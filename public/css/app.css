@@ -1,0 +1,461 @@
+/* public/css/app.css */
+
+/* === Import Font === */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+
+/* === Color & Typography Variables === */
+:root {
+  --primary:        #E2136E;
+  --lavender-blush: #FEEAEE; /* table heading */
+  --bivid-blue:     #2D8EFF; /* view btn color */
+  --yellow:         #FFA800; /* edit */
+  --standard-red:   #FF0000; /* delete */
+  --light-red:      #FF4D49; /* De-Register color */
+  --green:          #00AA03; /* active date */
+  --navy-blue:      #0047FF; /* calender item */
+  --weekend-bg:     #a0d9fa;
+  --bkash-pink-dark:#c1005d;
+  
+
+  --bg:      #F7F9FC;
+  --card-bg: #FFFFFF;
+  --text-main:      #333333;
+  --text-secondary: #666666;
+  --font-family: 'Montserrat', sans-serif;
+
+}
+
+/* === Global Styles === */
+.color-green {
+  color: var(--green);
+}
+.color-pink {
+  color: var(--bkash-pink-dark);
+}
+.color-red {
+  color: var(--standard-red);
+}
+
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-family);
+  background-color: var(--bg);
+  color: var(--text-main);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-size: 0.8rem;
+}
+a {
+  text-decoration: none;
+}
+.container-fluid, .row {
+  margin: 0;
+  padding: 0;
+}
+
+/* === Header === */
+header > nav.navbar {
+  padding: 0.5rem 1rem;
+}
+
+.bg-primary {
+  background-color: var(--primary) !important;
+  border-color: var(--primary) !important;
+}
+
+header .navbar .btn-primary:hover,
+header .navbar .btn-primary:focus {
+  background-color: var(--primary) !important;
+  border-color: var(--primary) !important;
+}
+
+.btn-primary:hover {
+  color: #fff;
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+
+header .navbar-brand {
+  color: var(--text-main);
+  font-weight: 600;
+  font-size: 1.25rem;
+}
+header .nav-link {
+  margin-right: 1rem;
+}
+
+header .nav-link:hover,
+header .nav-link:focus {
+  color: var(--primary) !important;
+}
+header .notification-icon {
+  position: relative;
+  margin-right: 1rem;
+}
+header .notification-icon .badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: var(--yellow);
+  color: #fff;
+  font-size: 0.6rem;
+  border-radius: 50%;
+  padding: 0.2rem 0.4rem;
+}
+
+/* === Sidebar === */
+#sidebarOffcanvas {
+  transition: all 1.9s ease;
+}
+.nav-item{
+  padding-top: 3px;
+}
+ .nav .nav-link {
+  color: var(--card-bg);
+  padding: 0.75rem 0.55rem;
+  font-weight: 500;
+}
+.nav .nav-link.active {
+  background-color: var(--card-bg);
+  color: var(--text-main);
+}
+.sidebar .nav-link:hover {
+  background-color: var(--primary);
+  color: #fff;
+}
+
+/* === Main Content === */
+main {
+  padding: 1.5rem;
+  flex: 1;
+}
+
+/* === Card Widgets === */
+.card-widget {
+  background-color: var(--card-bg);
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  padding: 1rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+.card-widget .card-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+}
+.card-widget .card-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+.card-widget .card-icon {
+  font-size: 1.5rem;
+  color: var(--yellow);
+  margin-bottom: 0.5rem;
+}
+
+/* === Grid Helpers for Widgets === */
+.widgets-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* === Quick Actions === */
+.quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.quick-actions .btn {
+  background-color: var(--card-bg);
+  color: var(--text-main);
+  border: 1px solid #ddd;
+  flex: 1;
+  min-width: 150px;
+  padding: 0.75rem 1rem;
+  text-align: left;
+}
+.quick-actions .btn:hover {
+  background-color: var(--bg);
+}
+
+/* === Footer === */
+footer.footer {
+  background-color: var(--card-bg);
+  padding: 0.75rem 1rem;
+  text-align: center;
+  font-size: 0.85rem;
+  margin-top: auto;
+}
+
+/* Vendor: limit datepicker width and add spacing */
+.datepicker {
+  max-width: 160px;
+  margin-right: 0.5rem;
+}
+
+/* Vendor: space below the profile update message */
+#profileMsg {
+  margin-bottom: 1rem;
+}
+
+/* Vendor: ensure tables in AJAX results have top margin */
+#orderHistoryResults table {
+  margin-top: 1rem;
+}
+
+/* Apou start */
+.btn-primary {
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+.bi-pencil-fill {
+  color: var(--yellow);
+}
+
+.bi-trash3-fill {
+  color: var(--standard-red);
+}
+.bi-eye-fill {
+  color: var(--bivid-blue);
+}
+
+.table thead th {
+  background-color: var(--lavender-blush);
+}
+
+a {
+  color: inherit;
+  text-decoration: none; /* if you also want to remove underlines */
+}
+a:hover,
+a:focus {
+  color: var(--primary);
+}
+.page-item.active .page-link {
+  z-index: 3;
+  color: #fff;
+  background-color: var(--yellow);
+  border-color: var(--yellow);
+}
+
+.page-link {
+  color: var(--bivid-blue);
+}
+.page-link:hover {
+  color: var(--yellow);
+  background-color: var(--card-bg);
+  border-color: var(--yellow);
+}
+
+
+/* Subscription calender start */
+/* ── Reset generic disabled styling ── */
+.flatpickr-day.flatpickr-disabled {
+  background: transparent;
+  color: var(--card-bg)            !important;
+  cursor: not-allowed    !important;
+}
+
+.flatpickr-day {
+  color: var(--green);
+  margin: 1px;
+}
+
+.flatpickr-calendar .fp-select-all,
+.flatpickr-calendar .fp-select-next7,
+.flatpickr-calendar .fp-select-next15,
+.flatpickr-calendar .fp-clear {
+  /* push them down from the top of the calendar */
+  margin-top: 0.5rem;
+  /* shrink the text and padding */
+  font-size: 0.75rem;
+  /* padding: 0.25rem 0.5rem; */
+}
+
+
+.flatpickr-day.nextMonthDay {
+  color: var(--green);
+  background: transparent;
+  border-color: transparent;
+  cursor: default;
+}
+
+/* ── Public holidays → orange ── */
+.holiday-day {
+  background: var(--yellow) !important;
+  color: var(--card-bg)         !important;
+}
+
+/* ── Already registered → pink ── */
+.registered-day {
+  background: var(--primary) !important;
+  color: var(--card-bg)          !important;
+}
+
+
+/* ── Cut-off out-of-window → grey ── */
+.cutoff-day {
+  background: #dadfe2 !important; /* Bootstrap “secondary” grey */
+  color: var(--card-bg)         !important;
+}
+
+/* ── Cut-off out-of-window → grey ── */
+.weekly-holiday-day {
+  background: var(--weekend-bg) !important; /* Bootstrap “secondary” grey */
+  color: var(--card-bg)         !important;
+}
+
+/* ── Selected → green ── */
+.flatpickr-day.selected {
+  background: var(--navy-blue) !important;
+  border-color: var(--navy-blue) !important;
+  color: var(--card-bg)        !important;
+}
+
+/* ── Month dropdown + year spinner arrows ── */
+.flatpickr-current-month .numInputWrapper input {
+  -moz-appearance: textfield !important;
+}
+.flatpickr-current-month .numInputWrapper input::-webkit-inner-spin-button,
+.flatpickr-current-month .numInputWrapper input::-webkit-outer-spin-button {
+  -webkit-appearance: inner-spin-button !important;
+}
+/* Subscription calender end */
+
+
+.legend {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Each legend row */
+.legend__item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  color: #333;
+}
+
+/* The colored circle */
+.legend__marker {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 0.5rem;
+}
+
+/* Specific colors */
+.legend__marker--available {
+  background-color: var(--green); /* green */
+}
+.legend__marker--registered {
+  background-color: var(--primary); /* pink */
+}
+.legend__marker--unavailable {
+  background-color: var(--yellow); /* orange */
+}
+.weekly_holiday--unavailable {
+  background-color: var(--weekend-bg); /* orange */
+}
+
+.min-vh-80 {
+  min-height: 80vh !important;
+}
+
+/* datatable css */
+div.dataTables_scrollBody {
+  scrollbar-width: thin;
+  scrollbar-color: #ccc transparent;
+}
+
+#subscriptionTable_wrapper .dataTables_scrollHead,
+#subscriptionTable_wrapper .dataTables_scrollBody {
+  width: 100% !important;
+  overflow: auto;
+}
+
+#subscriptionTable_wrapper .dataTables_scrollBody {
+  overflow-y: scroll !important;
+  max-height: 400px;
+}
+
+/* dashboard css */
+/* menu shortcart */
+.shortcut-card .card-header{ background:var(--card-bg); border-bottom:1px solid #eef0f4; }
+.shortcut { 
+  display:block; text-decoration:none; text-align:center; 
+  padding:14px; border-radius:12px; transition:transform .12s, box-shadow .12s; 
+}
+.shortcut:hover{ transform:translateY(-2px); box-shadow:0 .35rem .9rem rgba(0,0,0,.06); }
+.shortcut i{ font-size:32px; color:var(--primary); }
+.shortcut .title{ margin-top:8px; color:#212529; font-weight:600; font-size:14px; }
+
+ /* user manual btn */
+ .btn-pink{ background:var(--primary); border-color:var(--primary); color:var(--card-bg); }
+ .btn-pink:hover{ background:var(--bkash-pink-dark); border-color:var(--bkash-pink-dark); color:var(--card-bg); }
+ .pill-alert{ background:#fde8ea; color:#b02a37; border:1px solid #f5c2c7; }
+
+
+ /* Donut */
+ .donut{
+  --size: 190px;              /* diameter */
+  --thickness: 26px;          /* ring width */
+  --c1:#6f42c1;               /* consumed */
+  --c2:#e9d5ff;               /* not consumed */
+  width:var(--size); height:var(--size); border-radius:50%;
+  background:conic-gradient(var(--c1) calc(var(--p,0)*1%), var(--c2) 0);
+  position:relative; margin:auto;
+}
+.donut::before{
+  content:""; position:absolute; inset:var(--thickness);
+  background:var(--card-bg); border-radius:50%;
+}
+.donut-center{ position:absolute; inset:0; display:grid; place-content:center; text-align:center; }
+.legend-dot{ width:10px; height:10px; border-radius:50%; display:inline-block; }
+.bg-consumed{ background:#6f42c1; }
+.bg-not{ background:#e9d5ff; border:1px solid #d9c6ff; }
+.stat-card .rate{ color:var(--primary); } /* hot pink */
+
+
+/* Make Select2 search input & box full width like normal form-select */
+/* Make Select2 same width as the column */
+.select2-container { width: 100% !important; }
+
+/* Default size: match .form-select height */
+.form-select + .select2 .select2-selection--single {
+  height: calc(2.25rem + 2px) !important;
+}
+.form-select + .select2 .select2-selection--single .select2-selection__rendered {
+  line-height: 2.25rem !important;
+  padding-left: 0.75rem !important; /* like .form-select */
+}
+.form-select + .select2 .select2-selection--single .select2-selection__arrow {
+  height: calc(2.25rem + 2px) !important;
+}
+
+/* If you ever use size variants on the <select>, these keep Select2 in sync */
+.form-select-lg + .select2 .select2-selection--single {
+  height: calc(3rem + 2px) !important;
+}
+.form-select-lg + .select2 .select2-selection--single .select2-selection__rendered {
+  line-height: 3rem !important;
+}
+.form-select-sm + .select2 .select2-selection--single {
+  height: calc(1.8125rem + 2px) !important;
+}
+.form-select-sm + .select2 .select2-selection--single .select2-selection__rendered {
+  line-height: 1.8125rem !important;
+}
