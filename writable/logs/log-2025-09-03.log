@@ -1,0 +1,21 @@
+CRITICAL - 2025-09-03 15:32:48 --> Error: Call to undefined method App\Controllers\AuthController::sendSms()
+[Method: GET, Route: test]
+in APPPATH\Controllers\AuthController.php on line 195.
+ 1 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\AuthController->test()
+ 2 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\AuthController))
+ 3 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 4 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 5 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 6 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ 7 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-03 15:41:41 --> Error: Call to undefined method App\Controllers\AuthController::sendSms()
+[Method: GET, Route: test]
+in APPPATH\Controllers\AuthController.php on line 195.
+ 1 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\AuthController->test()
+ 2 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\AuthController))
+ 3 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 4 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 5 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 6 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ 7 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+ERROR - 2025-09-03 17:44:53 --> Portal sync failed: HTTP 401

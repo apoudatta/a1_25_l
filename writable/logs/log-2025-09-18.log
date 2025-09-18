@@ -1,0 +1,102 @@
+CRITICAL - 2025-09-18 10:35:49 --> CodeIgniter\Filters\Exceptions\FilterException: "permission" filter must have a matching alias defined.
+[Method: GET, Route: admin/report/meal-charge-list-for-payroll]
+in SYSTEMPATH\Filters\Filters.php on line 590.
+ 1 SYSTEMPATH\Filters\Filters.php(590): CodeIgniter\Filters\Exceptions\FilterException::forNoAlias('permission')
+ 2 SYSTEMPATH\Filters\Filters.php(641): CodeIgniter\Filters\Filters->enableFilter('permission:admin.report.meal-charge-list-for-payroll', 'before')
+ 3 SYSTEMPATH\CodeIgniter.php(467): CodeIgniter\Filters\Filters->enableFilters([...], 'before')
+ 4 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 6 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 7 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ 8 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-18 17:47:39 --> ErrorException: Undefined variable $showUnsubs
+[Method: GET, Route: admin/guest-subscriptions]
+in APPPATH\Views\partials\admin\subs_list_tbody.php on line 102.
+ 1 APPPATH\Views\partials\admin\subs_list_tbody.php(102): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined variable $showUnsubs', 'C:\\wamp64\\www\\bkash_lms\\app\\Views\\partials\\admin\\subs_list_tbody.php', 102)
+ 2 SYSTEMPATH\View\View.php(224): include('C:\\wamp64\\www\\bkash_lms\\app\\Views\\partials\\admin\\subs_list_tbody.php')
+ 3 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('partials/admin/subs_list_tbody', [], true)
+ 5 APPPATH\Views\admin\guest\index.php(59): view('partials/admin/subs_list_tbody', [...])
+ 6 SYSTEMPATH\View\View.php(224): include('C:\\wamp64\\www\\bkash_lms\\app\\Views\\admin\\guest\\index.php')
+ 7 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 8 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('admin/guest/index', [], true)
+ 9 APPPATH\Controllers\Admin\GuestSubscription.php(334): view('admin/guest/index', [...])
+10 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\GuestSubscription->index()
+11 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\GuestSubscription))
+12 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+13 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+14 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+15 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+16 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-18 17:51:07 --> ErrorException: Undefined variable $r
+[Method: GET, Route: admin/subscription/all-subscriptions]
+in APPPATH\Views\admin\subscription\all_subscription.php on line 90.
+ 1 APPPATH\Views\admin\subscription\all_subscription.php(90): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined variable $r', 'C:\\wamp64\\www\\bkash_lms\\app\\Views\\admin\\subscription\\all_subscription.php', 90)
+ 2 SYSTEMPATH\View\View.php(224): include('C:\\wamp64\\www\\bkash_lms\\app\\Views\\admin\\subscription\\all_subscription.php')
+ 3 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('admin/subscription/all_subscription', [], true)
+ 5 APPPATH\Controllers\Admin\Subscription.php(394): view('admin/subscription/all_subscription', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\Subscription->allSubscriptions()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Subscription))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+12 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-18 17:51:17 --> ErrorException: Undefined array key "employee_id"
+[Method: GET, Route: admin/subscription/all-subscriptions]
+in APPPATH\Views\admin\subscription\all_subscription.php on line 90.
+ 1 APPPATH\Views\admin\subscription\all_subscription.php(90): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "employee_id"', 'C:\\wamp64\\www\\bkash_lms\\app\\Views\\admin\\subscription\\all_subscription.php', 90)
+ 2 SYSTEMPATH\View\View.php(224): include('C:\\wamp64\\www\\bkash_lms\\app\\Views\\admin\\subscription\\all_subscription.php')
+ 3 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('admin/subscription/all_subscription', [], true)
+ 5 APPPATH\Controllers\Admin\Subscription.php(394): view('admin/subscription/all_subscription', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\Subscription->allSubscriptions()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Subscription))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+12 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-18 18:27:49 --> CodeIgniter\Database\Exceptions\DataException: There is no data to update.
+[Method: POST, Route: admin/meal-costs/13/toggle]
+in SYSTEMPATH\BaseModel.php on line 1834.
+ 1 SYSTEMPATH\BaseModel.php(1834): CodeIgniter\Database\Exceptions\DataException::forEmptyDataset('update')
+ 2 SYSTEMPATH\BaseModel.php(1000): CodeIgniter\BaseModel->transformDataToArray(null, 'update')
+ 3 SYSTEMPATH\Model.php(863): CodeIgniter\BaseModel->update([...], null)
+ 4 APPPATH\Controllers\Admin\crud\MealCosts.php(137): CodeIgniter\Model->update([...])
+ 5 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\crud\MealCosts->toggle(13)
+ 6 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\crud\MealCosts))
+ 7 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 9 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+10 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+11 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-18 18:28:02 --> CodeIgniter\Database\Exceptions\DataException: There is no data to update.
+[Method: POST, Route: admin/meal-costs/13/toggle]
+in SYSTEMPATH\BaseModel.php on line 1834.
+ 1 SYSTEMPATH\BaseModel.php(1834): CodeIgniter\Database\Exceptions\DataException::forEmptyDataset('update')
+ 2 SYSTEMPATH\BaseModel.php(1000): CodeIgniter\BaseModel->transformDataToArray(null, 'update')
+ 3 SYSTEMPATH\Model.php(863): CodeIgniter\BaseModel->update([...], null)
+ 4 APPPATH\Controllers\Admin\crud\MealCosts.php(137): CodeIgniter\Model->update([...])
+ 5 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\crud\MealCosts->toggle(13)
+ 6 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\crud\MealCosts))
+ 7 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 9 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+10 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+11 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-18 18:29:52 --> CodeIgniter\Database\Exceptions\DataException: There is no data to update.
+[Method: POST, Route: admin/meal-costs/13/toggle]
+in SYSTEMPATH\BaseModel.php on line 1834.
+ 1 SYSTEMPATH\BaseModel.php(1834): CodeIgniter\Database\Exceptions\DataException::forEmptyDataset('update')
+ 2 SYSTEMPATH\BaseModel.php(1000): CodeIgniter\BaseModel->transformDataToArray(null, 'update')
+ 3 SYSTEMPATH\Model.php(863): CodeIgniter\BaseModel->update([...], null)
+ 4 APPPATH\Controllers\Admin\crud\MealCosts.php(138): CodeIgniter\Model->update([...])
+ 5 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\crud\MealCosts->toggle(13)
+ 6 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\crud\MealCosts))
+ 7 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 9 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+10 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+11 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')

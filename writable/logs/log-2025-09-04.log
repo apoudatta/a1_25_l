@@ -1,0 +1,385 @@
+ERROR - 2025-09-04 11:04:48 --> mysqli_sql_exception: Column 'meal_type_id' in where clause is ambiguous in C:\wamp64\www\bkash_lms\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\wamp64\www\bkash_lms\system\Database\MySQLi\Connection.php(327): mysqli->query('SELECT `meal_su...', 0)
+#1 C:\wamp64\www\bkash_lms\system\Database\BaseConnection.php(738): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `meal_su...')
+#2 C:\wamp64\www\bkash_lms\system\Database\BaseConnection.php(652): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `meal_su...')
+#3 C:\wamp64\www\bkash_lms\system\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `meal_su...', Array, false)
+#4 C:\wamp64\www\bkash_lms\system\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\wamp64\www\bkash_lms\system\BaseModel.php(679): CodeIgniter\Model->doFindAll(0, 0)
+#6 C:\wamp64\www\bkash_lms\app\Controllers\Employee\Subscription.php(333): CodeIgniter\BaseModel->findAll()
+#7 C:\wamp64\www\bkash_lms\system\CodeIgniter.php(933): App\Controllers\Employee\Subscription->history()
+#8 C:\wamp64\www\bkash_lms\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Employee\Subscription))
+#9 C:\wamp64\www\bkash_lms\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#10 C:\wamp64\www\bkash_lms\system\Boot.php(334): CodeIgniter\CodeIgniter->run()
+#11 C:\wamp64\www\bkash_lms\system\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#12 C:\wamp64\www\bkash_lms\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#13 C:\wamp64\www\bkash_lms\system\rewrite.php(44): require_once('C:\\wamp64\\www\\b...')
+#14 {main}
+CRITICAL - 2025-09-04 11:04:48 --> CodeIgniter\Database\Exceptions\DatabaseException: Column 'meal_type_id' in where clause is ambiguous
+[Method: GET, Route: employee/subscription/history]
+in SYSTEMPATH\Database\BaseConnection.php on line 692.
+ 1 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `meal_subscription_details`.*, `meal_types`.`name` AS `meal_type_name`, `cafeterias`.`name` AS `caffname`, `ct`.`cut_off_time` AS `cutoff_time`, `ct`.`lead_days` AS `lead_days`
+FROM `meal_subscription_details`
+LEFT JOIN `meal_types` ON `meal_types`.`id` = `meal_subscription_details`.`meal_type_id`
+LEFT JOIN `cafeterias` ON `cafeterias`.`id` = `meal_subscription_details`.`cafeteria_id`
+LEFT JOIN `cutoff_times` `ct` ON `ct`.`meal_type_id` = `meal_subscription_details`.`meal_type_id` AND `ct`.`is_active` = 1
+WHERE `user_id` = :user_id:
+AND `meal_type_id` = :meal_type_id:
+ORDER BY `id` DESC', [...], false)
+ 2 SYSTEMPATH\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+ 3 SYSTEMPATH\BaseModel.php(679): CodeIgniter\Model->doFindAll(0, 0)
+ 4 APPPATH\Controllers\Employee\Subscription.php(333): CodeIgniter\BaseModel->findAll()
+ 5 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Employee\Subscription->history()
+ 6 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Employee\Subscription))
+ 7 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 9 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+10 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+11 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-04 11:04:48 --> [Caused by] CodeIgniter\Database\Exceptions\DatabaseException: Column 'meal_type_id' in where clause is ambiguous
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 332.
+ 1 SYSTEMPATH\Database\BaseConnection.php(738): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `meal_subscription_details`.*, `meal_types`.`name` AS `meal_type_name`, `cafeterias`.`name` AS `caffname`, `ct`.`cut_off_time` AS `cutoff_time`, `ct`.`lead_days` AS `lead_days`
+FROM `meal_subscription_details`
+LEFT JOIN `meal_types` ON `meal_types`.`id` = `meal_subscription_details`.`meal_type_id`
+LEFT JOIN `cafeterias` ON `cafeterias`.`id` = `meal_subscription_details`.`cafeteria_id`
+LEFT JOIN `cutoff_times` `ct` ON `ct`.`meal_type_id` = `meal_subscription_details`.`meal_type_id` AND `ct`.`is_active` = 1
+WHERE `user_id` = \'117\'
+AND `meal_type_id` = 1
+ORDER BY `id` DESC')
+ 2 SYSTEMPATH\Database\BaseConnection.php(652): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `meal_subscription_details`.*, `meal_types`.`name` AS `meal_type_name`, `cafeterias`.`name` AS `caffname`, `ct`.`cut_off_time` AS `cutoff_time`, `ct`.`lead_days` AS `lead_days`
+FROM `meal_subscription_details`
+LEFT JOIN `meal_types` ON `meal_types`.`id` = `meal_subscription_details`.`meal_type_id`
+LEFT JOIN `cafeterias` ON `cafeterias`.`id` = `meal_subscription_details`.`cafeteria_id`
+LEFT JOIN `cutoff_times` `ct` ON `ct`.`meal_type_id` = `meal_subscription_details`.`meal_type_id` AND `ct`.`is_active` = 1
+WHERE `user_id` = \'117\'
+AND `meal_type_id` = 1
+ORDER BY `id` DESC')
+ 3 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `meal_subscription_details`.*, `meal_types`.`name` AS `meal_type_name`, `cafeterias`.`name` AS `caffname`, `ct`.`cut_off_time` AS `cutoff_time`, `ct`.`lead_days` AS `lead_days`
+FROM `meal_subscription_details`
+LEFT JOIN `meal_types` ON `meal_types`.`id` = `meal_subscription_details`.`meal_type_id`
+LEFT JOIN `cafeterias` ON `cafeterias`.`id` = `meal_subscription_details`.`cafeteria_id`
+LEFT JOIN `cutoff_times` `ct` ON `ct`.`meal_type_id` = `meal_subscription_details`.`meal_type_id` AND `ct`.`is_active` = 1
+WHERE `user_id` = :user_id:
+AND `meal_type_id` = :meal_type_id:
+ORDER BY `id` DESC', [...], false)
+ 4 SYSTEMPATH\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+ 5 SYSTEMPATH\BaseModel.php(679): CodeIgniter\Model->doFindAll(0, 0)
+ 6 APPPATH\Controllers\Employee\Subscription.php(333): CodeIgniter\BaseModel->findAll()
+ 7 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Employee\Subscription->history()
+ 8 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Employee\Subscription))
+ 9 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+10 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+11 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+12 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+13 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-04 11:04:48 --> [Caused by] mysqli_sql_exception: Column 'meal_type_id' in where clause is ambiguous
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 327.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(327): mysqli->query('SELECT `meal_subscription_details`.*, `meal_types`.`name` AS `meal_type_name`, `cafeterias`.`name` AS `caffname`, `ct`.`cut_off_time` AS `cutoff_time`, `ct`.`lead_days` AS `lead_days`
+FROM `meal_subscription_details`
+LEFT JOIN `meal_types` ON `meal_types`.`id` = `meal_subscription_details`.`meal_type_id`
+LEFT JOIN `cafeterias` ON `cafeterias`.`id` = `meal_subscription_details`.`cafeteria_id`
+LEFT JOIN `cutoff_times` `ct` ON `ct`.`meal_type_id` = `meal_subscription_details`.`meal_type_id` AND `ct`.`is_active` = 1
+WHERE `user_id` = \'117\'
+AND `meal_type_id` = 1
+ORDER BY `id` DESC', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(738): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `meal_subscription_details`.*, `meal_types`.`name` AS `meal_type_name`, `cafeterias`.`name` AS `caffname`, `ct`.`cut_off_time` AS `cutoff_time`, `ct`.`lead_days` AS `lead_days`
+FROM `meal_subscription_details`
+LEFT JOIN `meal_types` ON `meal_types`.`id` = `meal_subscription_details`.`meal_type_id`
+LEFT JOIN `cafeterias` ON `cafeterias`.`id` = `meal_subscription_details`.`cafeteria_id`
+LEFT JOIN `cutoff_times` `ct` ON `ct`.`meal_type_id` = `meal_subscription_details`.`meal_type_id` AND `ct`.`is_active` = 1
+WHERE `user_id` = \'117\'
+AND `meal_type_id` = 1
+ORDER BY `id` DESC')
+ 3 SYSTEMPATH\Database\BaseConnection.php(652): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `meal_subscription_details`.*, `meal_types`.`name` AS `meal_type_name`, `cafeterias`.`name` AS `caffname`, `ct`.`cut_off_time` AS `cutoff_time`, `ct`.`lead_days` AS `lead_days`
+FROM `meal_subscription_details`
+LEFT JOIN `meal_types` ON `meal_types`.`id` = `meal_subscription_details`.`meal_type_id`
+LEFT JOIN `cafeterias` ON `cafeterias`.`id` = `meal_subscription_details`.`cafeteria_id`
+LEFT JOIN `cutoff_times` `ct` ON `ct`.`meal_type_id` = `meal_subscription_details`.`meal_type_id` AND `ct`.`is_active` = 1
+WHERE `user_id` = \'117\'
+AND `meal_type_id` = 1
+ORDER BY `id` DESC')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `meal_subscription_details`.*, `meal_types`.`name` AS `meal_type_name`, `cafeterias`.`name` AS `caffname`, `ct`.`cut_off_time` AS `cutoff_time`, `ct`.`lead_days` AS `lead_days`
+FROM `meal_subscription_details`
+LEFT JOIN `meal_types` ON `meal_types`.`id` = `meal_subscription_details`.`meal_type_id`
+LEFT JOIN `cafeterias` ON `cafeterias`.`id` = `meal_subscription_details`.`cafeteria_id`
+LEFT JOIN `cutoff_times` `ct` ON `ct`.`meal_type_id` = `meal_subscription_details`.`meal_type_id` AND `ct`.`is_active` = 1
+WHERE `user_id` = :user_id:
+AND `meal_type_id` = :meal_type_id:
+ORDER BY `id` DESC', [...], false)
+ 5 SYSTEMPATH\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+ 6 SYSTEMPATH\BaseModel.php(679): CodeIgniter\Model->doFindAll(0, 0)
+ 7 APPPATH\Controllers\Employee\Subscription.php(333): CodeIgniter\BaseModel->findAll()
+ 8 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Employee\Subscription->history()
+ 9 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Employee\Subscription))
+10 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+11 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+12 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+13 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+14 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-04 13:29:32 --> CodeIgniter\View\Exceptions\ViewException: Invalid file: "partials/admin_subs_list_tbody.php"
+[Method: GET, Route: admin/guest-subscriptions]
+in SYSTEMPATH\Exceptions\FrameworkException.php on line 39.
+ 1 SYSTEMPATH\View\View.php(212): CodeIgniter\Exceptions\FrameworkException::forInvalidFile('partials/admin_subs_list_tbody.php')
+ 2 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('partials/admin_subs_list_tbody', [], true)
+ 3 APPPATH\Views\admin\guest\index.php(55): view('partials/admin_subs_list_tbody', [...])
+ 4 SYSTEMPATH\View\View.php(224): include('C:\\wamp64\\www\\bkash_lms\\app\\Views\\admin\\guest\\index.php')
+ 5 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 6 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('admin/guest/index', [], true)
+ 7 APPPATH\Controllers\Admin\GuestSubscription.php(328): view('admin/guest/index', [...])
+ 8 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\GuestSubscription->index()
+ 9 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\GuestSubscription))
+10 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+11 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+12 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+13 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+14 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-04 14:21:58 --> ErrorException: Undefined array key "employee_id"
+[Method: GET, Route: admin/guest-subscriptions]
+in APPPATH\Views\partials\admin\subs_list_tbody.php on line 12.
+ 1 APPPATH\Views\partials\admin\subs_list_tbody.php(12): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "employee_id"', 'C:\\wamp64\\www\\bkash_lms\\app\\Views\\partials\\admin\\subs_list_tbody.php', 12)
+ 2 SYSTEMPATH\View\View.php(224): include('C:\\wamp64\\www\\bkash_lms\\app\\Views\\partials\\admin\\subs_list_tbody.php')
+ 3 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('partials/admin/subs_list_tbody', [], true)
+ 5 APPPATH\Views\admin\guest\index.php(56): view('partials/admin/subs_list_tbody', [...])
+ 6 SYSTEMPATH\View\View.php(224): include('C:\\wamp64\\www\\bkash_lms\\app\\Views\\admin\\guest\\index.php')
+ 7 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 8 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('admin/guest/index', [], true)
+ 9 APPPATH\Controllers\Admin\GuestSubscription.php(331): view('admin/guest/index', [...])
+10 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\GuestSubscription->index()
+11 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\GuestSubscription))
+12 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+13 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+14 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+15 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+16 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-04 14:27:51 --> ErrorException: Undefined array key "employee_id"
+[Method: GET, Route: admin/guest-subscriptions]
+in APPPATH\Views\partials\admin\subs_list_tbody.php on line 64.
+ 1 APPPATH\Views\partials\admin\subs_list_tbody.php(64): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "employee_id"', 'C:\\wamp64\\www\\bkash_lms\\app\\Views\\partials\\admin\\subs_list_tbody.php', 64)
+ 2 SYSTEMPATH\View\View.php(224): include('C:\\wamp64\\www\\bkash_lms\\app\\Views\\partials\\admin\\subs_list_tbody.php')
+ 3 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('partials/admin/subs_list_tbody', [], true)
+ 5 APPPATH\Views\admin\guest\index.php(56): view('partials/admin/subs_list_tbody', [...])
+ 6 SYSTEMPATH\View\View.php(224): include('C:\\wamp64\\www\\bkash_lms\\app\\Views\\admin\\guest\\index.php')
+ 7 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 8 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('admin/guest/index', [], true)
+ 9 APPPATH\Controllers\Admin\GuestSubscription.php(331): view('admin/guest/index', [...])
+10 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\GuestSubscription->index()
+11 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\GuestSubscription))
+12 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+13 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+14 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+15 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+16 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-04 14:29:43 --> ErrorException: Undefined array key "employee_id"
+[Method: GET, Route: admin/guest-subscriptions]
+in APPPATH\Views\partials\admin\subs_list_tbody.php on line 64.
+ 1 APPPATH\Views\partials\admin\subs_list_tbody.php(64): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "employee_id"', 'C:\\wamp64\\www\\bkash_lms\\app\\Views\\partials\\admin\\subs_list_tbody.php', 64)
+ 2 SYSTEMPATH\View\View.php(224): include('C:\\wamp64\\www\\bkash_lms\\app\\Views\\partials\\admin\\subs_list_tbody.php')
+ 3 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('partials/admin/subs_list_tbody', [], true)
+ 5 APPPATH\Views\admin\guest\index.php(56): view('partials/admin/subs_list_tbody', [...])
+ 6 SYSTEMPATH\View\View.php(224): include('C:\\wamp64\\www\\bkash_lms\\app\\Views\\admin\\guest\\index.php')
+ 7 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 8 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('admin/guest/index', [], true)
+ 9 APPPATH\Controllers\Admin\GuestSubscription.php(331): view('admin/guest/index', [...])
+10 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\GuestSubscription->index()
+11 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\GuestSubscription))
+12 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+13 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+14 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+15 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+16 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-04 15:24:28 --> ErrorException: Cannot use empty array elements in arrays
+[Method: GET, Route: admin/guest-subscriptions/bulk-list]
+in APPPATH\Views\admin\guest\bulk_list.php on line 59.
+ 1 [internal function]: CodeIgniter\Debug\Exceptions->shutdownHandler()
+CRITICAL - 2025-09-04 15:45:43 --> ErrorException: Undefined variable $r
+[Method: GET, Route: admin/ramadan/sehri-subscription/all-sehri-list]
+in APPPATH\Views\admin\sehri_subscription\all_sehri_list.php on line 64.
+ 1 APPPATH\Views\admin\sehri_subscription\all_sehri_list.php(64): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined variable $r', 'C:\\wamp64\\www\\bkash_lms\\app\\Views\\admin\\sehri_subscription\\all_sehri_list.php', 64)
+ 2 SYSTEMPATH\View\View.php(224): include('C:\\wamp64\\www\\bkash_lms\\app\\Views\\admin\\sehri_subscription\\all_sehri_list.php')
+ 3 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('admin/sehri_subscription/all_sehri_list', [], true)
+ 5 APPPATH\Controllers\Admin\SehriSubscription.php(66): view('admin/sehri_subscription/all_sehri_list', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\SehriSubscription->allSehriList()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\SehriSubscription))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+12 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-04 15:46:06 --> ErrorException: Undefined array key "guest_name"
+[Method: GET, Route: admin/ramadan/ifter-subscription/all-ifter-list]
+in APPPATH\Views\partials\admin\subs_list_tbody.php on line 44.
+ 1 APPPATH\Views\partials\admin\subs_list_tbody.php(44): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "guest_name"', 'C:\\wamp64\\www\\bkash_lms\\app\\Views\\partials\\admin\\subs_list_tbody.php', 44)
+ 2 SYSTEMPATH\View\View.php(224): include('C:\\wamp64\\www\\bkash_lms\\app\\Views\\partials\\admin\\subs_list_tbody.php')
+ 3 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('partials/admin/subs_list_tbody', [], true)
+ 5 APPPATH\Views\admin\ifter_subscription\all_ifter_list.php(59): view('partials/admin/subs_list_tbody', [...])
+ 6 SYSTEMPATH\View\View.php(224): include('C:\\wamp64\\www\\bkash_lms\\app\\Views\\admin\\ifter_subscription\\all_ifter_list.php')
+ 7 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 8 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('admin/ifter_subscription/all_ifter_list', [], true)
+ 9 APPPATH\Controllers\Admin\IfterSubscription.php(67): view('admin/ifter_subscription/all_ifter_list', [...])
+10 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\IfterSubscription->allIfterList()
+11 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\IfterSubscription))
+12 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+13 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+14 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+15 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+16 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-04 15:55:19 --> ErrorException: Undefined array key "meal_type_name"
+[Method: GET, Route: admin/ramadan/ifter-subscription/all-ifter-list]
+in APPPATH\Views\partials\admin\subs_list_tbody.php on line 51.
+ 1 APPPATH\Views\partials\admin\subs_list_tbody.php(51): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "meal_type_name"', 'C:\\wamp64\\www\\bkash_lms\\app\\Views\\partials\\admin\\subs_list_tbody.php', 51)
+ 2 SYSTEMPATH\View\View.php(224): include('C:\\wamp64\\www\\bkash_lms\\app\\Views\\partials\\admin\\subs_list_tbody.php')
+ 3 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('partials/admin/subs_list_tbody', [], true)
+ 5 APPPATH\Views\admin\ifter_subscription\all_ifter_list.php(59): view('partials/admin/subs_list_tbody', [...])
+ 6 SYSTEMPATH\View\View.php(224): include('C:\\wamp64\\www\\bkash_lms\\app\\Views\\admin\\ifter_subscription\\all_ifter_list.php')
+ 7 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 8 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('admin/ifter_subscription/all_ifter_list', [], true)
+ 9 APPPATH\Controllers\Admin\IfterSubscription.php(67): view('admin/ifter_subscription/all_ifter_list', [...])
+10 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\IfterSubscription->allIfterList()
+11 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\IfterSubscription))
+12 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+13 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+14 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+15 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+16 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-04 16:00:47 --> ErrorException: Undefined array key "meal_type_name"
+[Method: GET, Route: admin/ramadan/ifter-subscription/all-ifter-list]
+in APPPATH\Views\partials\admin\subs_list_tbody.php on line 51.
+ 1 APPPATH\Views\partials\admin\subs_list_tbody.php(51): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "meal_type_name"', 'C:\\wamp64\\www\\bkash_lms\\app\\Views\\partials\\admin\\subs_list_tbody.php', 51)
+ 2 SYSTEMPATH\View\View.php(224): include('C:\\wamp64\\www\\bkash_lms\\app\\Views\\partials\\admin\\subs_list_tbody.php')
+ 3 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('partials/admin/subs_list_tbody', [], true)
+ 5 APPPATH\Views\admin\ifter_subscription\all_ifter_list.php(59): view('partials/admin/subs_list_tbody', [...])
+ 6 SYSTEMPATH\View\View.php(224): include('C:\\wamp64\\www\\bkash_lms\\app\\Views\\admin\\ifter_subscription\\all_ifter_list.php')
+ 7 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 8 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('admin/ifter_subscription/all_ifter_list', [], true)
+ 9 APPPATH\Controllers\Admin\IfterSubscription.php(67): view('admin/ifter_subscription/all_ifter_list', [...])
+10 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\IfterSubscription->allIfterList()
+11 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\IfterSubscription))
+12 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+13 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+14 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+15 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+16 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-04 16:04:58 --> ErrorException: Undefined variable $r
+[Method: GET, Route: admin/ramadan/sehri-subscription/all-sehri-list]
+in APPPATH\Views\admin\sehri_subscription\all_sehri_list.php on line 64.
+ 1 APPPATH\Views\admin\sehri_subscription\all_sehri_list.php(64): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined variable $r', 'C:\\wamp64\\www\\bkash_lms\\app\\Views\\admin\\sehri_subscription\\all_sehri_list.php', 64)
+ 2 SYSTEMPATH\View\View.php(224): include('C:\\wamp64\\www\\bkash_lms\\app\\Views\\admin\\sehri_subscription\\all_sehri_list.php')
+ 3 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('admin/sehri_subscription/all_sehri_list', [], true)
+ 5 APPPATH\Controllers\Admin\SehriSubscription.php(66): view('admin/sehri_subscription/all_sehri_list', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\SehriSubscription->allSehriList()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\SehriSubscription))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+12 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-04 16:58:26 --> ErrorException: Undefined array key "meal_type_name"
+[Method: GET, Route: admin/ramadan/sehri-subscription]
+in APPPATH\Views\partials\admin\subs_list_tbody.php on line 51.
+ 1 APPPATH\Views\partials\admin\subs_list_tbody.php(51): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "meal_type_name"', 'C:\\wamp64\\www\\bkash_lms\\app\\Views\\partials\\admin\\subs_list_tbody.php', 51)
+ 2 SYSTEMPATH\View\View.php(224): include('C:\\wamp64\\www\\bkash_lms\\app\\Views\\partials\\admin\\subs_list_tbody.php')
+ 3 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('partials/admin/subs_list_tbody', [], true)
+ 5 APPPATH\Views\admin\sehri_subscription\history.php(61): view('partials/admin/subs_list_tbody', [...])
+ 6 SYSTEMPATH\View\View.php(224): include('C:\\wamp64\\www\\bkash_lms\\app\\Views\\admin\\sehri_subscription\\history.php')
+ 7 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 8 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('admin/sehri_subscription/history', [], true)
+ 9 APPPATH\Controllers\Admin\SehriSubscription.php(55): view('admin/sehri_subscription/history', [...])
+10 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\SehriSubscription->history()
+11 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\SehriSubscription))
+12 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+13 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+14 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+15 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+16 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-04 17:01:16 --> ErrorException: Undefined variable $r
+[Method: GET, Route: admin/ramadan/sehri-subscription/all-sehri-list]
+in APPPATH\Views\admin\sehri_subscription\all_sehri_list.php on line 64.
+ 1 APPPATH\Views\admin\sehri_subscription\all_sehri_list.php(64): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined variable $r', 'C:\\wamp64\\www\\bkash_lms\\app\\Views\\admin\\sehri_subscription\\all_sehri_list.php', 64)
+ 2 SYSTEMPATH\View\View.php(224): include('C:\\wamp64\\www\\bkash_lms\\app\\Views\\admin\\sehri_subscription\\all_sehri_list.php')
+ 3 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('admin/sehri_subscription/all_sehri_list', [], true)
+ 5 APPPATH\Controllers\Admin\SehriSubscription.php(78): view('admin/sehri_subscription/all_sehri_list', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\SehriSubscription->allSehriList()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\SehriSubscription))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+12 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-04 17:16:32 --> ErrorException: Undefined array key "caffname"
+[Method: GET, Route: admin/eid-subscription/all-eid-subscription-list]
+in APPPATH\Views\partials\admin\subs_list_tbody.php on line 52.
+ 1 APPPATH\Views\partials\admin\subs_list_tbody.php(52): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "caffname"', 'C:\\wamp64\\www\\bkash_lms\\app\\Views\\partials\\admin\\subs_list_tbody.php', 52)
+ 2 SYSTEMPATH\View\View.php(224): include('C:\\wamp64\\www\\bkash_lms\\app\\Views\\partials\\admin\\subs_list_tbody.php')
+ 3 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('partials/admin/subs_list_tbody', [], true)
+ 5 APPPATH\Views\admin\eid_subscription\all_eid_subscriptions.php(48): view('partials/admin/subs_list_tbody', [...])
+ 6 SYSTEMPATH\View\View.php(224): include('C:\\wamp64\\www\\bkash_lms\\app\\Views\\admin\\eid_subscription\\all_eid_subscriptions.php')
+ 7 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 8 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('admin/eid_subscription/all_eid_subscriptions', [], true)
+ 9 APPPATH\Controllers\Admin\EidSubscription.php(69): view('admin/eid_subscription/all_eid_subscriptions', [...])
+10 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\EidSubscription->allEidSubsList()
+11 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\EidSubscription))
+12 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+13 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+14 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+15 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+16 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-04 17:58:24 --> ErrorException: Undefined variable $rows
+[Method: GET, Route: admin/intern-requisitions]
+in APPPATH\Views\admin\intern\index.php on line 32.
+ 1 APPPATH\Views\admin\intern\index.php(32): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined variable $rows', 'C:\\wamp64\\www\\bkash_lms\\app\\Views\\admin\\intern\\index.php', 32)
+ 2 SYSTEMPATH\View\View.php(224): include('C:\\wamp64\\www\\bkash_lms\\app\\Views\\admin\\intern\\index.php')
+ 3 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('admin/intern/index', [], true)
+ 5 APPPATH\Controllers\Admin\InternRequisition.php(74): view('admin/intern/index', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\InternRequisition->index()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\InternRequisition))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+12 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-04 18:01:03 --> ErrorException: Undefined array key "employee_id"
+[Method: GET, Route: admin/intern-requisitions]
+in APPPATH\Views\partials\admin\subs_list_tbody.php on line 36.
+ 1 APPPATH\Views\partials\admin\subs_list_tbody.php(36): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "employee_id"', 'C:\\wamp64\\www\\bkash_lms\\app\\Views\\partials\\admin\\subs_list_tbody.php', 36)
+ 2 SYSTEMPATH\View\View.php(224): include('C:\\wamp64\\www\\bkash_lms\\app\\Views\\partials\\admin\\subs_list_tbody.php')
+ 3 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('partials/admin/subs_list_tbody', [], true)
+ 5 APPPATH\Views\admin\intern\index.php(57): view('partials/admin/subs_list_tbody', [...])
+ 6 SYSTEMPATH\View\View.php(224): include('C:\\wamp64\\www\\bkash_lms\\app\\Views\\admin\\intern\\index.php')
+ 7 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 8 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('admin/intern/index', [], true)
+ 9 APPPATH\Controllers\Admin\InternRequisition.php(74): view('admin/intern/index', [...])
+10 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\InternRequisition->index()
+11 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\InternRequisition))
+12 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+13 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+14 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+15 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+16 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-04 18:01:21 --> ErrorException: Undefined variable $pager
+[Method: GET, Route: admin/intern-requisitions]
+in APPPATH\Views\admin\intern\index.php on line 61.
+ 1 APPPATH\Views\admin\intern\index.php(61): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined variable $pager', 'C:\\wamp64\\www\\bkash_lms\\app\\Views\\admin\\intern\\index.php', 61)
+ 2 SYSTEMPATH\View\View.php(224): include('C:\\wamp64\\www\\bkash_lms\\app\\Views\\admin\\intern\\index.php')
+ 3 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('admin/intern/index', [], true)
+ 5 APPPATH\Controllers\Admin\InternRequisition.php(74): view('admin/intern/index', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\InternRequisition->index()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\InternRequisition))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+12 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')

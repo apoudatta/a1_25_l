@@ -1,0 +1,580 @@
+ERROR - 2025-09-08 11:31:17 --> mysqli_sql_exception: Unknown column 'u.mobile' in 'field list' in C:\wamp64\www\bkash_lms\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\wamp64\www\bkash_lms\system\Database\MySQLi\Connection.php(327): mysqli->query('\r\n             ...', 0)
+#1 C:\wamp64\www\bkash_lms\system\Database\BaseConnection.php(738): CodeIgniter\Database\MySQLi\Connection->execute('\r\n             ...')
+#2 C:\wamp64\www\bkash_lms\system\Database\BaseConnection.php(652): CodeIgniter\Database\BaseConnection->simpleQuery('\r\n             ...')
+#3 C:\wamp64\www\bkash_lms\app\Controllers\Admin\ReportController.php(183): CodeIgniter\Database\BaseConnection->query('\r\n             ...', Array)
+#4 C:\wamp64\www\bkash_lms\system\CodeIgniter.php(933): App\Controllers\Admin\ReportController->mealReportForBilling()
+#5 C:\wamp64\www\bkash_lms\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\ReportController))
+#6 C:\wamp64\www\bkash_lms\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#7 C:\wamp64\www\bkash_lms\system\Boot.php(334): CodeIgniter\CodeIgniter->run()
+#8 C:\wamp64\www\bkash_lms\system\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#9 C:\wamp64\www\bkash_lms\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#10 C:\wamp64\www\bkash_lms\system\rewrite.php(44): require_once('C:\\wamp64\\www\\b...')
+#11 {main}
+CRITICAL - 2025-09-08 11:31:17 --> CodeIgniter\Database\Exceptions\DatabaseException: Unknown column 'u.mobile' in 'field list'
+[Method: GET, Route: admin/report/meal-report-for-billing]
+in SYSTEMPATH\Database\BaseConnection.php on line 692.
+ 1 APPPATH\Controllers\Admin\ReportController.php(183): CodeIgniter\Database\BaseConnection->query('
+                SELECT
+                    u.employee_id                          AS emp_id,
+                    COALESCE(u.name,\'\')                    AS emp_name,
+                    COALESCE(u.designation,\'\')             AS designation,
+                    COALESCE(u.division, u.department,\'\')  AS division,
+                    COALESCE(u.mobile, u.phone, \'\')        AS mobile,
+                    COUNT(msd.id)                           AS day_count,
+                    ROUND(SUM(COALESCE(mc.user_tk,0) + COALESCE(mc.company_tk,0)),2) AS full_meal_cost
+                FROM meal_subscription_details msd
+                JOIN meal_subscriptions ms  ON ms.id  = msd.subscription_id
+                JOIN users u                ON u.id   = msd.user_id
+                LEFT JOIN meal_contributions mc
+                    ON mc.meal_type_id  = msd.meal_type_id
+                    AND (mc.cafeteria_id IS NULL OR mc.cafeteria_id = msd.cafeteria_id)
+                    AND mc.user_type     = ms.subscription_type
+                    AND mc.effective_date = (
+                            SELECT MAX(m2.effective_date)
+                            FROM meal_contributions m2
+                            WHERE m2.meal_type_id  = msd.meal_type_id
+                            AND (m2.cafeteria_id IS NULL OR m2.cafeteria_id = msd.cafeteria_id)
+                            AND m2.user_type     = ms.subscription_type
+                            AND m2.effective_date <= msd.subscription_date
+                    )
+                WHERE msd.subscription_date BETWEEN ? AND ?
+                AND ms.status = \'ACTIVE\'
+                AND msd.status = \'REDEEMED\'   -- billing = consumed
+            
+                GROUP BY u.id, u.employee_id, u.name, u.designation, u.division, u.department, u.mobile, u.phone
+                ORDER BY u.employee_id
+            ', [...])
+ 2 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\ReportController->mealReportForBilling()
+ 3 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\ReportController))
+ 4 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 6 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 7 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ 8 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-08 11:31:17 --> [Caused by] CodeIgniter\Database\Exceptions\DatabaseException: Unknown column 'u.mobile' in 'field list'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 332.
+ 1 SYSTEMPATH\Database\BaseConnection.php(738): CodeIgniter\Database\MySQLi\Connection->execute('
+                SELECT
+                    u.employee_id                          AS emp_id,
+                    COALESCE(u.name,\'\')                    AS emp_name,
+                    COALESCE(u.designation,\'\')             AS designation,
+                    COALESCE(u.division, u.department,\'\')  AS division,
+                    COALESCE(u.mobile, u.phone, \'\')        AS mobile,
+                    COUNT(msd.id)                           AS day_count,
+                    ROUND(SUM(COALESCE(mc.user_tk,0) + COALESCE(mc.company_tk,0)),2) AS full_meal_cost
+                FROM meal_subscription_details msd
+                JOIN meal_subscriptions ms  ON ms.id  = msd.subscription_id
+                JOIN users u                ON u.id   = msd.user_id
+                LEFT JOIN meal_contributions mc
+                    ON mc.meal_type_id  = msd.meal_type_id
+                    AND (mc.cafeteria_id IS NULL OR mc.cafeteria_id = msd.cafeteria_id)
+                    AND mc.user_type     = ms.subscription_type
+                    AND mc.effective_date = (
+                            SELECT MAX(m2.effective_date)
+                            FROM meal_contributions m2
+                            WHERE m2.meal_type_id  = msd.meal_type_id
+                            AND (m2.cafeteria_id IS NULL OR m2.cafeteria_id = msd.cafeteria_id)
+                            AND m2.user_type     = ms.subscription_type
+                            AND m2.effective_date <= msd.subscription_date
+                    )
+                WHERE msd.subscription_date BETWEEN \'2025-09-01\' AND \'2025-09-30\'
+                AND ms.status = \'ACTIVE\'
+                AND msd.status = \'REDEEMED\'   -- billing = consumed
+            
+                GROUP BY u.id, u.employee_id, u.name, u.designation, u.division, u.department, u.mobile, u.phone
+                ORDER BY u.employee_id
+            ')
+ 2 SYSTEMPATH\Database\BaseConnection.php(652): CodeIgniter\Database\BaseConnection->simpleQuery('
+                SELECT
+                    u.employee_id                          AS emp_id,
+                    COALESCE(u.name,\'\')                    AS emp_name,
+                    COALESCE(u.designation,\'\')             AS designation,
+                    COALESCE(u.division, u.department,\'\')  AS division,
+                    COALESCE(u.mobile, u.phone, \'\')        AS mobile,
+                    COUNT(msd.id)                           AS day_count,
+                    ROUND(SUM(COALESCE(mc.user_tk,0) + COALESCE(mc.company_tk,0)),2) AS full_meal_cost
+                FROM meal_subscription_details msd
+                JOIN meal_subscriptions ms  ON ms.id  = msd.subscription_id
+                JOIN users u                ON u.id   = msd.user_id
+                LEFT JOIN meal_contributions mc
+                    ON mc.meal_type_id  = msd.meal_type_id
+                    AND (mc.cafeteria_id IS NULL OR mc.cafeteria_id = msd.cafeteria_id)
+                    AND mc.user_type     = ms.subscription_type
+                    AND mc.effective_date = (
+                            SELECT MAX(m2.effective_date)
+                            FROM meal_contributions m2
+                            WHERE m2.meal_type_id  = msd.meal_type_id
+                            AND (m2.cafeteria_id IS NULL OR m2.cafeteria_id = msd.cafeteria_id)
+                            AND m2.user_type     = ms.subscription_type
+                            AND m2.effective_date <= msd.subscription_date
+                    )
+                WHERE msd.subscription_date BETWEEN \'2025-09-01\' AND \'2025-09-30\'
+                AND ms.status = \'ACTIVE\'
+                AND msd.status = \'REDEEMED\'   -- billing = consumed
+            
+                GROUP BY u.id, u.employee_id, u.name, u.designation, u.division, u.department, u.mobile, u.phone
+                ORDER BY u.employee_id
+            ')
+ 3 APPPATH\Controllers\Admin\ReportController.php(183): CodeIgniter\Database\BaseConnection->query('
+                SELECT
+                    u.employee_id                          AS emp_id,
+                    COALESCE(u.name,\'\')                    AS emp_name,
+                    COALESCE(u.designation,\'\')             AS designation,
+                    COALESCE(u.division, u.department,\'\')  AS division,
+                    COALESCE(u.mobile, u.phone, \'\')        AS mobile,
+                    COUNT(msd.id)                           AS day_count,
+                    ROUND(SUM(COALESCE(mc.user_tk,0) + COALESCE(mc.company_tk,0)),2) AS full_meal_cost
+                FROM meal_subscription_details msd
+                JOIN meal_subscriptions ms  ON ms.id  = msd.subscription_id
+                JOIN users u                ON u.id   = msd.user_id
+                LEFT JOIN meal_contributions mc
+                    ON mc.meal_type_id  = msd.meal_type_id
+                    AND (mc.cafeteria_id IS NULL OR mc.cafeteria_id = msd.cafeteria_id)
+                    AND mc.user_type     = ms.subscription_type
+                    AND mc.effective_date = (
+                            SELECT MAX(m2.effective_date)
+                            FROM meal_contributions m2
+                            WHERE m2.meal_type_id  = msd.meal_type_id
+                            AND (m2.cafeteria_id IS NULL OR m2.cafeteria_id = msd.cafeteria_id)
+                            AND m2.user_type     = ms.subscription_type
+                            AND m2.effective_date <= msd.subscription_date
+                    )
+                WHERE msd.subscription_date BETWEEN ? AND ?
+                AND ms.status = \'ACTIVE\'
+                AND msd.status = \'REDEEMED\'   -- billing = consumed
+            
+                GROUP BY u.id, u.employee_id, u.name, u.designation, u.division, u.department, u.mobile, u.phone
+                ORDER BY u.employee_id
+            ', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\ReportController->mealReportForBilling()
+ 5 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\ReportController))
+ 6 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+10 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-08 11:31:17 --> [Caused by] mysqli_sql_exception: Unknown column 'u.mobile' in 'field list'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 327.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(327): mysqli->query('
+                SELECT
+                    u.employee_id                          AS emp_id,
+                    COALESCE(u.name,\'\')                    AS emp_name,
+                    COALESCE(u.designation,\'\')             AS designation,
+                    COALESCE(u.division, u.department,\'\')  AS division,
+                    COALESCE(u.mobile, u.phone, \'\')        AS mobile,
+                    COUNT(msd.id)                           AS day_count,
+                    ROUND(SUM(COALESCE(mc.user_tk,0) + COALESCE(mc.company_tk,0)),2) AS full_meal_cost
+                FROM meal_subscription_details msd
+                JOIN meal_subscriptions ms  ON ms.id  = msd.subscription_id
+                JOIN users u                ON u.id   = msd.user_id
+                LEFT JOIN meal_contributions mc
+                    ON mc.meal_type_id  = msd.meal_type_id
+                    AND (mc.cafeteria_id IS NULL OR mc.cafeteria_id = msd.cafeteria_id)
+                    AND mc.user_type     = ms.subscription_type
+                    AND mc.effective_date = (
+                            SELECT MAX(m2.effective_date)
+                            FROM meal_contributions m2
+                            WHERE m2.meal_type_id  = msd.meal_type_id
+                            AND (m2.cafeteria_id IS NULL OR m2.cafeteria_id = msd.cafeteria_id)
+                            AND m2.user_type     = ms.subscription_type
+                            AND m2.effective_date <= msd.subscription_date
+                    )
+                WHERE msd.subscription_date BETWEEN \'2025-09-01\' AND \'2025-09-30\'
+                AND ms.status = \'ACTIVE\'
+                AND msd.status = \'REDEEMED\'   -- billing = consumed
+            
+                GROUP BY u.id, u.employee_id, u.name, u.designation, u.division, u.department, u.mobile, u.phone
+                ORDER BY u.employee_id
+            ', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(738): CodeIgniter\Database\MySQLi\Connection->execute('
+                SELECT
+                    u.employee_id                          AS emp_id,
+                    COALESCE(u.name,\'\')                    AS emp_name,
+                    COALESCE(u.designation,\'\')             AS designation,
+                    COALESCE(u.division, u.department,\'\')  AS division,
+                    COALESCE(u.mobile, u.phone, \'\')        AS mobile,
+                    COUNT(msd.id)                           AS day_count,
+                    ROUND(SUM(COALESCE(mc.user_tk,0) + COALESCE(mc.company_tk,0)),2) AS full_meal_cost
+                FROM meal_subscription_details msd
+                JOIN meal_subscriptions ms  ON ms.id  = msd.subscription_id
+                JOIN users u                ON u.id   = msd.user_id
+                LEFT JOIN meal_contributions mc
+                    ON mc.meal_type_id  = msd.meal_type_id
+                    AND (mc.cafeteria_id IS NULL OR mc.cafeteria_id = msd.cafeteria_id)
+                    AND mc.user_type     = ms.subscription_type
+                    AND mc.effective_date = (
+                            SELECT MAX(m2.effective_date)
+                            FROM meal_contributions m2
+                            WHERE m2.meal_type_id  = msd.meal_type_id
+                            AND (m2.cafeteria_id IS NULL OR m2.cafeteria_id = msd.cafeteria_id)
+                            AND m2.user_type     = ms.subscription_type
+                            AND m2.effective_date <= msd.subscription_date
+                    )
+                WHERE msd.subscription_date BETWEEN \'2025-09-01\' AND \'2025-09-30\'
+                AND ms.status = \'ACTIVE\'
+                AND msd.status = \'REDEEMED\'   -- billing = consumed
+            
+                GROUP BY u.id, u.employee_id, u.name, u.designation, u.division, u.department, u.mobile, u.phone
+                ORDER BY u.employee_id
+            ')
+ 3 SYSTEMPATH\Database\BaseConnection.php(652): CodeIgniter\Database\BaseConnection->simpleQuery('
+                SELECT
+                    u.employee_id                          AS emp_id,
+                    COALESCE(u.name,\'\')                    AS emp_name,
+                    COALESCE(u.designation,\'\')             AS designation,
+                    COALESCE(u.division, u.department,\'\')  AS division,
+                    COALESCE(u.mobile, u.phone, \'\')        AS mobile,
+                    COUNT(msd.id)                           AS day_count,
+                    ROUND(SUM(COALESCE(mc.user_tk,0) + COALESCE(mc.company_tk,0)),2) AS full_meal_cost
+                FROM meal_subscription_details msd
+                JOIN meal_subscriptions ms  ON ms.id  = msd.subscription_id
+                JOIN users u                ON u.id   = msd.user_id
+                LEFT JOIN meal_contributions mc
+                    ON mc.meal_type_id  = msd.meal_type_id
+                    AND (mc.cafeteria_id IS NULL OR mc.cafeteria_id = msd.cafeteria_id)
+                    AND mc.user_type     = ms.subscription_type
+                    AND mc.effective_date = (
+                            SELECT MAX(m2.effective_date)
+                            FROM meal_contributions m2
+                            WHERE m2.meal_type_id  = msd.meal_type_id
+                            AND (m2.cafeteria_id IS NULL OR m2.cafeteria_id = msd.cafeteria_id)
+                            AND m2.user_type     = ms.subscription_type
+                            AND m2.effective_date <= msd.subscription_date
+                    )
+                WHERE msd.subscription_date BETWEEN \'2025-09-01\' AND \'2025-09-30\'
+                AND ms.status = \'ACTIVE\'
+                AND msd.status = \'REDEEMED\'   -- billing = consumed
+            
+                GROUP BY u.id, u.employee_id, u.name, u.designation, u.division, u.department, u.mobile, u.phone
+                ORDER BY u.employee_id
+            ')
+ 4 APPPATH\Controllers\Admin\ReportController.php(183): CodeIgniter\Database\BaseConnection->query('
+                SELECT
+                    u.employee_id                          AS emp_id,
+                    COALESCE(u.name,\'\')                    AS emp_name,
+                    COALESCE(u.designation,\'\')             AS designation,
+                    COALESCE(u.division, u.department,\'\')  AS division,
+                    COALESCE(u.mobile, u.phone, \'\')        AS mobile,
+                    COUNT(msd.id)                           AS day_count,
+                    ROUND(SUM(COALESCE(mc.user_tk,0) + COALESCE(mc.company_tk,0)),2) AS full_meal_cost
+                FROM meal_subscription_details msd
+                JOIN meal_subscriptions ms  ON ms.id  = msd.subscription_id
+                JOIN users u                ON u.id   = msd.user_id
+                LEFT JOIN meal_contributions mc
+                    ON mc.meal_type_id  = msd.meal_type_id
+                    AND (mc.cafeteria_id IS NULL OR mc.cafeteria_id = msd.cafeteria_id)
+                    AND mc.user_type     = ms.subscription_type
+                    AND mc.effective_date = (
+                            SELECT MAX(m2.effective_date)
+                            FROM meal_contributions m2
+                            WHERE m2.meal_type_id  = msd.meal_type_id
+                            AND (m2.cafeteria_id IS NULL OR m2.cafeteria_id = msd.cafeteria_id)
+                            AND m2.user_type     = ms.subscription_type
+                            AND m2.effective_date <= msd.subscription_date
+                    )
+                WHERE msd.subscription_date BETWEEN ? AND ?
+                AND ms.status = \'ACTIVE\'
+                AND msd.status = \'REDEEMED\'   -- billing = consumed
+            
+                GROUP BY u.id, u.employee_id, u.name, u.designation, u.division, u.department, u.mobile, u.phone
+                ORDER BY u.employee_id
+            ', [...])
+ 5 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\ReportController->mealReportForBilling()
+ 6 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\ReportController))
+ 7 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 9 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+10 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+11 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+ERROR - 2025-09-08 11:37:49 --> mysqli_sql_exception: Unknown column 'u.mobile' in 'group statement' in C:\wamp64\www\bkash_lms\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\wamp64\www\bkash_lms\system\Database\MySQLi\Connection.php(327): mysqli->query('\r\n             ...', 0)
+#1 C:\wamp64\www\bkash_lms\system\Database\BaseConnection.php(738): CodeIgniter\Database\MySQLi\Connection->execute('\r\n             ...')
+#2 C:\wamp64\www\bkash_lms\system\Database\BaseConnection.php(652): CodeIgniter\Database\BaseConnection->simpleQuery('\r\n             ...')
+#3 C:\wamp64\www\bkash_lms\app\Controllers\Admin\ReportController.php(183): CodeIgniter\Database\BaseConnection->query('\r\n             ...', Array)
+#4 C:\wamp64\www\bkash_lms\system\CodeIgniter.php(933): App\Controllers\Admin\ReportController->mealReportForBilling()
+#5 C:\wamp64\www\bkash_lms\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\ReportController))
+#6 C:\wamp64\www\bkash_lms\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#7 C:\wamp64\www\bkash_lms\system\Boot.php(334): CodeIgniter\CodeIgniter->run()
+#8 C:\wamp64\www\bkash_lms\system\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#9 C:\wamp64\www\bkash_lms\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#10 C:\wamp64\www\bkash_lms\system\rewrite.php(44): require_once('C:\\wamp64\\www\\b...')
+#11 {main}
+CRITICAL - 2025-09-08 11:37:49 --> CodeIgniter\Database\Exceptions\DatabaseException: Unknown column 'u.mobile' in 'group statement'
+[Method: GET, Route: admin/report/meal-report-for-billing]
+in SYSTEMPATH\Database\BaseConnection.php on line 692.
+ 1 APPPATH\Controllers\Admin\ReportController.php(183): CodeIgniter\Database\BaseConnection->query('
+                SELECT
+                    u.employee_id  AS emp_id,
+                    u.name         AS emp_name,
+                    u.designation  AS designation,
+                    u.division     AS division,
+                    u.phone        AS mobile,
+                    COUNT(msd.id)                           AS day_count,
+                    ROUND(SUM(COALESCE(mc.user_tk,0) + COALESCE(mc.company_tk,0)),2) AS full_meal_cost
+                FROM meal_subscription_details msd
+                JOIN meal_subscriptions ms  ON ms.id  = msd.subscription_id
+                JOIN users u                ON u.id   = msd.user_id
+                LEFT JOIN meal_contributions mc
+                    ON mc.meal_type_id  = msd.meal_type_id
+                    AND (mc.cafeteria_id IS NULL OR mc.cafeteria_id = msd.cafeteria_id)
+                    AND mc.user_type     = ms.subscription_type
+                    AND mc.effective_date = (
+                            SELECT MAX(m2.effective_date)
+                            FROM meal_contributions m2
+                            WHERE m2.meal_type_id  = msd.meal_type_id
+                            AND (m2.cafeteria_id IS NULL OR m2.cafeteria_id = msd.cafeteria_id)
+                            AND m2.user_type     = ms.subscription_type
+                            AND m2.effective_date <= msd.subscription_date
+                    )
+                WHERE msd.subscription_date BETWEEN ? AND ?
+                AND ms.status = \'ACTIVE\'
+                AND msd.status = \'REDEEMED\'   -- billing = consumed
+            
+                GROUP BY u.id, u.employee_id, u.name, u.designation, u.division, u.department, u.mobile, u.phone
+                ORDER BY u.employee_id
+            ', [...])
+ 2 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\ReportController->mealReportForBilling()
+ 3 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\ReportController))
+ 4 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 6 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 7 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ 8 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-08 11:37:49 --> [Caused by] CodeIgniter\Database\Exceptions\DatabaseException: Unknown column 'u.mobile' in 'group statement'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 332.
+ 1 SYSTEMPATH\Database\BaseConnection.php(738): CodeIgniter\Database\MySQLi\Connection->execute('
+                SELECT
+                    u.employee_id  AS emp_id,
+                    u.name         AS emp_name,
+                    u.designation  AS designation,
+                    u.division     AS division,
+                    u.phone        AS mobile,
+                    COUNT(msd.id)                           AS day_count,
+                    ROUND(SUM(COALESCE(mc.user_tk,0) + COALESCE(mc.company_tk,0)),2) AS full_meal_cost
+                FROM meal_subscription_details msd
+                JOIN meal_subscriptions ms  ON ms.id  = msd.subscription_id
+                JOIN users u                ON u.id   = msd.user_id
+                LEFT JOIN meal_contributions mc
+                    ON mc.meal_type_id  = msd.meal_type_id
+                    AND (mc.cafeteria_id IS NULL OR mc.cafeteria_id = msd.cafeteria_id)
+                    AND mc.user_type     = ms.subscription_type
+                    AND mc.effective_date = (
+                            SELECT MAX(m2.effective_date)
+                            FROM meal_contributions m2
+                            WHERE m2.meal_type_id  = msd.meal_type_id
+                            AND (m2.cafeteria_id IS NULL OR m2.cafeteria_id = msd.cafeteria_id)
+                            AND m2.user_type     = ms.subscription_type
+                            AND m2.effective_date <= msd.subscription_date
+                    )
+                WHERE msd.subscription_date BETWEEN \'2025-09-01\' AND \'2025-09-30\'
+                AND ms.status = \'ACTIVE\'
+                AND msd.status = \'REDEEMED\'   -- billing = consumed
+            
+                GROUP BY u.id, u.employee_id, u.name, u.designation, u.division, u.department, u.mobile, u.phone
+                ORDER BY u.employee_id
+            ')
+ 2 SYSTEMPATH\Database\BaseConnection.php(652): CodeIgniter\Database\BaseConnection->simpleQuery('
+                SELECT
+                    u.employee_id  AS emp_id,
+                    u.name         AS emp_name,
+                    u.designation  AS designation,
+                    u.division     AS division,
+                    u.phone        AS mobile,
+                    COUNT(msd.id)                           AS day_count,
+                    ROUND(SUM(COALESCE(mc.user_tk,0) + COALESCE(mc.company_tk,0)),2) AS full_meal_cost
+                FROM meal_subscription_details msd
+                JOIN meal_subscriptions ms  ON ms.id  = msd.subscription_id
+                JOIN users u                ON u.id   = msd.user_id
+                LEFT JOIN meal_contributions mc
+                    ON mc.meal_type_id  = msd.meal_type_id
+                    AND (mc.cafeteria_id IS NULL OR mc.cafeteria_id = msd.cafeteria_id)
+                    AND mc.user_type     = ms.subscription_type
+                    AND mc.effective_date = (
+                            SELECT MAX(m2.effective_date)
+                            FROM meal_contributions m2
+                            WHERE m2.meal_type_id  = msd.meal_type_id
+                            AND (m2.cafeteria_id IS NULL OR m2.cafeteria_id = msd.cafeteria_id)
+                            AND m2.user_type     = ms.subscription_type
+                            AND m2.effective_date <= msd.subscription_date
+                    )
+                WHERE msd.subscription_date BETWEEN \'2025-09-01\' AND \'2025-09-30\'
+                AND ms.status = \'ACTIVE\'
+                AND msd.status = \'REDEEMED\'   -- billing = consumed
+            
+                GROUP BY u.id, u.employee_id, u.name, u.designation, u.division, u.department, u.mobile, u.phone
+                ORDER BY u.employee_id
+            ')
+ 3 APPPATH\Controllers\Admin\ReportController.php(183): CodeIgniter\Database\BaseConnection->query('
+                SELECT
+                    u.employee_id  AS emp_id,
+                    u.name         AS emp_name,
+                    u.designation  AS designation,
+                    u.division     AS division,
+                    u.phone        AS mobile,
+                    COUNT(msd.id)                           AS day_count,
+                    ROUND(SUM(COALESCE(mc.user_tk,0) + COALESCE(mc.company_tk,0)),2) AS full_meal_cost
+                FROM meal_subscription_details msd
+                JOIN meal_subscriptions ms  ON ms.id  = msd.subscription_id
+                JOIN users u                ON u.id   = msd.user_id
+                LEFT JOIN meal_contributions mc
+                    ON mc.meal_type_id  = msd.meal_type_id
+                    AND (mc.cafeteria_id IS NULL OR mc.cafeteria_id = msd.cafeteria_id)
+                    AND mc.user_type     = ms.subscription_type
+                    AND mc.effective_date = (
+                            SELECT MAX(m2.effective_date)
+                            FROM meal_contributions m2
+                            WHERE m2.meal_type_id  = msd.meal_type_id
+                            AND (m2.cafeteria_id IS NULL OR m2.cafeteria_id = msd.cafeteria_id)
+                            AND m2.user_type     = ms.subscription_type
+                            AND m2.effective_date <= msd.subscription_date
+                    )
+                WHERE msd.subscription_date BETWEEN ? AND ?
+                AND ms.status = \'ACTIVE\'
+                AND msd.status = \'REDEEMED\'   -- billing = consumed
+            
+                GROUP BY u.id, u.employee_id, u.name, u.designation, u.division, u.department, u.mobile, u.phone
+                ORDER BY u.employee_id
+            ', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\ReportController->mealReportForBilling()
+ 5 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\ReportController))
+ 6 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+10 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-08 11:37:49 --> [Caused by] mysqli_sql_exception: Unknown column 'u.mobile' in 'group statement'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 327.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(327): mysqli->query('
+                SELECT
+                    u.employee_id  AS emp_id,
+                    u.name         AS emp_name,
+                    u.designation  AS designation,
+                    u.division     AS division,
+                    u.phone        AS mobile,
+                    COUNT(msd.id)                           AS day_count,
+                    ROUND(SUM(COALESCE(mc.user_tk,0) + COALESCE(mc.company_tk,0)),2) AS full_meal_cost
+                FROM meal_subscription_details msd
+                JOIN meal_subscriptions ms  ON ms.id  = msd.subscription_id
+                JOIN users u                ON u.id   = msd.user_id
+                LEFT JOIN meal_contributions mc
+                    ON mc.meal_type_id  = msd.meal_type_id
+                    AND (mc.cafeteria_id IS NULL OR mc.cafeteria_id = msd.cafeteria_id)
+                    AND mc.user_type     = ms.subscription_type
+                    AND mc.effective_date = (
+                            SELECT MAX(m2.effective_date)
+                            FROM meal_contributions m2
+                            WHERE m2.meal_type_id  = msd.meal_type_id
+                            AND (m2.cafeteria_id IS NULL OR m2.cafeteria_id = msd.cafeteria_id)
+                            AND m2.user_type     = ms.subscription_type
+                            AND m2.effective_date <= msd.subscription_date
+                    )
+                WHERE msd.subscription_date BETWEEN \'2025-09-01\' AND \'2025-09-30\'
+                AND ms.status = \'ACTIVE\'
+                AND msd.status = \'REDEEMED\'   -- billing = consumed
+            
+                GROUP BY u.id, u.employee_id, u.name, u.designation, u.division, u.department, u.mobile, u.phone
+                ORDER BY u.employee_id
+            ', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(738): CodeIgniter\Database\MySQLi\Connection->execute('
+                SELECT
+                    u.employee_id  AS emp_id,
+                    u.name         AS emp_name,
+                    u.designation  AS designation,
+                    u.division     AS division,
+                    u.phone        AS mobile,
+                    COUNT(msd.id)                           AS day_count,
+                    ROUND(SUM(COALESCE(mc.user_tk,0) + COALESCE(mc.company_tk,0)),2) AS full_meal_cost
+                FROM meal_subscription_details msd
+                JOIN meal_subscriptions ms  ON ms.id  = msd.subscription_id
+                JOIN users u                ON u.id   = msd.user_id
+                LEFT JOIN meal_contributions mc
+                    ON mc.meal_type_id  = msd.meal_type_id
+                    AND (mc.cafeteria_id IS NULL OR mc.cafeteria_id = msd.cafeteria_id)
+                    AND mc.user_type     = ms.subscription_type
+                    AND mc.effective_date = (
+                            SELECT MAX(m2.effective_date)
+                            FROM meal_contributions m2
+                            WHERE m2.meal_type_id  = msd.meal_type_id
+                            AND (m2.cafeteria_id IS NULL OR m2.cafeteria_id = msd.cafeteria_id)
+                            AND m2.user_type     = ms.subscription_type
+                            AND m2.effective_date <= msd.subscription_date
+                    )
+                WHERE msd.subscription_date BETWEEN \'2025-09-01\' AND \'2025-09-30\'
+                AND ms.status = \'ACTIVE\'
+                AND msd.status = \'REDEEMED\'   -- billing = consumed
+            
+                GROUP BY u.id, u.employee_id, u.name, u.designation, u.division, u.department, u.mobile, u.phone
+                ORDER BY u.employee_id
+            ')
+ 3 SYSTEMPATH\Database\BaseConnection.php(652): CodeIgniter\Database\BaseConnection->simpleQuery('
+                SELECT
+                    u.employee_id  AS emp_id,
+                    u.name         AS emp_name,
+                    u.designation  AS designation,
+                    u.division     AS division,
+                    u.phone        AS mobile,
+                    COUNT(msd.id)                           AS day_count,
+                    ROUND(SUM(COALESCE(mc.user_tk,0) + COALESCE(mc.company_tk,0)),2) AS full_meal_cost
+                FROM meal_subscription_details msd
+                JOIN meal_subscriptions ms  ON ms.id  = msd.subscription_id
+                JOIN users u                ON u.id   = msd.user_id
+                LEFT JOIN meal_contributions mc
+                    ON mc.meal_type_id  = msd.meal_type_id
+                    AND (mc.cafeteria_id IS NULL OR mc.cafeteria_id = msd.cafeteria_id)
+                    AND mc.user_type     = ms.subscription_type
+                    AND mc.effective_date = (
+                            SELECT MAX(m2.effective_date)
+                            FROM meal_contributions m2
+                            WHERE m2.meal_type_id  = msd.meal_type_id
+                            AND (m2.cafeteria_id IS NULL OR m2.cafeteria_id = msd.cafeteria_id)
+                            AND m2.user_type     = ms.subscription_type
+                            AND m2.effective_date <= msd.subscription_date
+                    )
+                WHERE msd.subscription_date BETWEEN \'2025-09-01\' AND \'2025-09-30\'
+                AND ms.status = \'ACTIVE\'
+                AND msd.status = \'REDEEMED\'   -- billing = consumed
+            
+                GROUP BY u.id, u.employee_id, u.name, u.designation, u.division, u.department, u.mobile, u.phone
+                ORDER BY u.employee_id
+            ')
+ 4 APPPATH\Controllers\Admin\ReportController.php(183): CodeIgniter\Database\BaseConnection->query('
+                SELECT
+                    u.employee_id  AS emp_id,
+                    u.name         AS emp_name,
+                    u.designation  AS designation,
+                    u.division     AS division,
+                    u.phone        AS mobile,
+                    COUNT(msd.id)                           AS day_count,
+                    ROUND(SUM(COALESCE(mc.user_tk,0) + COALESCE(mc.company_tk,0)),2) AS full_meal_cost
+                FROM meal_subscription_details msd
+                JOIN meal_subscriptions ms  ON ms.id  = msd.subscription_id
+                JOIN users u                ON u.id   = msd.user_id
+                LEFT JOIN meal_contributions mc
+                    ON mc.meal_type_id  = msd.meal_type_id
+                    AND (mc.cafeteria_id IS NULL OR mc.cafeteria_id = msd.cafeteria_id)
+                    AND mc.user_type     = ms.subscription_type
+                    AND mc.effective_date = (
+                            SELECT MAX(m2.effective_date)
+                            FROM meal_contributions m2
+                            WHERE m2.meal_type_id  = msd.meal_type_id
+                            AND (m2.cafeteria_id IS NULL OR m2.cafeteria_id = msd.cafeteria_id)
+                            AND m2.user_type     = ms.subscription_type
+                            AND m2.effective_date <= msd.subscription_date
+                    )
+                WHERE msd.subscription_date BETWEEN ? AND ?
+                AND ms.status = \'ACTIVE\'
+                AND msd.status = \'REDEEMED\'   -- billing = consumed
+            
+                GROUP BY u.id, u.employee_id, u.name, u.designation, u.division, u.department, u.mobile, u.phone
+                ORDER BY u.employee_id
+            ', [...])
+ 5 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\ReportController->mealReportForBilling()
+ 6 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\ReportController))
+ 7 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 9 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+10 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+11 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')

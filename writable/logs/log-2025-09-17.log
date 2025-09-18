@@ -1,0 +1,178 @@
+CRITICAL - 2025-09-17 11:03:35 --> ErrorException: Undefined variable $menus
+[Method: GET, Route: admin/roles/4/permissions]
+in APPPATH\Views\admin\rbac\assign_role_perms.php on line 341.
+ 1 APPPATH\Views\admin\rbac\assign_role_perms.php(341): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined variable $menus', 'C:\\wamp64\\www\\bkash_lms\\app\\Views\\admin\\rbac\\assign_role_perms.php', 341)
+ 2 SYSTEMPATH\View\View.php(224): include('C:\\wamp64\\www\\bkash_lms\\app\\Views\\admin\\rbac\\assign_role_perms.php')
+ 3 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('admin/rbac/assign_role_perms', [], true)
+ 5 APPPATH\Controllers\Admin\Rbac\Assign.php(39): view('admin/rbac/assign_role_perms', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\Rbac\Assign->role(4)
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Rbac\Assign))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+12 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-17 11:59:06 --> ErrorException: Undefined array key "name"
+[Method: GET, Route: admin/roles/4/permissions]
+in APPPATH\Views\admin\rbac\assign_role_perms.php on line 379.
+ 1 APPPATH\Views\admin\rbac\assign_role_perms.php(379): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "name"', 'C:\\wamp64\\www\\bkash_lms\\app\\Views\\admin\\rbac\\assign_role_perms.php', 379)
+ 2 SYSTEMPATH\View\View.php(224): include('C:\\wamp64\\www\\bkash_lms\\app\\Views\\admin\\rbac\\assign_role_perms.php')
+ 3 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('admin/rbac/assign_role_perms', [], true)
+ 5 APPPATH\Controllers\Admin\Rbac\Assign.php(39): view('admin/rbac/assign_role_perms', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\Rbac\Assign->role(4)
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Rbac\Assign))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+12 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+ERROR - 2025-09-17 12:15:57 --> mysqli_sql_exception: Duplicate entry 'admin.intern-subscriptions.unsubscribe_single' for key 'permissions.uq_permissions_name' in C:\wamp64\www\bkash_lms\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\wamp64\www\bkash_lms\system\Database\MySQLi\Connection.php(327): mysqli->query('INSERT INTO `pe...', 0)
+#1 C:\wamp64\www\bkash_lms\system\Database\BaseConnection.php(738): CodeIgniter\Database\MySQLi\Connection->execute('INSERT INTO `pe...')
+#2 C:\wamp64\www\bkash_lms\system\Database\BaseConnection.php(652): CodeIgniter\Database\BaseConnection->simpleQuery('INSERT INTO `pe...')
+#3 C:\wamp64\www\bkash_lms\system\Database\BaseBuilder.php(2345): CodeIgniter\Database\BaseConnection->query('INSERT INTO `pe...', Array, false)
+#4 C:\wamp64\www\bkash_lms\app\Controllers\Admin\Rbac\Permissions.php(25): CodeIgniter\Database\BaseBuilder->insert(Array)
+#5 C:\wamp64\www\bkash_lms\system\CodeIgniter.php(933): App\Controllers\Admin\Rbac\Permissions->store()
+#6 C:\wamp64\www\bkash_lms\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Rbac\Permissions))
+#7 C:\wamp64\www\bkash_lms\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\wamp64\www\bkash_lms\system\Boot.php(334): CodeIgniter\CodeIgniter->run()
+#9 C:\wamp64\www\bkash_lms\system\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#10 C:\wamp64\www\bkash_lms\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#11 C:\wamp64\www\bkash_lms\system\rewrite.php(44): require_once('C:\\wamp64\\www\\b...')
+#12 {main}
+CRITICAL - 2025-09-17 12:51:34 --> CodeIgniter\Security\Exceptions\SecurityException: The action you requested is not allowed.
+[Method: POST, Route: admin/permissions]
+in SYSTEMPATH\Security\Security.php on line 262.
+ 1 SYSTEMPATH\Security\Security.php(262): CodeIgniter\Security\Exceptions\SecurityException::forDisallowedAction()
+ 2 SYSTEMPATH\Filters\CSRF.php(52): CodeIgniter\Security\Security->verify(Object(CodeIgniter\HTTP\IncomingRequest))
+ 3 SYSTEMPATH\Filters\Filters.php(241): CodeIgniter\Filters\CSRF->before(Object(CodeIgniter\HTTP\IncomingRequest), null)
+ 4 SYSTEMPATH\Filters\Filters.php(221): CodeIgniter\Filters\Filters->runBefore([...])
+ 5 SYSTEMPATH\CodeIgniter.php(479): CodeIgniter\Filters\Filters->run('admin/permissions', 'before')
+ 6 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+10 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-17 12:51:44 --> CodeIgniter\Security\Exceptions\SecurityException: The action you requested is not allowed.
+[Method: POST, Route: admin/permissions]
+in SYSTEMPATH\Security\Security.php on line 262.
+ 1 SYSTEMPATH\Security\Security.php(262): CodeIgniter\Security\Exceptions\SecurityException::forDisallowedAction()
+ 2 SYSTEMPATH\Filters\CSRF.php(52): CodeIgniter\Security\Security->verify(Object(CodeIgniter\HTTP\IncomingRequest))
+ 3 SYSTEMPATH\Filters\Filters.php(241): CodeIgniter\Filters\CSRF->before(Object(CodeIgniter\HTTP\IncomingRequest), null)
+ 4 SYSTEMPATH\Filters\Filters.php(221): CodeIgniter\Filters\Filters->runBefore([...])
+ 5 SYSTEMPATH\CodeIgniter.php(479): CodeIgniter\Filters\Filters->run('admin/permissions', 'before')
+ 6 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+10 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+ERROR - 2025-09-17 15:42:21 --> mysqli_sql_exception: Unknown column 'subscription_type' in 'where clause' in C:\wamp64\www\bkash_lms\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\wamp64\www\bkash_lms\system\Database\MySQLi\Connection.php(327): mysqli->query('SELECT COUNT(*)...', 0)
+#1 C:\wamp64\www\bkash_lms\system\Database\BaseConnection.php(738): CodeIgniter\Database\MySQLi\Connection->execute('SELECT COUNT(*)...')
+#2 C:\wamp64\www\bkash_lms\system\Database\BaseConnection.php(652): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT COUNT(*)...')
+#3 C:\wamp64\www\bkash_lms\system\Database\BaseBuilder.php(1733): CodeIgniter\Database\BaseConnection->query('SELECT COUNT(*)...', Array, false)
+#4 C:\wamp64\www\bkash_lms\app\Controllers\Admin\Dashboard.php(274): CodeIgniter\Database\BaseBuilder->countAllResults()
+#5 C:\wamp64\www\bkash_lms\system\CodeIgniter.php(933): App\Controllers\Admin\Dashboard->index()
+#6 C:\wamp64\www\bkash_lms\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Dashboard))
+#7 C:\wamp64\www\bkash_lms\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\wamp64\www\bkash_lms\system\Boot.php(334): CodeIgniter\CodeIgniter->run()
+#9 C:\wamp64\www\bkash_lms\system\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#10 C:\wamp64\www\bkash_lms\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#11 C:\wamp64\www\bkash_lms\system\rewrite.php(44): require_once('C:\\wamp64\\www\\b...')
+#12 {main}
+CRITICAL - 2025-09-17 15:42:21 --> CodeIgniter\Database\Exceptions\DatabaseException: Unknown column 'subscription_type' in 'where clause'
+[Method: GET, Route: admin/dashboard]
+in SYSTEMPATH\Database\BaseConnection.php on line 692.
+ 1 SYSTEMPATH\Database\BaseBuilder.php(1733): CodeIgniter\Database\BaseConnection->query('SELECT COUNT(*) AS `numrows`
+FROM `intern_subscriptions`
+WHERE `subscription_date` >= :subscription_date:
+AND `subscription_date` <= :subscription_date.1:
+AND `status` = :status:
+AND `subscription_type` = :subscription_type:', [...], false)
+ 2 APPPATH\Controllers\Admin\Dashboard.php(274): CodeIgniter\Database\BaseBuilder->countAllResults()
+ 3 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\Dashboard->index()
+ 4 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Dashboard))
+ 5 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 6 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 7 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 8 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ 9 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-17 15:42:21 --> [Caused by] CodeIgniter\Database\Exceptions\DatabaseException: Unknown column 'subscription_type' in 'where clause'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 332.
+ 1 SYSTEMPATH\Database\BaseConnection.php(738): CodeIgniter\Database\MySQLi\Connection->execute('SELECT COUNT(*) AS `numrows`
+FROM `intern_subscriptions`
+WHERE `subscription_date` >= \'2025-09-17\'
+AND `subscription_date` <= \'2025-09-17\'
+AND `status` = \'ACTIVE\'
+AND `subscription_type` = \'FTC\'')
+ 2 SYSTEMPATH\Database\BaseConnection.php(652): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT COUNT(*) AS `numrows`
+FROM `intern_subscriptions`
+WHERE `subscription_date` >= \'2025-09-17\'
+AND `subscription_date` <= \'2025-09-17\'
+AND `status` = \'ACTIVE\'
+AND `subscription_type` = \'FTC\'')
+ 3 SYSTEMPATH\Database\BaseBuilder.php(1733): CodeIgniter\Database\BaseConnection->query('SELECT COUNT(*) AS `numrows`
+FROM `intern_subscriptions`
+WHERE `subscription_date` >= :subscription_date:
+AND `subscription_date` <= :subscription_date.1:
+AND `status` = :status:
+AND `subscription_type` = :subscription_type:', [...], false)
+ 4 APPPATH\Controllers\Admin\Dashboard.php(274): CodeIgniter\Database\BaseBuilder->countAllResults()
+ 5 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\Dashboard->index()
+ 6 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Dashboard))
+ 7 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 9 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+10 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+11 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-17 15:42:21 --> [Caused by] mysqli_sql_exception: Unknown column 'subscription_type' in 'where clause'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 327.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(327): mysqli->query('SELECT COUNT(*) AS `numrows`
+FROM `intern_subscriptions`
+WHERE `subscription_date` >= \'2025-09-17\'
+AND `subscription_date` <= \'2025-09-17\'
+AND `status` = \'ACTIVE\'
+AND `subscription_type` = \'FTC\'', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(738): CodeIgniter\Database\MySQLi\Connection->execute('SELECT COUNT(*) AS `numrows`
+FROM `intern_subscriptions`
+WHERE `subscription_date` >= \'2025-09-17\'
+AND `subscription_date` <= \'2025-09-17\'
+AND `status` = \'ACTIVE\'
+AND `subscription_type` = \'FTC\'')
+ 3 SYSTEMPATH\Database\BaseConnection.php(652): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT COUNT(*) AS `numrows`
+FROM `intern_subscriptions`
+WHERE `subscription_date` >= \'2025-09-17\'
+AND `subscription_date` <= \'2025-09-17\'
+AND `status` = \'ACTIVE\'
+AND `subscription_type` = \'FTC\'')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1733): CodeIgniter\Database\BaseConnection->query('SELECT COUNT(*) AS `numrows`
+FROM `intern_subscriptions`
+WHERE `subscription_date` >= :subscription_date:
+AND `subscription_date` <= :subscription_date.1:
+AND `status` = :status:
+AND `subscription_type` = :subscription_type:', [...], false)
+ 5 APPPATH\Controllers\Admin\Dashboard.php(274): CodeIgniter\Database\BaseBuilder->countAllResults()
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\Dashboard->index()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Dashboard))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+12 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-17 16:27:14 --> ErrorException: Undefined array key "name"
+[Method: GET, Route: admin/dashboard]
+in APPPATH\Controllers\Admin\Dashboard.php on line 43.
+ 1 APPPATH\Controllers\Admin\Dashboard.php(43): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "name"', 'C:\\wamp64\\www\\bkash_lms\\app\\Controllers\\Admin\\Dashboard.php', 43)
+ 2 [internal function]: App\Controllers\Admin\Dashboard::App\Controllers\Admin\{closure}([...])
+ 3 APPPATH\Controllers\Admin\Dashboard.php(43): array_map(Object(Closure), [...])
+ 4 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\Dashboard->index()
+ 5 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Dashboard))
+ 6 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+10 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')

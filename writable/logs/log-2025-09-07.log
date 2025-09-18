@@ -1,0 +1,575 @@
+ERROR - 2025-09-07 12:26:12 --> mysqli_sql_exception: Unknown column 'meal_subscription_details.employee_name' in 'field list' in C:\wamp64\www\bkash_lms\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\wamp64\www\bkash_lms\system\Database\MySQLi\Connection.php(327): mysqli->query('SELECT `meal_su...', 0)
+#1 C:\wamp64\www\bkash_lms\system\Database\BaseConnection.php(738): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `meal_su...')
+#2 C:\wamp64\www\bkash_lms\system\Database\BaseConnection.php(652): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `meal_su...')
+#3 C:\wamp64\www\bkash_lms\system\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `meal_su...', Array, false)
+#4 C:\wamp64\www\bkash_lms\system\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\wamp64\www\bkash_lms\system\BaseModel.php(679): CodeIgniter\Model->doFindAll(0, 0)
+#6 C:\wamp64\www\bkash_lms\app\Controllers\Admin\MealApprovals.php(186): CodeIgniter\BaseModel->findAll()
+#7 C:\wamp64\www\bkash_lms\system\CodeIgniter.php(933): App\Controllers\Admin\MealApprovals->batchItemList(54)
+#8 C:\wamp64\www\bkash_lms\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\MealApprovals))
+#9 C:\wamp64\www\bkash_lms\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#10 C:\wamp64\www\bkash_lms\system\Boot.php(334): CodeIgniter\CodeIgniter->run()
+#11 C:\wamp64\www\bkash_lms\system\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#12 C:\wamp64\www\bkash_lms\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#13 C:\wamp64\www\bkash_lms\system\rewrite.php(44): require_once('C:\\wamp64\\www\\b...')
+#14 {main}
+CRITICAL - 2025-09-07 12:26:12 --> CodeIgniter\Database\Exceptions\DatabaseException: Unknown column 'meal_subscription_details.employee_name' in 'field list'
+[Method: GET, Route: admin/approvals/batch_item_list/54]
+in SYSTEMPATH\Database\BaseConnection.php on line 692.
+ 1 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `meal_subscription_details`.*, COALESCE(users.name, meal_subscription_details.employee_name)  AS name, COALESCE(users.phone, meal_subscription_details.phone)         AS phone, COALESCE(meal_subscription_details.employee_id, meal_subscription_details.emp_id) AS employee_code, COALESCE(meal_subscription_details.meal_type, meal_types.name) AS meal_type, `cafeterias`.`name` AS `cafeteria_name`
+FROM `meal_subscription_details`
+LEFT JOIN `users` ON `users`.`id` = `meal_subscription_details`.`user_id`
+LEFT JOIN `cafeterias` ON `cafeterias`.`id` = `meal_subscription_details`.`cafeteria_id`
+LEFT JOIN `meal_types` ON `meal_types`.`id` = `meal_subscription_details`.`meal_type_id`
+WHERE `meal_subscription_details`.`subscription_id` = :meal_subscription_details.subscription_id:
+ORDER BY `meal_subscription_details`.`id` ASC', [...], false)
+ 2 SYSTEMPATH\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+ 3 SYSTEMPATH\BaseModel.php(679): CodeIgniter\Model->doFindAll(0, 0)
+ 4 APPPATH\Controllers\Admin\MealApprovals.php(186): CodeIgniter\BaseModel->findAll()
+ 5 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\MealApprovals->batchItemList(54)
+ 6 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\MealApprovals))
+ 7 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 9 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+10 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+11 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-07 12:26:12 --> [Caused by] CodeIgniter\Database\Exceptions\DatabaseException: Unknown column 'meal_subscription_details.employee_name' in 'field list'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 332.
+ 1 SYSTEMPATH\Database\BaseConnection.php(738): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `meal_subscription_details`.*, COALESCE(users.name, meal_subscription_details.employee_name)  AS name, COALESCE(users.phone, meal_subscription_details.phone)         AS phone, COALESCE(meal_subscription_details.employee_id, meal_subscription_details.emp_id) AS employee_code, COALESCE(meal_subscription_details.meal_type, meal_types.name) AS meal_type, `cafeterias`.`name` AS `cafeteria_name`
+FROM `meal_subscription_details`
+LEFT JOIN `users` ON `users`.`id` = `meal_subscription_details`.`user_id`
+LEFT JOIN `cafeterias` ON `cafeterias`.`id` = `meal_subscription_details`.`cafeteria_id`
+LEFT JOIN `meal_types` ON `meal_types`.`id` = `meal_subscription_details`.`meal_type_id`
+WHERE `meal_subscription_details`.`subscription_id` = 31
+ORDER BY `meal_subscription_details`.`id` ASC')
+ 2 SYSTEMPATH\Database\BaseConnection.php(652): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `meal_subscription_details`.*, COALESCE(users.name, meal_subscription_details.employee_name)  AS name, COALESCE(users.phone, meal_subscription_details.phone)         AS phone, COALESCE(meal_subscription_details.employee_id, meal_subscription_details.emp_id) AS employee_code, COALESCE(meal_subscription_details.meal_type, meal_types.name) AS meal_type, `cafeterias`.`name` AS `cafeteria_name`
+FROM `meal_subscription_details`
+LEFT JOIN `users` ON `users`.`id` = `meal_subscription_details`.`user_id`
+LEFT JOIN `cafeterias` ON `cafeterias`.`id` = `meal_subscription_details`.`cafeteria_id`
+LEFT JOIN `meal_types` ON `meal_types`.`id` = `meal_subscription_details`.`meal_type_id`
+WHERE `meal_subscription_details`.`subscription_id` = 31
+ORDER BY `meal_subscription_details`.`id` ASC')
+ 3 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `meal_subscription_details`.*, COALESCE(users.name, meal_subscription_details.employee_name)  AS name, COALESCE(users.phone, meal_subscription_details.phone)         AS phone, COALESCE(meal_subscription_details.employee_id, meal_subscription_details.emp_id) AS employee_code, COALESCE(meal_subscription_details.meal_type, meal_types.name) AS meal_type, `cafeterias`.`name` AS `cafeteria_name`
+FROM `meal_subscription_details`
+LEFT JOIN `users` ON `users`.`id` = `meal_subscription_details`.`user_id`
+LEFT JOIN `cafeterias` ON `cafeterias`.`id` = `meal_subscription_details`.`cafeteria_id`
+LEFT JOIN `meal_types` ON `meal_types`.`id` = `meal_subscription_details`.`meal_type_id`
+WHERE `meal_subscription_details`.`subscription_id` = :meal_subscription_details.subscription_id:
+ORDER BY `meal_subscription_details`.`id` ASC', [...], false)
+ 4 SYSTEMPATH\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+ 5 SYSTEMPATH\BaseModel.php(679): CodeIgniter\Model->doFindAll(0, 0)
+ 6 APPPATH\Controllers\Admin\MealApprovals.php(186): CodeIgniter\BaseModel->findAll()
+ 7 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\MealApprovals->batchItemList(54)
+ 8 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\MealApprovals))
+ 9 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+10 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+11 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+12 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+13 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-07 12:26:12 --> [Caused by] mysqli_sql_exception: Unknown column 'meal_subscription_details.employee_name' in 'field list'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 327.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(327): mysqli->query('SELECT `meal_subscription_details`.*, COALESCE(users.name, meal_subscription_details.employee_name)  AS name, COALESCE(users.phone, meal_subscription_details.phone)         AS phone, COALESCE(meal_subscription_details.employee_id, meal_subscription_details.emp_id) AS employee_code, COALESCE(meal_subscription_details.meal_type, meal_types.name) AS meal_type, `cafeterias`.`name` AS `cafeteria_name`
+FROM `meal_subscription_details`
+LEFT JOIN `users` ON `users`.`id` = `meal_subscription_details`.`user_id`
+LEFT JOIN `cafeterias` ON `cafeterias`.`id` = `meal_subscription_details`.`cafeteria_id`
+LEFT JOIN `meal_types` ON `meal_types`.`id` = `meal_subscription_details`.`meal_type_id`
+WHERE `meal_subscription_details`.`subscription_id` = 31
+ORDER BY `meal_subscription_details`.`id` ASC', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(738): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `meal_subscription_details`.*, COALESCE(users.name, meal_subscription_details.employee_name)  AS name, COALESCE(users.phone, meal_subscription_details.phone)         AS phone, COALESCE(meal_subscription_details.employee_id, meal_subscription_details.emp_id) AS employee_code, COALESCE(meal_subscription_details.meal_type, meal_types.name) AS meal_type, `cafeterias`.`name` AS `cafeteria_name`
+FROM `meal_subscription_details`
+LEFT JOIN `users` ON `users`.`id` = `meal_subscription_details`.`user_id`
+LEFT JOIN `cafeterias` ON `cafeterias`.`id` = `meal_subscription_details`.`cafeteria_id`
+LEFT JOIN `meal_types` ON `meal_types`.`id` = `meal_subscription_details`.`meal_type_id`
+WHERE `meal_subscription_details`.`subscription_id` = 31
+ORDER BY `meal_subscription_details`.`id` ASC')
+ 3 SYSTEMPATH\Database\BaseConnection.php(652): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `meal_subscription_details`.*, COALESCE(users.name, meal_subscription_details.employee_name)  AS name, COALESCE(users.phone, meal_subscription_details.phone)         AS phone, COALESCE(meal_subscription_details.employee_id, meal_subscription_details.emp_id) AS employee_code, COALESCE(meal_subscription_details.meal_type, meal_types.name) AS meal_type, `cafeterias`.`name` AS `cafeteria_name`
+FROM `meal_subscription_details`
+LEFT JOIN `users` ON `users`.`id` = `meal_subscription_details`.`user_id`
+LEFT JOIN `cafeterias` ON `cafeterias`.`id` = `meal_subscription_details`.`cafeteria_id`
+LEFT JOIN `meal_types` ON `meal_types`.`id` = `meal_subscription_details`.`meal_type_id`
+WHERE `meal_subscription_details`.`subscription_id` = 31
+ORDER BY `meal_subscription_details`.`id` ASC')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `meal_subscription_details`.*, COALESCE(users.name, meal_subscription_details.employee_name)  AS name, COALESCE(users.phone, meal_subscription_details.phone)         AS phone, COALESCE(meal_subscription_details.employee_id, meal_subscription_details.emp_id) AS employee_code, COALESCE(meal_subscription_details.meal_type, meal_types.name) AS meal_type, `cafeterias`.`name` AS `cafeteria_name`
+FROM `meal_subscription_details`
+LEFT JOIN `users` ON `users`.`id` = `meal_subscription_details`.`user_id`
+LEFT JOIN `cafeterias` ON `cafeterias`.`id` = `meal_subscription_details`.`cafeteria_id`
+LEFT JOIN `meal_types` ON `meal_types`.`id` = `meal_subscription_details`.`meal_type_id`
+WHERE `meal_subscription_details`.`subscription_id` = :meal_subscription_details.subscription_id:
+ORDER BY `meal_subscription_details`.`id` ASC', [...], false)
+ 5 SYSTEMPATH\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+ 6 SYSTEMPATH\BaseModel.php(679): CodeIgniter\Model->doFindAll(0, 0)
+ 7 APPPATH\Controllers\Admin\MealApprovals.php(186): CodeIgniter\BaseModel->findAll()
+ 8 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\MealApprovals->batchItemList(54)
+ 9 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\MealApprovals))
+10 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+11 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+12 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+13 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+14 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+ERROR - 2025-09-07 12:29:42 --> mysqli_sql_exception: Unknown column 'AS' in 'field list' in C:\wamp64\www\bkash_lms\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\wamp64\www\bkash_lms\system\Database\MySQLi\Connection.php(327): mysqli->query('SELECT `meal_su...', 0)
+#1 C:\wamp64\www\bkash_lms\system\Database\BaseConnection.php(738): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `meal_su...')
+#2 C:\wamp64\www\bkash_lms\system\Database\BaseConnection.php(652): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `meal_su...')
+#3 C:\wamp64\www\bkash_lms\system\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `meal_su...', Array, false)
+#4 C:\wamp64\www\bkash_lms\system\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\wamp64\www\bkash_lms\system\BaseModel.php(679): CodeIgniter\Model->doFindAll(0, 0)
+#6 C:\wamp64\www\bkash_lms\app\Controllers\Admin\MealApprovals.php(186): CodeIgniter\BaseModel->findAll()
+#7 C:\wamp64\www\bkash_lms\system\CodeIgniter.php(933): App\Controllers\Admin\MealApprovals->batchItemList(54)
+#8 C:\wamp64\www\bkash_lms\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\MealApprovals))
+#9 C:\wamp64\www\bkash_lms\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#10 C:\wamp64\www\bkash_lms\system\Boot.php(334): CodeIgniter\CodeIgniter->run()
+#11 C:\wamp64\www\bkash_lms\system\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#12 C:\wamp64\www\bkash_lms\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#13 C:\wamp64\www\bkash_lms\system\rewrite.php(44): require_once('C:\\wamp64\\www\\b...')
+#14 {main}
+CRITICAL - 2025-09-07 12:29:42 --> CodeIgniter\Database\Exceptions\DatabaseException: Unknown column 'AS' in 'field list'
+[Method: GET, Route: admin/approvals/batch_item_list/54]
+in SYSTEMPATH\Database\BaseConnection.php on line 692.
+ 1 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `meal_subscription_details`.*, `users`.`name`, `AS` `name`, `users`.`phone`, `AS` `phone`, `users`.`employee_id`, `AS` `employee_code`, `meal_types`.`name` AS `meal_type`, `cafeterias`.`name` AS `cafeteria_name`
+FROM `meal_subscription_details`
+LEFT JOIN `users` ON `users`.`id` = `meal_subscription_details`.`user_id`
+LEFT JOIN `cafeterias` ON `cafeterias`.`id` = `meal_subscription_details`.`cafeteria_id`
+LEFT JOIN `meal_types` ON `meal_types`.`id` = `meal_subscription_details`.`meal_type_id`
+WHERE `meal_subscription_details`.`subscription_id` = :meal_subscription_details.subscription_id:
+ORDER BY `meal_subscription_details`.`id` ASC', [...], false)
+ 2 SYSTEMPATH\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+ 3 SYSTEMPATH\BaseModel.php(679): CodeIgniter\Model->doFindAll(0, 0)
+ 4 APPPATH\Controllers\Admin\MealApprovals.php(186): CodeIgniter\BaseModel->findAll()
+ 5 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\MealApprovals->batchItemList(54)
+ 6 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\MealApprovals))
+ 7 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 9 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+10 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+11 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-07 12:29:42 --> [Caused by] CodeIgniter\Database\Exceptions\DatabaseException: Unknown column 'AS' in 'field list'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 332.
+ 1 SYSTEMPATH\Database\BaseConnection.php(738): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `meal_subscription_details`.*, `users`.`name`, `AS` `name`, `users`.`phone`, `AS` `phone`, `users`.`employee_id`, `AS` `employee_code`, `meal_types`.`name` AS `meal_type`, `cafeterias`.`name` AS `cafeteria_name`
+FROM `meal_subscription_details`
+LEFT JOIN `users` ON `users`.`id` = `meal_subscription_details`.`user_id`
+LEFT JOIN `cafeterias` ON `cafeterias`.`id` = `meal_subscription_details`.`cafeteria_id`
+LEFT JOIN `meal_types` ON `meal_types`.`id` = `meal_subscription_details`.`meal_type_id`
+WHERE `meal_subscription_details`.`subscription_id` = 31
+ORDER BY `meal_subscription_details`.`id` ASC')
+ 2 SYSTEMPATH\Database\BaseConnection.php(652): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `meal_subscription_details`.*, `users`.`name`, `AS` `name`, `users`.`phone`, `AS` `phone`, `users`.`employee_id`, `AS` `employee_code`, `meal_types`.`name` AS `meal_type`, `cafeterias`.`name` AS `cafeteria_name`
+FROM `meal_subscription_details`
+LEFT JOIN `users` ON `users`.`id` = `meal_subscription_details`.`user_id`
+LEFT JOIN `cafeterias` ON `cafeterias`.`id` = `meal_subscription_details`.`cafeteria_id`
+LEFT JOIN `meal_types` ON `meal_types`.`id` = `meal_subscription_details`.`meal_type_id`
+WHERE `meal_subscription_details`.`subscription_id` = 31
+ORDER BY `meal_subscription_details`.`id` ASC')
+ 3 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `meal_subscription_details`.*, `users`.`name`, `AS` `name`, `users`.`phone`, `AS` `phone`, `users`.`employee_id`, `AS` `employee_code`, `meal_types`.`name` AS `meal_type`, `cafeterias`.`name` AS `cafeteria_name`
+FROM `meal_subscription_details`
+LEFT JOIN `users` ON `users`.`id` = `meal_subscription_details`.`user_id`
+LEFT JOIN `cafeterias` ON `cafeterias`.`id` = `meal_subscription_details`.`cafeteria_id`
+LEFT JOIN `meal_types` ON `meal_types`.`id` = `meal_subscription_details`.`meal_type_id`
+WHERE `meal_subscription_details`.`subscription_id` = :meal_subscription_details.subscription_id:
+ORDER BY `meal_subscription_details`.`id` ASC', [...], false)
+ 4 SYSTEMPATH\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+ 5 SYSTEMPATH\BaseModel.php(679): CodeIgniter\Model->doFindAll(0, 0)
+ 6 APPPATH\Controllers\Admin\MealApprovals.php(186): CodeIgniter\BaseModel->findAll()
+ 7 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\MealApprovals->batchItemList(54)
+ 8 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\MealApprovals))
+ 9 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+10 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+11 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+12 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+13 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-07 12:29:42 --> [Caused by] mysqli_sql_exception: Unknown column 'AS' in 'field list'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 327.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(327): mysqli->query('SELECT `meal_subscription_details`.*, `users`.`name`, `AS` `name`, `users`.`phone`, `AS` `phone`, `users`.`employee_id`, `AS` `employee_code`, `meal_types`.`name` AS `meal_type`, `cafeterias`.`name` AS `cafeteria_name`
+FROM `meal_subscription_details`
+LEFT JOIN `users` ON `users`.`id` = `meal_subscription_details`.`user_id`
+LEFT JOIN `cafeterias` ON `cafeterias`.`id` = `meal_subscription_details`.`cafeteria_id`
+LEFT JOIN `meal_types` ON `meal_types`.`id` = `meal_subscription_details`.`meal_type_id`
+WHERE `meal_subscription_details`.`subscription_id` = 31
+ORDER BY `meal_subscription_details`.`id` ASC', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(738): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `meal_subscription_details`.*, `users`.`name`, `AS` `name`, `users`.`phone`, `AS` `phone`, `users`.`employee_id`, `AS` `employee_code`, `meal_types`.`name` AS `meal_type`, `cafeterias`.`name` AS `cafeteria_name`
+FROM `meal_subscription_details`
+LEFT JOIN `users` ON `users`.`id` = `meal_subscription_details`.`user_id`
+LEFT JOIN `cafeterias` ON `cafeterias`.`id` = `meal_subscription_details`.`cafeteria_id`
+LEFT JOIN `meal_types` ON `meal_types`.`id` = `meal_subscription_details`.`meal_type_id`
+WHERE `meal_subscription_details`.`subscription_id` = 31
+ORDER BY `meal_subscription_details`.`id` ASC')
+ 3 SYSTEMPATH\Database\BaseConnection.php(652): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `meal_subscription_details`.*, `users`.`name`, `AS` `name`, `users`.`phone`, `AS` `phone`, `users`.`employee_id`, `AS` `employee_code`, `meal_types`.`name` AS `meal_type`, `cafeterias`.`name` AS `cafeteria_name`
+FROM `meal_subscription_details`
+LEFT JOIN `users` ON `users`.`id` = `meal_subscription_details`.`user_id`
+LEFT JOIN `cafeterias` ON `cafeterias`.`id` = `meal_subscription_details`.`cafeteria_id`
+LEFT JOIN `meal_types` ON `meal_types`.`id` = `meal_subscription_details`.`meal_type_id`
+WHERE `meal_subscription_details`.`subscription_id` = 31
+ORDER BY `meal_subscription_details`.`id` ASC')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `meal_subscription_details`.*, `users`.`name`, `AS` `name`, `users`.`phone`, `AS` `phone`, `users`.`employee_id`, `AS` `employee_code`, `meal_types`.`name` AS `meal_type`, `cafeterias`.`name` AS `cafeteria_name`
+FROM `meal_subscription_details`
+LEFT JOIN `users` ON `users`.`id` = `meal_subscription_details`.`user_id`
+LEFT JOIN `cafeterias` ON `cafeterias`.`id` = `meal_subscription_details`.`cafeteria_id`
+LEFT JOIN `meal_types` ON `meal_types`.`id` = `meal_subscription_details`.`meal_type_id`
+WHERE `meal_subscription_details`.`subscription_id` = :meal_subscription_details.subscription_id:
+ORDER BY `meal_subscription_details`.`id` ASC', [...], false)
+ 5 SYSTEMPATH\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+ 6 SYSTEMPATH\BaseModel.php(679): CodeIgniter\Model->doFindAll(0, 0)
+ 7 APPPATH\Controllers\Admin\MealApprovals.php(186): CodeIgniter\BaseModel->findAll()
+ 8 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\MealApprovals->batchItemList(54)
+ 9 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\MealApprovals))
+10 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+11 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+12 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+13 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+14 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-07 13:27:43 --> ErrorException: Undefined variable $row
+[Method: GET, Route: admin/guest-subscriptions]
+in APPPATH\Views\partials\admin\subs_list_tbody.php on line 60.
+ 1 APPPATH\Views\partials\admin\subs_list_tbody.php(60): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined variable $row', 'C:\\wamp64\\www\\bkash_lms\\app\\Views\\partials\\admin\\subs_list_tbody.php', 60)
+ 2 SYSTEMPATH\View\View.php(224): include('C:\\wamp64\\www\\bkash_lms\\app\\Views\\partials\\admin\\subs_list_tbody.php')
+ 3 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('partials/admin/subs_list_tbody', [], true)
+ 5 APPPATH\Views\admin\guest\index.php(58): view('partials/admin/subs_list_tbody', [...])
+ 6 SYSTEMPATH\View\View.php(224): include('C:\\wamp64\\www\\bkash_lms\\app\\Views\\admin\\guest\\index.php')
+ 7 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 8 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('admin/guest/index', [], true)
+ 9 APPPATH\Controllers\Admin\GuestSubscription.php(331): view('admin/guest/index', [...])
+10 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\GuestSubscription->index()
+11 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\GuestSubscription))
+12 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+13 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+14 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+15 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+16 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-07 18:00:32 --> ParseError: Unclosed '[' on line 86 does not match ')'
+[Method: GET, Route: admin/report/meal-charge-list-for-payroll]
+in APPPATH\Controllers\Admin\ReportController.php on line 90.
+ 1 SYSTEMPATH\Autoloader\Autoloader.php(295): CodeIgniter\Autoloader\Autoloader->includeFile('C:\\wamp64\\www\\bkash_lms\\app\\Controllers\\Admin\\ReportController.php')
+ 2 SYSTEMPATH\Autoloader\Autoloader.php(271): CodeIgniter\Autoloader\Autoloader->loadInNamespace('App\\Controllers\\Admin\\ReportController')
+ 3 [internal function]: CodeIgniter\Autoloader\Autoloader->loadClass('App\\Controllers\\Admin\\ReportController')
+ 4 SYSTEMPATH\CodeIgniter.php(885): class_exists('\\App\\Controllers\\Admin\\ReportController', true)
+ 5 SYSTEMPATH\CodeIgniter.php(494): CodeIgniter\CodeIgniter->startController()
+ 6 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+10 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-07 18:18:21 --> ParseError: Unclosed '[' on line 147 does not match ')'
+[Method: GET, Route: admin/report/meal-charge-list-for-payroll]
+in APPPATH\Controllers\Admin\ReportController.php on line 151.
+ 1 SYSTEMPATH\Autoloader\Autoloader.php(295): CodeIgniter\Autoloader\Autoloader->includeFile('C:\\wamp64\\www\\bkash_lms\\app\\Controllers\\Admin\\ReportController.php')
+ 2 SYSTEMPATH\Autoloader\Autoloader.php(271): CodeIgniter\Autoloader\Autoloader->loadInNamespace('App\\Controllers\\Admin\\ReportController')
+ 3 [internal function]: CodeIgniter\Autoloader\Autoloader->loadClass('App\\Controllers\\Admin\\ReportController')
+ 4 SYSTEMPATH\CodeIgniter.php(885): class_exists('\\App\\Controllers\\Admin\\ReportController', true)
+ 5 SYSTEMPATH\CodeIgniter.php(494): CodeIgniter\CodeIgniter->startController()
+ 6 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+10 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+ERROR - 2025-09-07 18:19:26 --> mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '?, "%M'%Y")               AS month_year,
+                COUNT(msd.id)         ' at line 7 in C:\wamp64\www\bkash_lms\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\wamp64\www\bkash_lms\system\Database\MySQLi\Connection.php(327): mysqli->query('\r\n            S...', 0)
+#1 C:\wamp64\www\bkash_lms\system\Database\BaseConnection.php(738): CodeIgniter\Database\MySQLi\Connection->execute('\r\n            S...')
+#2 C:\wamp64\www\bkash_lms\system\Database\BaseConnection.php(652): CodeIgniter\Database\BaseConnection->simpleQuery('\r\n            S...')
+#3 C:\wamp64\www\bkash_lms\app\Controllers\Admin\ReportController.php(105): CodeIgniter\Database\BaseConnection->query('\r\n            S...', Array)
+#4 C:\wamp64\www\bkash_lms\system\CodeIgniter.php(933): App\Controllers\Admin\ReportController->mealChargeListForPayroll()
+#5 C:\wamp64\www\bkash_lms\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\ReportController))
+#6 C:\wamp64\www\bkash_lms\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#7 C:\wamp64\www\bkash_lms\system\Boot.php(334): CodeIgniter\CodeIgniter->run()
+#8 C:\wamp64\www\bkash_lms\system\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#9 C:\wamp64\www\bkash_lms\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#10 C:\wamp64\www\bkash_lms\system\rewrite.php(44): require_once('C:\\wamp64\\www\\b...')
+#11 {main}
+CRITICAL - 2025-09-07 18:19:26 --> CodeIgniter\Database\Exceptions\DatabaseException: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '?, "%M'%Y")               AS month_year,
+                COUNT(msd.id)         ' at line 7
+[Method: GET, Route: admin/report/meal-charge-list-for-payroll]
+in SYSTEMPATH\Database\BaseConnection.php on line 692.
+ 1 APPPATH\Controllers\Admin\ReportController.php(105): CodeIgniter\Database\BaseConnection->query('
+            SELECT
+                u.employee_id                           AS emp_id,
+                u.name                     AS emp_name,
+                u.designation           AS designation,
+                u.division AS division,
+                u.department           AS job_location,   
+                DATE_FORMAT(?, "%M\'%Y")               AS month_year,
+                COUNT(msd.id)                           AS day_count,
+                ROUND(SUM(COALESCE(mc.user_tk,0)),2)   AS meal_charge,
+                ms.subscription_type                    AS type
+            FROM meal_subscription_details msd
+            JOIN meal_subscriptions ms ON ms.id = msd.subscription_id
+            JOIN users u               ON u.id  = msd.user_id
+            LEFT JOIN meal_contributions mc
+                ON mc.meal_type_id  = msd.meal_type_id
+                AND (mc.cafeteria_id IS NULL OR mc.cafeteria_id = msd.cafeteria_id)
+                AND mc.user_type     = ms.subscription_type
+                AND mc.effective_date = (
+                        SELECT MAX(m2.effective_date)
+                        FROM meal_contributions m2
+                        WHERE m2.meal_type_id  = msd.meal_type_id
+                        AND (m2.cafeteria_id IS NULL OR m2.cafeteria_id = msd.cafeteria_id)
+                        AND m2.user_type     = ms.subscription_type
+                        AND m2.effective_date <= msd.subscription_date
+                )
+            WHERE msd.subscription_date BETWEEN ? AND ?
+            AND ms.status = \'ACTIVE\'
+            AND msd.status IN (\'ACTIVE\',\'REDEEMED\',\'NO_SHOW\')
+        
+            GROUP BY u.id, u.employee_id, u.name, u.designation, u.division, ms.subscription_type
+            ORDER BY u.employee_id
+        ', [...])
+ 2 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\ReportController->mealChargeListForPayroll()
+ 3 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\ReportController))
+ 4 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 6 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 7 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ 8 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-07 18:19:26 --> [Caused by] CodeIgniter\Database\Exceptions\DatabaseException: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '?, "%M'%Y")               AS month_year,
+                COUNT(msd.id)         ' at line 7
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 332.
+ 1 SYSTEMPATH\Database\BaseConnection.php(738): CodeIgniter\Database\MySQLi\Connection->execute('
+            SELECT
+                u.employee_id                           AS emp_id,
+                u.name                     AS emp_name,
+                u.designation           AS designation,
+                u.division AS division,
+                u.department           AS job_location,   
+                DATE_FORMAT(?, "%M\'%Y")               AS month_year,
+                COUNT(msd.id)                           AS day_count,
+                ROUND(SUM(COALESCE(mc.user_tk,0)),2)   AS meal_charge,
+                ms.subscription_type                    AS type
+            FROM meal_subscription_details msd
+            JOIN meal_subscriptions ms ON ms.id = msd.subscription_id
+            JOIN users u               ON u.id  = msd.user_id
+            LEFT JOIN meal_contributions mc
+                ON mc.meal_type_id  = msd.meal_type_id
+                AND (mc.cafeteria_id IS NULL OR mc.cafeteria_id = msd.cafeteria_id)
+                AND mc.user_type     = ms.subscription_type
+                AND mc.effective_date = (
+                        SELECT MAX(m2.effective_date)
+                        FROM meal_contributions m2
+                        WHERE m2.meal_type_id  = msd.meal_type_id
+                        AND (m2.cafeteria_id IS NULL OR m2.cafeteria_id = msd.cafeteria_id)
+                        AND m2.user_type     = ms.subscription_type
+                        AND m2.effective_date <= msd.subscription_date
+                )
+            WHERE msd.subscription_date BETWEEN ? AND ?
+            AND ms.status = \'ACTIVE\'
+            AND msd.status IN (\'ACTIVE\',\'REDEEMED\',\'NO_SHOW\')
+        
+            GROUP BY u.id, u.employee_id, u.name, u.designation, u.division, ms.subscription_type
+            ORDER BY u.employee_id
+        ')
+ 2 SYSTEMPATH\Database\BaseConnection.php(652): CodeIgniter\Database\BaseConnection->simpleQuery('
+            SELECT
+                u.employee_id                           AS emp_id,
+                u.name                     AS emp_name,
+                u.designation           AS designation,
+                u.division AS division,
+                u.department           AS job_location,   
+                DATE_FORMAT(?, "%M\'%Y")               AS month_year,
+                COUNT(msd.id)                           AS day_count,
+                ROUND(SUM(COALESCE(mc.user_tk,0)),2)   AS meal_charge,
+                ms.subscription_type                    AS type
+            FROM meal_subscription_details msd
+            JOIN meal_subscriptions ms ON ms.id = msd.subscription_id
+            JOIN users u               ON u.id  = msd.user_id
+            LEFT JOIN meal_contributions mc
+                ON mc.meal_type_id  = msd.meal_type_id
+                AND (mc.cafeteria_id IS NULL OR mc.cafeteria_id = msd.cafeteria_id)
+                AND mc.user_type     = ms.subscription_type
+                AND mc.effective_date = (
+                        SELECT MAX(m2.effective_date)
+                        FROM meal_contributions m2
+                        WHERE m2.meal_type_id  = msd.meal_type_id
+                        AND (m2.cafeteria_id IS NULL OR m2.cafeteria_id = msd.cafeteria_id)
+                        AND m2.user_type     = ms.subscription_type
+                        AND m2.effective_date <= msd.subscription_date
+                )
+            WHERE msd.subscription_date BETWEEN ? AND ?
+            AND ms.status = \'ACTIVE\'
+            AND msd.status IN (\'ACTIVE\',\'REDEEMED\',\'NO_SHOW\')
+        
+            GROUP BY u.id, u.employee_id, u.name, u.designation, u.division, ms.subscription_type
+            ORDER BY u.employee_id
+        ')
+ 3 APPPATH\Controllers\Admin\ReportController.php(105): CodeIgniter\Database\BaseConnection->query('
+            SELECT
+                u.employee_id                           AS emp_id,
+                u.name                     AS emp_name,
+                u.designation           AS designation,
+                u.division AS division,
+                u.department           AS job_location,   
+                DATE_FORMAT(?, "%M\'%Y")               AS month_year,
+                COUNT(msd.id)                           AS day_count,
+                ROUND(SUM(COALESCE(mc.user_tk,0)),2)   AS meal_charge,
+                ms.subscription_type                    AS type
+            FROM meal_subscription_details msd
+            JOIN meal_subscriptions ms ON ms.id = msd.subscription_id
+            JOIN users u               ON u.id  = msd.user_id
+            LEFT JOIN meal_contributions mc
+                ON mc.meal_type_id  = msd.meal_type_id
+                AND (mc.cafeteria_id IS NULL OR mc.cafeteria_id = msd.cafeteria_id)
+                AND mc.user_type     = ms.subscription_type
+                AND mc.effective_date = (
+                        SELECT MAX(m2.effective_date)
+                        FROM meal_contributions m2
+                        WHERE m2.meal_type_id  = msd.meal_type_id
+                        AND (m2.cafeteria_id IS NULL OR m2.cafeteria_id = msd.cafeteria_id)
+                        AND m2.user_type     = ms.subscription_type
+                        AND m2.effective_date <= msd.subscription_date
+                )
+            WHERE msd.subscription_date BETWEEN ? AND ?
+            AND ms.status = \'ACTIVE\'
+            AND msd.status IN (\'ACTIVE\',\'REDEEMED\',\'NO_SHOW\')
+        
+            GROUP BY u.id, u.employee_id, u.name, u.designation, u.division, ms.subscription_type
+            ORDER BY u.employee_id
+        ', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\ReportController->mealChargeListForPayroll()
+ 5 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\ReportController))
+ 6 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+10 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-07 18:19:26 --> [Caused by] mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '?, "%M'%Y")               AS month_year,
+                COUNT(msd.id)         ' at line 7
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 327.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(327): mysqli->query('
+            SELECT
+                u.employee_id                           AS emp_id,
+                u.name                     AS emp_name,
+                u.designation           AS designation,
+                u.division AS division,
+                u.department           AS job_location,   
+                DATE_FORMAT(?, "%M\'%Y")               AS month_year,
+                COUNT(msd.id)                           AS day_count,
+                ROUND(SUM(COALESCE(mc.user_tk,0)),2)   AS meal_charge,
+                ms.subscription_type                    AS type
+            FROM meal_subscription_details msd
+            JOIN meal_subscriptions ms ON ms.id = msd.subscription_id
+            JOIN users u               ON u.id  = msd.user_id
+            LEFT JOIN meal_contributions mc
+                ON mc.meal_type_id  = msd.meal_type_id
+                AND (mc.cafeteria_id IS NULL OR mc.cafeteria_id = msd.cafeteria_id)
+                AND mc.user_type     = ms.subscription_type
+                AND mc.effective_date = (
+                        SELECT MAX(m2.effective_date)
+                        FROM meal_contributions m2
+                        WHERE m2.meal_type_id  = msd.meal_type_id
+                        AND (m2.cafeteria_id IS NULL OR m2.cafeteria_id = msd.cafeteria_id)
+                        AND m2.user_type     = ms.subscription_type
+                        AND m2.effective_date <= msd.subscription_date
+                )
+            WHERE msd.subscription_date BETWEEN ? AND ?
+            AND ms.status = \'ACTIVE\'
+            AND msd.status IN (\'ACTIVE\',\'REDEEMED\',\'NO_SHOW\')
+        
+            GROUP BY u.id, u.employee_id, u.name, u.designation, u.division, ms.subscription_type
+            ORDER BY u.employee_id
+        ', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(738): CodeIgniter\Database\MySQLi\Connection->execute('
+            SELECT
+                u.employee_id                           AS emp_id,
+                u.name                     AS emp_name,
+                u.designation           AS designation,
+                u.division AS division,
+                u.department           AS job_location,   
+                DATE_FORMAT(?, "%M\'%Y")               AS month_year,
+                COUNT(msd.id)                           AS day_count,
+                ROUND(SUM(COALESCE(mc.user_tk,0)),2)   AS meal_charge,
+                ms.subscription_type                    AS type
+            FROM meal_subscription_details msd
+            JOIN meal_subscriptions ms ON ms.id = msd.subscription_id
+            JOIN users u               ON u.id  = msd.user_id
+            LEFT JOIN meal_contributions mc
+                ON mc.meal_type_id  = msd.meal_type_id
+                AND (mc.cafeteria_id IS NULL OR mc.cafeteria_id = msd.cafeteria_id)
+                AND mc.user_type     = ms.subscription_type
+                AND mc.effective_date = (
+                        SELECT MAX(m2.effective_date)
+                        FROM meal_contributions m2
+                        WHERE m2.meal_type_id  = msd.meal_type_id
+                        AND (m2.cafeteria_id IS NULL OR m2.cafeteria_id = msd.cafeteria_id)
+                        AND m2.user_type     = ms.subscription_type
+                        AND m2.effective_date <= msd.subscription_date
+                )
+            WHERE msd.subscription_date BETWEEN ? AND ?
+            AND ms.status = \'ACTIVE\'
+            AND msd.status IN (\'ACTIVE\',\'REDEEMED\',\'NO_SHOW\')
+        
+            GROUP BY u.id, u.employee_id, u.name, u.designation, u.division, ms.subscription_type
+            ORDER BY u.employee_id
+        ')
+ 3 SYSTEMPATH\Database\BaseConnection.php(652): CodeIgniter\Database\BaseConnection->simpleQuery('
+            SELECT
+                u.employee_id                           AS emp_id,
+                u.name                     AS emp_name,
+                u.designation           AS designation,
+                u.division AS division,
+                u.department           AS job_location,   
+                DATE_FORMAT(?, "%M\'%Y")               AS month_year,
+                COUNT(msd.id)                           AS day_count,
+                ROUND(SUM(COALESCE(mc.user_tk,0)),2)   AS meal_charge,
+                ms.subscription_type                    AS type
+            FROM meal_subscription_details msd
+            JOIN meal_subscriptions ms ON ms.id = msd.subscription_id
+            JOIN users u               ON u.id  = msd.user_id
+            LEFT JOIN meal_contributions mc
+                ON mc.meal_type_id  = msd.meal_type_id
+                AND (mc.cafeteria_id IS NULL OR mc.cafeteria_id = msd.cafeteria_id)
+                AND mc.user_type     = ms.subscription_type
+                AND mc.effective_date = (
+                        SELECT MAX(m2.effective_date)
+                        FROM meal_contributions m2
+                        WHERE m2.meal_type_id  = msd.meal_type_id
+                        AND (m2.cafeteria_id IS NULL OR m2.cafeteria_id = msd.cafeteria_id)
+                        AND m2.user_type     = ms.subscription_type
+                        AND m2.effective_date <= msd.subscription_date
+                )
+            WHERE msd.subscription_date BETWEEN ? AND ?
+            AND ms.status = \'ACTIVE\'
+            AND msd.status IN (\'ACTIVE\',\'REDEEMED\',\'NO_SHOW\')
+        
+            GROUP BY u.id, u.employee_id, u.name, u.designation, u.division, ms.subscription_type
+            ORDER BY u.employee_id
+        ')
+ 4 APPPATH\Controllers\Admin\ReportController.php(105): CodeIgniter\Database\BaseConnection->query('
+            SELECT
+                u.employee_id                           AS emp_id,
+                u.name                     AS emp_name,
+                u.designation           AS designation,
+                u.division AS division,
+                u.department           AS job_location,   
+                DATE_FORMAT(?, "%M\'%Y")               AS month_year,
+                COUNT(msd.id)                           AS day_count,
+                ROUND(SUM(COALESCE(mc.user_tk,0)),2)   AS meal_charge,
+                ms.subscription_type                    AS type
+            FROM meal_subscription_details msd
+            JOIN meal_subscriptions ms ON ms.id = msd.subscription_id
+            JOIN users u               ON u.id  = msd.user_id
+            LEFT JOIN meal_contributions mc
+                ON mc.meal_type_id  = msd.meal_type_id
+                AND (mc.cafeteria_id IS NULL OR mc.cafeteria_id = msd.cafeteria_id)
+                AND mc.user_type     = ms.subscription_type
+                AND mc.effective_date = (
+                        SELECT MAX(m2.effective_date)
+                        FROM meal_contributions m2
+                        WHERE m2.meal_type_id  = msd.meal_type_id
+                        AND (m2.cafeteria_id IS NULL OR m2.cafeteria_id = msd.cafeteria_id)
+                        AND m2.user_type     = ms.subscription_type
+                        AND m2.effective_date <= msd.subscription_date
+                )
+            WHERE msd.subscription_date BETWEEN ? AND ?
+            AND ms.status = \'ACTIVE\'
+            AND msd.status IN (\'ACTIVE\',\'REDEEMED\',\'NO_SHOW\')
+        
+            GROUP BY u.id, u.employee_id, u.name, u.designation, u.division, ms.subscription_type
+            ORDER BY u.employee_id
+        ', [...])
+ 5 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\ReportController->mealChargeListForPayroll()
+ 6 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\ReportController))
+ 7 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 9 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+10 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+11 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')

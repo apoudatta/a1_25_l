@@ -1,0 +1,73 @@
+CRITICAL - 2025-09-11 13:27:51 --> ErrorException: Undefined variable $types
+[Method: GET, Route: admin/contributions/new]
+in APPPATH\Views\admin\crud\contributions\form.php on line 34.
+ 1 APPPATH\Views\admin\crud\contributions\form.php(34): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined variable $types', 'C:\\wamp64\\www\\bkash_lms\\app\\Views\\admin\\crud\\contributions\\form.php', 34)
+ 2 SYSTEMPATH\View\View.php(224): include('C:\\wamp64\\www\\bkash_lms\\app\\Views\\admin\\crud\\contributions\\form.php')
+ 3 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('admin/crud/contributions/form', [], true)
+ 5 APPPATH\Controllers\Admin\crud\Contributions.php(58): view('admin/crud/contributions/form', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\crud\Contributions->new()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\crud\Contributions))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+12 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-11 14:27:53 --> ErrorException: Undefined array key "base_price"
+[Method: GET, Route: admin/contributions/7/edit]
+in APPPATH\Views\admin\crud\contributions\form.php on line 79.
+ 1 APPPATH\Views\admin\crud\contributions\form.php(79): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "base_price"', 'C:\\wamp64\\www\\bkash_lms\\app\\Views\\admin\\crud\\contributions\\form.php', 79)
+ 2 SYSTEMPATH\View\View.php(224): include('C:\\wamp64\\www\\bkash_lms\\app\\Views\\admin\\crud\\contributions\\form.php')
+ 3 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('admin/crud/contributions/form', [], true)
+ 5 APPPATH\Controllers\Admin\crud\Contributions.php(109): view('admin/crud/contributions/form', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\crud\Contributions->edit('7')
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\crud\Contributions))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+12 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-11 15:47:16 --> Error: Call to a member function hasError() on null
+[Method: GET, Route: admin/cutoff-times/new]
+in APPPATH\Views\admin\crud\cutoff_times\form.php on line 61.
+ 1 SYSTEMPATH\View\View.php(224): include()
+ 2 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 3 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('admin/crud/cutoff_times/form', [], true)
+ 4 APPPATH\Controllers\Admin\crud\CutoffTimes.php(36): view('admin/crud/cutoff_times/form', [...])
+ 5 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\crud\CutoffTimes->create()
+ 6 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\crud\CutoffTimes))
+ 7 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 9 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+10 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+11 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-11 15:47:41 --> Error: Call to a member function hasError() on null
+[Method: GET, Route: admin/cutoff-times/new]
+in APPPATH\Views\admin\crud\cutoff_times\form.php on line 67.
+ 1 SYSTEMPATH\View\View.php(224): include()
+ 2 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 3 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('admin/crud/cutoff_times/form', [], true)
+ 4 APPPATH\Controllers\Admin\crud\CutoffTimes.php(36): view('admin/crud/cutoff_times/form', [...])
+ 5 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\crud\CutoffTimes->create()
+ 6 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\crud\CutoffTimes))
+ 7 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 9 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+10 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+11 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-11 17:05:11 --> CodeIgniter\Exceptions\RuntimeException: View themes, no current section.
+[Method: GET, Route: admin/ramadan/ifter-subscription/new]
+in SYSTEMPATH\View\View.php on line 430.
+ 1 APPPATH\Views\admin\ifter_subscription\new.php(282): CodeIgniter\View\View->endSection()
+ 2 SYSTEMPATH\View\View.php(224): include('C:\\wamp64\\www\\bkash_lms\\app\\Views\\admin\\ifter_subscription\\new.php')
+ 3 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('admin/ifter_subscription/new', [], true)
+ 5 APPPATH\Controllers\Admin\IfterSubscription.php(138): view('admin/ifter_subscription/new', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\IfterSubscription->new()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\IfterSubscription))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+12 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')

@@ -1,0 +1,299 @@
+CRITICAL - 2025-09-09 10:57:06 --> CodeIgniter\Pager\Exceptions\PagerException: "bootstrap-pagination" is not a valid Pager template.
+[Method: GET, Route: admin/public-holidays]
+in SYSTEMPATH\Pager\Pager.php on line 124.
+ 1 SYSTEMPATH\Pager\Pager.php(124): CodeIgniter\Pager\Exceptions\PagerException::forInvalidTemplate('bootstrap-pagination')
+ 2 SYSTEMPATH\Pager\Pager.php(87): CodeIgniter\Pager\Pager->displayLinks('group1', 'bootstrap-pagination')
+ 3 APPPATH\Views\admin\holidays\index.php(81): CodeIgniter\Pager\Pager->links('group1', 'bootstrap-pagination')
+ 4 SYSTEMPATH\View\View.php(224): include('C:\\wamp64\\www\\bkash_lms\\app\\Views\\admin\\holidays\\index.php')
+ 5 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 6 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('admin/holidays/index', [], true)
+ 7 APPPATH\Controllers\Admin\Holidays.php(39): view('admin/holidays/index', [...])
+ 8 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\Holidays->index()
+ 9 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Holidays))
+10 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+11 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+12 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+13 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+14 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-09 11:36:12 --> CodeIgniter\Exceptions\LogicException: No validation rules for the placeholder: "id". You must set the validation rules for the field. See <https://codeigniter4.github.io/userguide/libraries/validation.html#validation-placeholders>.
+[Method: POST, Route: admin/employment-types/store]
+in SYSTEMPATH\Validation\Validation.php on line 803.
+ 1 SYSTEMPATH\Validation\Validation.php(155): CodeIgniter\Validation\Validation->fillPlaceholders([...], [...])
+ 2 SYSTEMPATH\BaseModel.php(1580): CodeIgniter\Validation\Validation->run([...], null, null)
+ 3 SYSTEMPATH\BaseModel.php(812): CodeIgniter\BaseModel->validate([...])
+ 4 SYSTEMPATH\Model.php(800): CodeIgniter\BaseModel->insert([...], false)
+ 5 SYSTEMPATH\BaseModel.php(754): CodeIgniter\Model->insert([...], false)
+ 6 APPPATH\Controllers\Admin\crud\EmploymentTypes.php(56): CodeIgniter\BaseModel->save([...])
+ 7 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\crud\EmploymentTypes->store()
+ 8 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\crud\EmploymentTypes))
+ 9 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+10 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+11 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+12 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+13 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-09 12:04:48 --> CodeIgniter\View\Exceptions\ViewException: Invalid file: "admin/approval_flows/index.php"
+[Method: GET, Route: admin/approval-flows]
+in SYSTEMPATH\Exceptions\FrameworkException.php on line 39.
+ 1 SYSTEMPATH\View\View.php(212): CodeIgniter\Exceptions\FrameworkException::forInvalidFile('admin/approval_flows/index.php')
+ 2 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('admin/approval_flows/index', [], true)
+ 3 APPPATH\Controllers\Admin\crud\ApprovalFlows.php(45): view('admin/approval_flows/index', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\crud\ApprovalFlows->index()
+ 5 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\crud\ApprovalFlows))
+ 6 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+10 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-09 12:06:01 --> CodeIgniter\View\Exceptions\ViewException: Invalid file: "admin/approval_flows/index.php"
+[Method: GET, Route: admin/approval-flows]
+in SYSTEMPATH\Exceptions\FrameworkException.php on line 39.
+ 1 SYSTEMPATH\View\View.php(212): CodeIgniter\Exceptions\FrameworkException::forInvalidFile('admin/approval_flows/index.php')
+ 2 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('admin/approval_flows/index', [], true)
+ 3 APPPATH\Controllers\Admin\crud\ApprovalFlows.php(45): view('admin/approval_flows/index', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\crud\ApprovalFlows->index()
+ 5 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\crud\ApprovalFlows))
+ 6 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+10 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-09 12:18:15 --> CodeIgniter\View\Exceptions\ViewException: Invalid file: "admin/cafeterias/index.php"
+[Method: GET, Route: admin/cafeterias]
+in SYSTEMPATH\Exceptions\FrameworkException.php on line 39.
+ 1 SYSTEMPATH\View\View.php(212): CodeIgniter\Exceptions\FrameworkException::forInvalidFile('admin/cafeterias/index.php')
+ 2 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('admin/cafeterias/index', [], true)
+ 3 APPPATH\Controllers\Admin\crud\Cafeterias.php(41): view('admin/cafeterias/index', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\crud\Cafeterias->index()
+ 5 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\crud\Cafeterias))
+ 6 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+10 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-09 13:04:01 --> CodeIgniter\Security\Exceptions\SecurityException: The action you requested is not allowed.
+[Method: POST, Route: admin/intern-requisitions/process-upload]
+in SYSTEMPATH\Security\Security.php on line 262.
+ 1 SYSTEMPATH\Security\Security.php(262): CodeIgniter\Security\Exceptions\SecurityException::forDisallowedAction()
+ 2 SYSTEMPATH\Filters\CSRF.php(52): CodeIgniter\Security\Security->verify(Object(CodeIgniter\HTTP\IncomingRequest))
+ 3 SYSTEMPATH\Filters\Filters.php(241): CodeIgniter\Filters\CSRF->before(Object(CodeIgniter\HTTP\IncomingRequest), null)
+ 4 SYSTEMPATH\Filters\Filters.php(221): CodeIgniter\Filters\Filters->runBefore([...])
+ 5 SYSTEMPATH\CodeIgniter.php(479): CodeIgniter\Filters\Filters->run('admin/intern-requisitions/process-upload', 'before')
+ 6 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+10 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-09 13:15:57 --> CodeIgniter\Security\Exceptions\SecurityException: The action you requested is not allowed.
+[Method: POST, Route: admin/intern-requisitions/process-upload]
+in SYSTEMPATH\Security\Security.php on line 262.
+ 1 SYSTEMPATH\Security\Security.php(262): CodeIgniter\Security\Exceptions\SecurityException::forDisallowedAction()
+ 2 SYSTEMPATH\Filters\CSRF.php(52): CodeIgniter\Security\Security->verify(Object(CodeIgniter\HTTP\IncomingRequest))
+ 3 SYSTEMPATH\Filters\Filters.php(241): CodeIgniter\Filters\CSRF->before(Object(CodeIgniter\HTTP\IncomingRequest), null)
+ 4 SYSTEMPATH\Filters\Filters.php(221): CodeIgniter\Filters\Filters->runBefore([...])
+ 5 SYSTEMPATH\CodeIgniter.php(479): CodeIgniter\Filters\Filters->run('admin/intern-requisitions/process-upload', 'before')
+ 6 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+10 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-09 13:16:22 --> CodeIgniter\Security\Exceptions\SecurityException: The action you requested is not allowed.
+[Method: POST, Route: admin/intern-requisitions/process-upload]
+in SYSTEMPATH\Security\Security.php on line 262.
+ 1 SYSTEMPATH\Security\Security.php(262): CodeIgniter\Security\Exceptions\SecurityException::forDisallowedAction()
+ 2 SYSTEMPATH\Filters\CSRF.php(52): CodeIgniter\Security\Security->verify(Object(CodeIgniter\HTTP\IncomingRequest))
+ 3 SYSTEMPATH\Filters\Filters.php(241): CodeIgniter\Filters\CSRF->before(Object(CodeIgniter\HTTP\IncomingRequest), null)
+ 4 SYSTEMPATH\Filters\Filters.php(221): CodeIgniter\Filters\Filters->runBefore([...])
+ 5 SYSTEMPATH\CodeIgniter.php(479): CodeIgniter\Filters\Filters->run('admin/intern-requisitions/process-upload', 'before')
+ 6 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+10 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-09 13:40:02 --> ErrorException: Undefined array key "subscription_type"
+[Method: GET, Route: admin/intern-requisitions]
+in APPPATH\Views\partials\admin\subs_list_tbody.php on line 44.
+ 1 APPPATH\Views\partials\admin\subs_list_tbody.php(44): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "subscription_type"', 'C:\\wamp64\\www\\bkash_lms\\app\\Views\\partials\\admin\\subs_list_tbody.php', 44)
+ 2 SYSTEMPATH\View\View.php(224): include('C:\\wamp64\\www\\bkash_lms\\app\\Views\\partials\\admin\\subs_list_tbody.php')
+ 3 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('partials/admin/subs_list_tbody', [], true)
+ 5 APPPATH\Views\admin\intern\index.php(57): view('partials/admin/subs_list_tbody', [...])
+ 6 SYSTEMPATH\View\View.php(224): include('C:\\wamp64\\www\\bkash_lms\\app\\Views\\admin\\intern\\index.php')
+ 7 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 8 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('admin/intern/index', [], true)
+ 9 APPPATH\Controllers\Admin\InternRequisition.php(77): view('admin/intern/index', [...])
+10 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\InternRequisition->index()
+11 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\InternRequisition))
+12 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+13 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+14 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+15 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+16 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+ERROR - 2025-09-09 13:48:59 --> mysqli_sql_exception: Unknown column 'isub.subscription_type' in 'field list' in C:\wamp64\www\bkash_lms\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\wamp64\www\bkash_lms\system\Database\MySQLi\Connection.php(327): mysqli->query('\r\n             ...', 0)
+#1 C:\wamp64\www\bkash_lms\system\Database\BaseConnection.php(738): CodeIgniter\Database\MySQLi\Connection->execute('\r\n             ...')
+#2 C:\wamp64\www\bkash_lms\system\Database\BaseConnection.php(652): CodeIgniter\Database\BaseConnection->simpleQuery('\r\n             ...')
+#3 C:\wamp64\www\bkash_lms\app\Controllers\Admin\ReportController.php(414): CodeIgniter\Database\BaseConnection->query('\r\n             ...', Array)
+#4 C:\wamp64\www\bkash_lms\system\CodeIgniter.php(933): App\Controllers\Admin\ReportController->dailyMealReport()
+#5 C:\wamp64\www\bkash_lms\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\ReportController))
+#6 C:\wamp64\www\bkash_lms\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#7 C:\wamp64\www\bkash_lms\system\Boot.php(334): CodeIgniter\CodeIgniter->run()
+#8 C:\wamp64\www\bkash_lms\system\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#9 C:\wamp64\www\bkash_lms\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#10 C:\wamp64\www\bkash_lms\system\rewrite.php(44): require_once('C:\\wamp64\\www\\b...')
+#11 {main}
+CRITICAL - 2025-09-09 13:48:59 --> CodeIgniter\Database\Exceptions\DatabaseException: Unknown column 'isub.subscription_type' in 'field list'
+[Method: GET, Route: admin/report/daily-meal-report]
+in SYSTEMPATH\Database\BaseConnection.php on line 692.
+ 1 APPPATH\Controllers\Admin\ReportController.php(414): CodeIgniter\Database\BaseConnection->query('
+                SELECT
+                    \'\'                                      AS id,
+                    isub.intern_name                        AS name,
+                    DATE(isub.subscription_date)            AS date_val,
+                    isub.subscription_type                  AS emp_type,
+                    mt.name                                 AS meal_type,
+                    cf.name                                 AS location
+                FROM intern_subscriptions isub
+                LEFT JOIN meal_types mt ON mt.id = isub.meal_type_id
+                LEFT JOIN cafeterias cf ON cf.id = isub.cafeteria_id
+                WHERE DATE(isub.subscription_date) = ?
+                AND isub.status IN (\'ACTIVE\',\'REDEEMED\')
+            ', [...])
+ 2 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\ReportController->dailyMealReport()
+ 3 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\ReportController))
+ 4 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 6 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 7 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ 8 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-09 13:48:59 --> [Caused by] CodeIgniter\Database\Exceptions\DatabaseException: Unknown column 'isub.subscription_type' in 'field list'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 332.
+ 1 SYSTEMPATH\Database\BaseConnection.php(738): CodeIgniter\Database\MySQLi\Connection->execute('
+                SELECT
+                    \'\'                                      AS id,
+                    isub.intern_name                        AS name,
+                    DATE(isub.subscription_date)            AS date_val,
+                    isub.subscription_type                  AS emp_type,
+                    mt.name                                 AS meal_type,
+                    cf.name                                 AS location
+                FROM intern_subscriptions isub
+                LEFT JOIN meal_types mt ON mt.id = isub.meal_type_id
+                LEFT JOIN cafeterias cf ON cf.id = isub.cafeteria_id
+                WHERE DATE(isub.subscription_date) = \'2025-09-09\'
+                AND isub.status IN (\'ACTIVE\',\'REDEEMED\')
+            ')
+ 2 SYSTEMPATH\Database\BaseConnection.php(652): CodeIgniter\Database\BaseConnection->simpleQuery('
+                SELECT
+                    \'\'                                      AS id,
+                    isub.intern_name                        AS name,
+                    DATE(isub.subscription_date)            AS date_val,
+                    isub.subscription_type                  AS emp_type,
+                    mt.name                                 AS meal_type,
+                    cf.name                                 AS location
+                FROM intern_subscriptions isub
+                LEFT JOIN meal_types mt ON mt.id = isub.meal_type_id
+                LEFT JOIN cafeterias cf ON cf.id = isub.cafeteria_id
+                WHERE DATE(isub.subscription_date) = \'2025-09-09\'
+                AND isub.status IN (\'ACTIVE\',\'REDEEMED\')
+            ')
+ 3 APPPATH\Controllers\Admin\ReportController.php(414): CodeIgniter\Database\BaseConnection->query('
+                SELECT
+                    \'\'                                      AS id,
+                    isub.intern_name                        AS name,
+                    DATE(isub.subscription_date)            AS date_val,
+                    isub.subscription_type                  AS emp_type,
+                    mt.name                                 AS meal_type,
+                    cf.name                                 AS location
+                FROM intern_subscriptions isub
+                LEFT JOIN meal_types mt ON mt.id = isub.meal_type_id
+                LEFT JOIN cafeterias cf ON cf.id = isub.cafeteria_id
+                WHERE DATE(isub.subscription_date) = ?
+                AND isub.status IN (\'ACTIVE\',\'REDEEMED\')
+            ', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\ReportController->dailyMealReport()
+ 5 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\ReportController))
+ 6 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+10 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-09 13:48:59 --> [Caused by] mysqli_sql_exception: Unknown column 'isub.subscription_type' in 'field list'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 327.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(327): mysqli->query('
+                SELECT
+                    \'\'                                      AS id,
+                    isub.intern_name                        AS name,
+                    DATE(isub.subscription_date)            AS date_val,
+                    isub.subscription_type                  AS emp_type,
+                    mt.name                                 AS meal_type,
+                    cf.name                                 AS location
+                FROM intern_subscriptions isub
+                LEFT JOIN meal_types mt ON mt.id = isub.meal_type_id
+                LEFT JOIN cafeterias cf ON cf.id = isub.cafeteria_id
+                WHERE DATE(isub.subscription_date) = \'2025-09-09\'
+                AND isub.status IN (\'ACTIVE\',\'REDEEMED\')
+            ', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(738): CodeIgniter\Database\MySQLi\Connection->execute('
+                SELECT
+                    \'\'                                      AS id,
+                    isub.intern_name                        AS name,
+                    DATE(isub.subscription_date)            AS date_val,
+                    isub.subscription_type                  AS emp_type,
+                    mt.name                                 AS meal_type,
+                    cf.name                                 AS location
+                FROM intern_subscriptions isub
+                LEFT JOIN meal_types mt ON mt.id = isub.meal_type_id
+                LEFT JOIN cafeterias cf ON cf.id = isub.cafeteria_id
+                WHERE DATE(isub.subscription_date) = \'2025-09-09\'
+                AND isub.status IN (\'ACTIVE\',\'REDEEMED\')
+            ')
+ 3 SYSTEMPATH\Database\BaseConnection.php(652): CodeIgniter\Database\BaseConnection->simpleQuery('
+                SELECT
+                    \'\'                                      AS id,
+                    isub.intern_name                        AS name,
+                    DATE(isub.subscription_date)            AS date_val,
+                    isub.subscription_type                  AS emp_type,
+                    mt.name                                 AS meal_type,
+                    cf.name                                 AS location
+                FROM intern_subscriptions isub
+                LEFT JOIN meal_types mt ON mt.id = isub.meal_type_id
+                LEFT JOIN cafeterias cf ON cf.id = isub.cafeteria_id
+                WHERE DATE(isub.subscription_date) = \'2025-09-09\'
+                AND isub.status IN (\'ACTIVE\',\'REDEEMED\')
+            ')
+ 4 APPPATH\Controllers\Admin\ReportController.php(414): CodeIgniter\Database\BaseConnection->query('
+                SELECT
+                    \'\'                                      AS id,
+                    isub.intern_name                        AS name,
+                    DATE(isub.subscription_date)            AS date_val,
+                    isub.subscription_type                  AS emp_type,
+                    mt.name                                 AS meal_type,
+                    cf.name                                 AS location
+                FROM intern_subscriptions isub
+                LEFT JOIN meal_types mt ON mt.id = isub.meal_type_id
+                LEFT JOIN cafeterias cf ON cf.id = isub.cafeteria_id
+                WHERE DATE(isub.subscription_date) = ?
+                AND isub.status IN (\'ACTIVE\',\'REDEEMED\')
+            ', [...])
+ 5 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\ReportController->dailyMealReport()
+ 6 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\ReportController))
+ 7 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 9 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+10 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+11 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')
+CRITICAL - 2025-09-09 16:12:05 --> ErrorException: Array to string conversion
+[Method: GET, Route: admin/report/food-consumption-report]
+in APPPATH\Views\admin\report\food_consumption_report.php on line 44.
+ 1 APPPATH\Views\admin\report\food_consumption_report.php(44): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Array to string conversion', 'C:\\wamp64\\www\\bkash_lms\\app\\Views\\admin\\report\\food_consumption_report.php', 44)
+ 2 SYSTEMPATH\View\View.php(224): include('C:\\wamp64\\www\\bkash_lms\\app\\Views\\admin\\report\\food_consumption_report.php')
+ 3 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('admin/report/food_consumption_report', [], true)
+ 5 APPPATH\Controllers\Admin\ReportController.php(653): view('admin/report/food_consumption_report', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\ReportController->foodConsumptionReport()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\ReportController))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+12 SYSTEMPATH\rewrite.php(44): require_once('C:\\wamp64\\www\\bkash_lms\\public\\index.php')

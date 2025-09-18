@@ -1,0 +1,1 @@
+__ci_last_regenerate|i:1758176070;user_id|s:1:"1";user_name|s:11:"Super Admin";employee_id|N;email|s:21:"superadmin@bkash.test";login_method|s:5:"LOCAL";line_manager_id|N;user_type|s:5:"ADMIN";isLoggedIn|b:1;perm_list|a:0:{}role_list|a:1:{i:0;s:11:"SUPER ADMIN";}perm_last_load|i:1758174598;_ci_previous_url|s:47:"http://localhost:8082/index.php/admin/approvals";__ci_vars|a:0:{}
