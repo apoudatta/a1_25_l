@@ -1,31 +1,38 @@
 <?php
+
 namespace App\Models;
 
 use CodeIgniter\Model;
 
 class MealCardModel extends Model
 {
-    protected $table         = 'meal_card';
-    protected $primaryKey    = 'id';
-    protected $returnType    = 'array';
-    protected $allowedFields = ['user_id','employee_id','card_id','card_code','status'];
-    protected $useTimestamps = true; // maps to created_at / updated_at
+    protected $table            = 'meal_cards';
+    protected $primaryKey       = 'id';
+    protected $useAutoIncrement = true;
 
-    protected $validationRules = [
-        'user_id'     => 'permit_empty|is_natural_no_zero',
-        'employee_id' => 'permit_empty|max_length[20]',
-        'card_code'   => 'required|max_length[64]',
-        'status'      => 'required|in_list[ACTIVE,INACTIVE]',
+    protected $returnType       = 'array';
+    protected $protectFields    = true;
+
+    public const STATUS_ACTIVE   = 'ACTIVE';
+    public const STATUS_INACTIVE = 'INACTIVE';
+
+    protected $allowedFields = [
+        'user_id',
+        'employee_id',
+        'card_code',   // unique
+        'status',
+        'created_at',
+        'updated_at',
     ];
 
-    protected $validationMessages = [
-        'card_code' => [
-            'required'   => 'Card code is required.',
-            'max_length' => 'Card code must be at most 64 characters.',
-        ],
-        'status' => [
-            'required' => 'Status is required.',
-            'in_list'  => 'Status must be ACTIVE or INACTIVE.',
-        ],
+    protected $useTimestamps = true; // created_at/updated_at are TIMESTAMP columns
+    protected $createdField  = 'created_at';
+    protected $updatedField  = 'updated_at';
+
+    protected $validationRules = [
+        'user_id'     => 'permit_empty|integer',
+        'employee_id' => 'permit_empty|string|max_length[20]',
+        'card_code'   => 'required|string|max_length[64]|is_unique[meal_cards.card_code,id,{id}]',
+        'status'      => 'required|in_list[ACTIVE,INACTIVE]',
     ];
 }

@@ -6,11 +6,22 @@ use CodeIgniter\Model;
 
 class RoleModel extends Model
 {
-    protected $table      = 'roles';
-    protected $primaryKey = 'id';
+    protected $table            = 'roles';
+    protected $primaryKey       = 'id';
+    protected $useAutoIncrement = true;
+
+    protected $returnType    = 'array';
+    protected $protectFields = true;
 
     protected $allowedFields = [
         'name',
         'description',
+    ];
+
+    protected $useTimestamps = false;
+
+    protected $validationRules = [
+        'name'        => 'required|string|max_length[50]',
+        'description' => 'permit_empty|string',
     ];
 }

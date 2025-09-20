@@ -1,6 +1,7 @@
 <?= $this->extend('layouts/admin') ?>
 <?= $this->section('content') ?>
 
+
 <h4>New Meal Subscription</h4>
 <?php $validation = session()->getFlashdata('validation'); ?>
 
@@ -10,7 +11,6 @@
   </div>
 <?php endif ?>
 
-<?= view('partials/flash_message') ?>
 
 <?= form_open('admin/subscription/store') ?>
   <?= csrf_field() ?>
@@ -167,6 +167,8 @@
 
 
 <?= $this->section('scripts') ?>
+<?= view('partials/flash_message') ?>
+
 <script>
   const calendarConfig = <?= json_encode([
     'startDate'       => date('Y-m-d'),

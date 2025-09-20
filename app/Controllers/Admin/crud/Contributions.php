@@ -2,163 +2,263 @@
 
 use App\Controllers\BaseController;
 use App\Models\ContributionModel;
-use App\Models\CafeteriaModel;
 use App\Models\MealTypeModel;
-use App\Models\MealCostModel;
-use CodeIgniter\Exceptions\PageNotFoundException;
+use App\Models\EmploymentTypeModel;
+use App\Models\CafeteriaModel;
 
 class Contributions extends BaseController
 {
     protected $model;
-    protected $cafModel;
     protected $mealTypeModel;
-    protected $mealCostModel;
+    protected $empTypeModel;
+    protected $cafeteriaModel;
 
     public function __construct()
     {
-        $this->model         = new ContributionModel();
-        $this->mealCostModel = new MealCostModel();
-        $this->cafModel      = new CafeteriaModel();
-        $this->mealTypeModel = new MealTypeModel();
+        $this->model          = new ContributionModel();
+        $this->mealTypeModel  = new MealTypeModel();
+        $this->empTypeModel   = new EmploymentTypeModel();
+        $this->cafeteriaModel = new CafeteriaModel();
     }
 
-    /** GET /admin/contributions */
-	public function index()
+    public function index()
     {
-        $rows = $this->model
-            ->select('meal_contributions.*, meal_types.name AS meal_type, cafeterias.name AS cafeteria')
-            ->join('meal_types','meal_types.id=meal_contributions.meal_type_id')
-            ->join('cafeterias','cafeterias.id=meal_contributions.cafeteria_id','left')
-            ->orderBy('meal_contributions.id','DESC')
-            ->findAll(); // client-side DT
+        $search  = trim((string) ($this->request->getGet('search') ?? ''));
+        $perPage = 10;
+
+        $qb = $this->model
+            ->select("
+                meal_contributions.*,
+                mt.name AS meal_type_name,
+                COALESCE(et.name, 'ALL') AS emp_type_name,
+                c.name AS cafeteria_name
+            ", false)
+            ->join('meal_types mt', 'mt.id = meal_contributions.meal_type_id', 'inner')
+            ->join('employment_types et', 'et.id = meal_contributions.emp_type_id', 'left')
+            ->join('cafeterias c', 'c.id = meal_contributions.cafeteria_id', 'left');
+
+        if ($search !== '') {
+            $qb->groupStart()
+                ->like('mt.name', $search)
+                ->orLike('et.name', $search)
+                ->orLike('c.name',  $search)
+              ->groupEnd();
+        }
+
+        $rows  = $qb->orderBy('meal_contributions.id', 'DESC')->paginate($perPage, 'group1');
+        $pager = $this->model->pager;
 
         return view('admin/crud/contributions/index', [
-            'rows' => $rows,
+            'rows'   => $rows,
+            'pager'  => $pager,
+            'search' => $search,
         ]);
     }
 
-	
-
-    /** GET /admin/crud/contributions/new */
     public function new()
     {
-        $db = db_connect();
-
-        // active ET names (uppercase for stable comparisons)
-        $etRows  = $db->table('employment_types')
-                    ->select('UPPER(name) AS name')
-                    ->where('is_active', 1)
-                    ->orderBy('name', 'ASC')
-                    ->get()->getResultArray();
-        $etNames = array_map(fn($r) => (string) $r['name'], $etRows);
-
-        // EMPLOYEE + ETs + GUEST (no duplicates)
-        $typeOptions = array_values(array_unique(array_merge(['EMPLOYEE'], $etNames, ['GUEST'])));
+        $mealTypes   = $this->mealTypeModel->where('is_active', 1)->orderBy('name', 'ASC')->findAll();
+        $empTypes    = $this->empTypeModel->where('is_active', 1)->orderBy('name', 'ASC')->findAll();
+        $cafeterias  = $this->cafeteriaModel->where('is_active', 1)->orderBy('name', 'ASC')->findAll();
 
         return view('admin/crud/contributions/form', [
-            'row'         => null,
-            'cafeterias'  => $this->cafModel->findAll(),
-            'mealTypes'   => $this->mealTypeModel->findAll(),
-            'types' => $typeOptions,
+            'contrib'         => null,
+            'mealTypes'       => $mealTypes,
+            'employmentTypes' => $empTypes,
+            'cafeterias'      => $cafeterias,
+            'ALL_VALUE'       => 0,
         ]);
     }
 
-    /** POST /admin/crud/contributions */
     public function create()
     {
+        $cafeteriaId = $this->request->getPost('cafeteria_id');
+        $mealTypeId  = (int) $this->request->getPost('meal_type_id');
+        $empTypeId   = (int) ($this->request->getPost('emp_type_id') ?? 0);
+        $isActive    = $this->request->getPost('is_active') ? 1 : 0;
+
+        $costRow = $this->resolveCostRow($mealTypeId);
+        if (! $costRow || (float) ($costRow['base_price'] ?? 0) <= 0) {
+            return redirect()->back()->withInput()->with('error', 'Please insert meal cost first for this meal type.');
+        }
+        $base   = (float) $costRow['base_price'];
+
+        $companyTk = (float) $this->request->getPost('company_tk');
+        $userTk    = (float) $this->request->getPost('user_tk');
+
         $data = [
-            'meal_type_id'         => $this->request->getPost('meal_type_id'),
-            'user_type'            => $this->request->getPost('user_type'),
-            'company_contribution' => (float)$this->request->getPost('company_contribution'),
-            'user_contribution'    => (float)$this->request->getPost('user_contribution'),
-            'base_price'           => (float)$this->request->getPost('base_price'),
-            'company_tk'           => (float)$this->request->getPost('company_tk'),
-            'user_tk'              => (float)$this->request->getPost('user_tk'),
-            //'cafeteria_id'         => $this->request->getPost('cafeteria_id') ?: null,
-            'effective_date'       => $this->request->getPost('effective_date'),
+            'cafeteria_id' => ($cafeteriaId === '' || $cafeteriaId === null) ? null : (int) $cafeteriaId,
+            'meal_type_id' => $mealTypeId,
+            'emp_type_id'  => $empTypeId,
+            'base_price'   => number_format($base, 2, '.', ''),
+            'company_tk'   => number_format($companyTk, 2, '.', ''),
+            'user_tk'      => number_format($userTk, 2, '.', ''),
+            'is_active'    => $isActive,
         ];
 
-        $this->model->insert($data);
+        if (! $this->model->insert($data)) {
+            return redirect()->back()->withInput()->with('error', implode(' ', $this->model->errors()));
+        }
 
-        return redirect()->to('admin/contributions')
-                        ->with('success', 'Contribution rule created.');
+        return redirect()->to('admin/contributions')->with('success', 'Contribution created.');
     }
 
-
-    /** GET /admin/contributions/{id}/edit */
     public function edit($id)
     {
-        $row = $this->model->find($id);
+        $row = $this->model->find((int) $id);
         if (! $row) {
-            throw new PageNotFoundException("Rule #{$id} not found");
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
         }
 
-        // Build types: EMPLOYEE + active employment_types + GUEST
-        $db      = db_connect();
-        $etRows  = $db->table('employment_types')
-                    ->select('UPPER(name) AS name')
-                    ->where('is_active', 1)
-                    ->orderBy('name', 'ASC')
-                    ->get()->getResultArray();
-        $etNames = array_map(static fn($r) => (string) $r['name'], $etRows);
-
-        // Merge and de-dupe
-        $types = array_values(array_unique(array_merge(['EMPLOYEE'], $etNames, ['GUEST'])));
+        $mealTypes   = $this->mealTypeModel->where('is_active', 1)->orderBy('name', 'ASC')->findAll();
+        $empTypes    = $this->empTypeModel->where('is_active', 1)->orderBy('name', 'ASC')->findAll();
+        $cafeterias  = $this->cafeteriaModel->where('is_active', 1)->orderBy('name', 'ASC')->findAll();
 
         return view('admin/crud/contributions/form', [
-            'row'        => $row,
-            'cafeterias' => $this->cafModel->findAll(),
-            'mealTypes'  => $this->mealTypeModel->findAll(),
-            'types'      => $types, // <- merged list
+            'contrib'         => $row,
+            'mealTypes'       => $mealTypes,
+            'employmentTypes' => $empTypes,
+            'cafeterias'      => $cafeterias,
+            'ALL_VALUE'       => 0,
         ]);
     }
-    /** POST /admin/contributions/{id} */
+
     public function update($id)
     {
-        $row = $this->model->find($id);
-        if (! $row) {
-            throw new PageNotFoundException("Rule #{$id} not found");
+        $cafeteriaId = $this->request->getPost('cafeteria_id');
+        $mealTypeId  = (int) $this->request->getPost('meal_type_id');
+        $empTypeId   = (int) ($this->request->getPost('emp_type_id') ?? 0);
+        $isActive    = $this->request->getPost('is_active') ? 1 : 0;
+
+        $costRow = $this->resolveCostRow($mealTypeId);
+        if (! $costRow || (float) ($costRow['base_price'] ?? 0) <= 0) {
+            return redirect()->back()->withInput()->with('error', 'Please insert meal cost first for this meal type.');
         }
+        $base   = (float) $costRow['base_price'];
+
+        $companyTk = (float) $this->request->getPost('company_tk');
+        $userTk    = (float) $this->request->getPost('user_tk');
 
         $data = [
-            'meal_type_id'        => $this->request->getPost('meal_type_id'),
-            'user_type'           => $this->request->getPost('user_type'),
-            'company_contribution'=> (int)$this->request->getPost('company_contribution'),
-            'user_contribution'   => (int)$this->request->getPost('user_contribution'),
-            'base_price'           => (float)$this->request->getPost('base_price'),
-            'company_tk'           => (float)$this->request->getPost('company_tk'),
-            'user_tk'              => (float)$this->request->getPost('user_tk'),
-            //'cafeteria_id'        => $this->request->getPost('cafeteria_id') ?: null,
-            'effective_date'      => $this->request->getPost('effective_date'),
+            'cafeteria_id' => ($cafeteriaId === '' || $cafeteriaId === null) ? null : (int) $cafeteriaId,
+            'meal_type_id' => $mealTypeId,
+            'emp_type_id'  => $empTypeId,
+            'base_price'   => number_format($base, 2, '.', ''),
+            'company_tk'   => number_format($companyTk, 2, '.', ''),
+            'user_tk'      => number_format($userTk, 2, '.', ''),
+            'is_active'    => $isActive,
         ];
-        $this->model->update($id, $data);
 
-        return redirect()->to('admin/contributions')
-                         ->with('success','Contribution rule updated.');
+        if (! $this->model->update((int) $id, $data)) {
+            return redirect()->back()->withInput()->with('error', implode(' ', $this->model->errors()));
+        }
+
+        return redirect()->to('admin/contributions')->with('success', 'Contribution updated.');
     }
 
-    /** DELETE /admin/contributions/{id} */
     public function delete($id)
     {
-        $this->model->delete($id);
-        return redirect()->to('admin/contributions')
-                         ->with('success','Contribution rule deleted.');
+        $this->model->delete((int) $id);
+        return redirect()->to('admin/contributions')->with('success', 'Contribution deleted.');
     }
 
-    public function getBasePrice($mealTypeId)
-    {
-        $cost = $this->mealCostModel
-            ->where('meal_type_id', $mealTypeId)
-            ->orderBy('effective_date', 'DESC')
-            ->first();
+    /**
+     * Toggle active flag. Works with normal POST or AJAX.
+     * POST /admin/contributions/{id}/toggle
+     */
+   // app/Controllers/Admin/crud/Contributions.php
 
-        if ($cost) {
+    public function toggle($id)
+    {
+        $id  = (int) $id;
+        $row = $this->model->find($id);
+        if (! $row) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+        }
+
+        $new = $row['is_active'] ? 0 : 1;
+
+        if ($this->model->update($id, ['is_active' => $new]) === false) {
+            $err = implode(' ', (array) $this->model->errors()) ?: 'Unable to update status.';
+            return redirect()->back()->with('error', $err);
+        }
+
+        return redirect()->back()->with('success', $new ? 'Contribution activated.' : 'Contribution deactivated.');
+    }
+
+
+    // ---------- helpers ----------
+
+    /** Get the applicable meal_costs row for a meal type (effective or upcoming). */
+    public function resolveCostRow(int $mealTypeId): ?array
+    {
+        if ($mealTypeId <= 0) return null;
+
+        $db    = db_connect();
+        $today = date('Y-m-d');
+
+        $row = $db->table('meal_costs')
+            ->select('base_price, effective_date')
+            ->where('meal_type_id', $mealTypeId)
+            ->where('is_active', 1)
+            ->where('effective_date <=', $today)
+            ->orderBy('effective_date', 'DESC')
+            ->orderBy('id', 'DESC')
+            ->get(1)->getFirstRow('array');
+
+        if ($row) return $row;
+
+        $row = $db->table('meal_costs')
+            ->select('base_price, effective_date')
+            ->where('meal_type_id', $mealTypeId)
+            ->where('is_active', 1)
+            ->where('effective_date >', $today)
+            ->orderBy('effective_date', 'ASC')
+            ->orderBy('id', 'DESC')
+            ->get(1)->getFirstRow('array');
+
+        return $row ?: null;
+    }
+
+    public function getBasePrice(int $mealTypeId)
+    {
+        if ($mealTypeId <= 0) return null;
+
+        $db    = db_connect();
+        $today = date('Y-m-d');
+
+        $row = $db->table('meal_costs')
+            ->select('base_price')
+            ->where('meal_type_id', $mealTypeId)
+            ->where('is_active', 1)
+            ->where('effective_date <=', $today)
+            ->orderBy('effective_date', 'DESC')
+            ->orderBy('id', 'DESC')
+            ->get(1)->getFirstRow('array');
+
+        if ($row) {
             return $this->response->setJSON([
                 'success' => true,
-                'base_price' => $cost['base_price']
+                'base_price' => $row['base_price']
             ]);
         }
 
+        $row = $db->table('meal_costs')
+            ->select('base_price')
+            ->where('meal_type_id', $mealTypeId)
+            ->where('is_active', 1)
+            ->where('effective_date >', $today)
+            ->orderBy('effective_date', 'ASC')
+            ->orderBy('id', 'DESC')
+            ->get(1)->getFirstRow('array');
+
+        if ($row) {
+            return $this->response->setJSON([
+                'success' => true,
+                'base_price' => $row['base_price']
+            ]);
+        }
+        
         return $this->response->setJSON([
             'success' => false,
             'base_price' => 0

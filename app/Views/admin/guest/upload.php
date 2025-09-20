@@ -53,17 +53,22 @@
       <select id="guest_type_id"
               name="guest_type_id"
               class="form-select <?= isset($validation) && $validation->hasError('guest_type_id') ? 'is-invalid' : '' ?>"
-              required >
+              required>
         <option value="">Select guest type…</option>
-        <option value="HR GUEST">HR</option>
-        <option value="PROJECT GUEST">Project</option>
+        <?php foreach ($guestTypes as $gt): ?>
+          <option value="<?= (int) $gt['id'] ?>"
+            <?= set_select('guest_type_id', (string) $gt['id']) ?>>
+            <?= esc($gt['name']) ?>
+          </option>
+        <?php endforeach; ?>
       </select>
-      <?php if(isset($validation)): ?>
+      <?php if (isset($validation)): ?>
         <div class="invalid-feedback">
           <?= $validation->getError('guest_type_id') ?>
         </div>
       <?php endif ?>
     </div>
+
 
     <div class="col-md-6">
       <label for="xlsx_file" class="form-label">XLSX File</label>

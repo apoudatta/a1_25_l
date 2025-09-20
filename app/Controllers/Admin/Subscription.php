@@ -1,431 +1,473 @@
 <?php namespace App\Controllers\Admin;
 
 use App\Controllers\BaseController;
-use App\Models\MealSubscriptionDetailModel;
 use App\Models\MealSubscriptionModel;
-use App\Models\ApprovalFlowModel;
-use App\Models\ApprovalStepModel;
-use App\Models\MealApprovalModel;
 use App\Models\CutoffTimeModel;
 use App\Models\PublicHolidayModel;
 use App\Models\MealTypeModel;
 use App\Models\CafeteriaModel;
-use CodeIgniter\Exceptions\PageForbiddenException;
 use App\Models\UserModel;
-use DateTime;
-use DateTimeZone;
 
 class Subscription extends BaseController
 {
-    protected $MealSubscriptionModel;
-    protected $ApprovalFlowModel;
-    protected $ApprovalStepModel;
-    protected $MealApprovalModel;
-    protected $CutoffTimeModel;
-    protected $PublicHolidayModel;
-    protected $MealSubscriptionDetailModel;
-    protected $userModel;
+    protected $subs;
+    protected $cutoffTimes;
+    protected $holidays;
+    protected $mealTypes;
+    protected $cafeterias;
+    protected $users;
+    protected $db;
 
     public function __construct()
     {
-        $this->MealSubscriptionModel      = new MealSubscriptionModel();
-        $this->MealSubscriptionDetailModel= new MealSubscriptionDetailModel();
-        $this->ApprovalFlowModel          = new ApprovalFlowModel();
-        $this->ApprovalStepModel          = new ApprovalStepModel();
-        $this->MealApprovalModel          = new MealApprovalModel();
-        $this->CutoffTimeModel            = new CutoffTimeModel();
-        $this->PublicHolidayModel         = new PublicHolidayModel();
-        $this->userModel                  = new UserModel();
+        $this->subs        = new MealSubscriptionModel();
+        $this->cutoffTimes = new CutoffTimeModel();
+        $this->holidays    = new PublicHolidayModel();
+        $this->mealTypes   = new MealTypeModel();
+        $this->cafeterias  = new CafeteriaModel();
+        $this->users       = new UserModel();
+        $this->db          = db_connect();
     }
 
-    /** Show new-subscription form */
+    /** GET /admin/subscription/new */
     public function new()
     {
-        //$this->dd('aafffff');
-        $mealM = new MealTypeModel();
-        $cafM  = new CafeteriaModel();
+        // Default to Lunch (id = 1) like before
+        $mealTypeId = 1;
 
-        $cutoffRow = $this->CutoffTimeModel
-                    ->select('max_horizon_days, cut_off_time, lead_days')
-                    ->where('cutoff_date', null)  // for eid meal cutoff date not null
-                    ->where('is_active', 1)
-                    ->where('meal_type_id ', 1)
-                    ->first();
-        
-        // If nothing was returned, $cutoffRow will be null
-        if (empty($cutoffRow)) {  // No active data found
-            $cutoffDays = 30;  
-            $cutOffTime = '22:00:00';
-            $leadDays = 1;
-        } else {
-            // We have an array like ['max_horizon_days' => '15']
-            $cutoffDays = (int) $cutoffRow['max_horizon_days'];
-            $cutOffTime = $cutoffRow['cut_off_time'];
-            $leadDays = $cutoffRow['lead_days'];
-        }
-
-        $today      = date('Y-m-d');
-        $cutoffDate = date('Y-m-d', strtotime("+{$cutoffDays} days"));
-
-        // 2) Pull back only active holidays between today and cutoff
-        $publicHolidays = $this->PublicHolidayModel
-            ->select('holiday_date')
+        // Active cutoff row for this meal
+        $cut = $this->cutoffTimes
+            ->select('max_horizon_days, cut_off_time, lead_days')
             ->where('is_active', 1)
-            ->where('holiday_date >=', $today)
-            ->where('holiday_date <=', $cutoffDate)
-            ->orderBy('holiday_date', 'ASC')
-            ->findColumn('holiday_date');
+            ->where('cutoff_date', null)
+            ->where('meal_type_id', $mealTypeId)
+            ->orderBy('updated_at', 'DESC')
+            ->orderBy('id', 'DESC')
+            ->first();
 
+        $cutoffDays = (int)($cut['max_horizon_days'] ?? 30);
+        $cutOffTime = (string)($cut['cut_off_time'] ?? '22:00:00');
+        $leadDays   = (int)($cut['lead_days'] ?? 0);
 
-        // 3) Fetch only this user’s registrations within [today … cutoffDate]
-        $registeredDates = $this->MealSubscriptionDetailModel
-            ->select('subscription_date')
-            ->where('user_id', session()->get('user_id'))
-            ->where('meal_type_id', 1)
-            ->where('status', 'ACTIVE')
-            ->where('subscription_date >=', $today)
-            ->where('subscription_date <=', $cutoffDate)
-            ->orderBy('subscription_date', 'ASC')
-            ->findColumn('subscription_date');
+        // Dates already registered by this user (to shade in the calendar)
+        $userId = (int)(session('user_id') ?? 0);
+        $registeredDates = array_column(
+            $this->subs
+                ->select('subs_date')
+                ->where('user_id', $userId)
+                ->where('meal_type_id', $mealTypeId)
+                ->whereIn('status', ['ACTIVE','PENDING','REDEEMED'])
+                ->findAll(),
+            'subs_date'
+        );
 
-        //$this->dump_data($leadDays);
+        // Public holidays
+        $publicHolidays = array_column(
+            $this->holidays->where('is_active', 1)->findAll(),
+            'holiday_date'
+        );
 
         return view('admin/subscription/new', [
             'cutoffDays'      => $cutoffDays,
-            'cutOffTime'    => $cutOffTime,
-            'leadDays'       => $leadDays,
+            'cutOffTime'      => $cutOffTime,
+            'leadDays'        => $leadDays,
             'registeredDates' => $registeredDates,
             'publicHolidays'  => $publicHolidays,
-            'mealTypes'       => $mealM->where('id', 1)->findAll(),
-            'cafeterias'      => $cafM->findAll(),
+            'mealTypes'       => $this->mealTypes->where('id', $mealTypeId)->findAll(),
+            'cafeterias'      => $this->cafeterias->where('is_active', 1)->findAll(),
             'validation'      => \Config\Services::validation(),
         ]);
     }
 
+    /** POST /admin/subscription/store */
     public function store()
     {
-        // 1) Basic validation
+        // --------------- validate ---------------
         $rules = [
             'meal_type_id' => 'required|integer',
-            'meal_dates'   => 'required|string',   // now a CSV of dates
+            'meal_dates'   => 'required|string',   // CSV from flatpickr
             'cafeteria_id' => 'required|integer',
+            'employee_id'  => 'required|integer',
         ];
         if (! $this->validate($rules)) {
             return redirect()->back()
-                             ->withInput()
-                             ->with('validation', $this->validator);
+                ->withInput()
+                ->with('validation', $this->validator);
         }
 
-        // 2) Pull inputs
         $userId      = (int) $this->request->getPost('employee_id');
         $mealTypeId  = (int) $this->request->getPost('meal_type_id');
         $cafeteriaId = (int) $this->request->getPost('cafeteria_id');
-        $rawDates    = explode(',', $this->request->getPost('meal_dates'));
+        $rawDates    = explode(',', (string) $this->request->getPost('meal_dates'));
+        $empTypeId   = 1; // EMPLOYEE (ALL employees)
 
-        // Timezone
         $tz = new \DateTimeZone('Asia/Dhaka');
 
-        // 3) Parse & normalize dates → ['YYYY-MM-DD', …]
+        // Parse "d/m/Y" -> "Y-m-d"
         $dates = [];
         foreach ($rawDates as $r) {
-            $r  = trim($r);
+            $r = trim($r);
+            if ($r === '') continue;
             $dt = \DateTime::createFromFormat('d/m/Y', $r, $tz);
             if (! $dt) {
-                session()->setFlashdata('error', "Invalid date format: {$r}");
-                return redirect()->back()->withInput();
+                return redirect()->back()->withInput()->with('error', "Invalid date format: {$r}");
             }
             $dates[] = $dt->format('Y-m-d');
         }
-
-        // Sort ascending just in case
-        sort($dates);
-        $startDate = $dates[0];
-        $endDate   = end($dates);
-
-        // 4) Approval‐flow lookup
-        $userType = 'Admin';
-        $today    = (new \DateTime('now', $tz))->format('Y-m-d');
-        $flow = $this->ApprovalFlowModel
-                     ->where('user_type',    $userType)
-                     ->where('meal_type_id',  $mealTypeId)
-                     ->where('effective_date <=', $today)
-                     ->where('is_active',     1)
-                     ->first();
-
-        $status = ($flow && $flow['type'] === 'MANUAL')
-                ? 'PENDING'
-                : 'ACTIVE';
-
-        // 5) Cut‐off / lead‐days / horizon
-        $cut = $this->CutoffTimeModel
-                    ->where('meal_type_id',  $mealTypeId)
-                    ->where('cutoff_date', null)
-                    ->where('is_active',    1)
-                    ->first();
-        if (! $cut) {
-            session()->setFlashdata('error', 'Cut-off settings not found');
-            return redirect()->back()->withInput();
+        if (!$dates) {
+            return redirect()->back()->withInput()->with('error', 'Please select at least one date.');
         }
 
-        // now & cutOffMoment
-        $now = new \DateTime('now', $tz);
-        [$h, $m, $s] = explode(':', $cut['cut_off_time']);
-        $cutOffMoment = (clone $now)->setTime((int)$h, (int)$m, (int)$s);
+        // ---------------- cutoff window ----------------
+        $cut = $this->cutoffTimes
+            ->select('max_horizon_days, lead_days, cut_off_time')
+            ->where('is_active', 1)
+            ->where('cutoff_date', null)
+            ->where('meal_type_id', $mealTypeId)
+            ->orderBy('updated_at', 'DESC')->orderBy('id', 'DESC')
+            ->first();
 
-        // compute earliest allowed date
-        $daysToAdd = (int)$cut['lead_days'];
-        if ($now > $cutOffMoment) {
-            // past cut-off today, push earliest one more day
-            $daysToAdd++;
-        }
+        $now   = new \DateTime('now', $tz);
+        $start = (clone $now)->modify('+' . (int) ($cut['lead_days'] ?? 0) . ' days')->setTime(0, 0, 0);
+        $end   = (clone $now)->modify('+' . (int) ($cut['max_horizon_days'] ?? 30) . ' days')->setTime(23, 59, 59);
 
-        // earliest = today + daysToAdd at 00:00:00
-        $earliest = (clone $now)
-                    ->modify("+{$daysToAdd} days")
-                    ->setTime(0, 0, 0);
+        // Public holidays + weekly holidays
+        $holidays = array_column($this->holidays->where('is_active', 1)->findAll(), 'holiday_date');
 
-        // latest = today + max_horizon_days at 23:59:59
-        $latest = (clone $now)
-                  ->modify('+' . (int)$cut['max_horizon_days'] . ' days')
-                  ->setTime(23, 59, 59);
-
-        // 6) Holiday list
-        $holidays = array_column(
-            $this->PublicHolidayModel->where('is_active',1)->findAll(),
-            'holiday_date'
-        );
-
-        // 7) Per-date validations: cutoff window, holiday, weekly holiday
         foreach ($dates as $dstr) {
-            $d = \DateTime::createFromFormat('Y-m-d', $dstr, $tz)
-                 ->setTime(0, 0, 0);
-
-            // 7a) cut-off window
-            if ($d < $earliest || $d > $latest) {
-                session()->setFlashdata(
-                    'error',
-                    "Date {$dstr} must be between "
-                    . $earliest->format('Y-m-d')
-                    . " and "
-                    . $latest->format('Y-m-d')
-                );
-                return redirect()->back()->withInput();
+            $d = \DateTime::createFromFormat('Y-m-d', $dstr, $tz);
+            if (!$d) {
+                return redirect()->back()->withInput()->with('error', "Invalid date: {$dstr}");
             }
-
-            // 7b) public holiday
+            if ($d < $start || $d > $end) {
+                return redirect()->back()->withInput()->with('error', "Date {$dstr} is outside the allowed window.");
+            }
             if (in_array($dstr, $holidays, true)) {
-                session()->setFlashdata('error', "Cannot subscribe on public holiday: {$dstr}");
-                return redirect()->back()->withInput();
+                return redirect()->back()->withInput()->with('error', "Cannot subscribe on public holiday: {$dstr}");
             }
-
-            // 7c) weekly holiday (Friday=5, Saturday=6)
-            if (in_array((int)$d->format('w'), [5,6], true)) {
-                session()->setFlashdata('error', "Cannot subscribe on weekly holiday: {$dstr}");
-                return redirect()->back()->withInput();
+            // Friday (5) & Saturday (6)
+            if (in_array((int) $d->format('w'), [5, 6], true)) {
+                return redirect()->back()->withInput()->with('error', "Cannot subscribe on weekly holiday: {$dstr}");
             }
         }
 
-        // 8) Overlap check against DETAILS table
-        $existing = $this->MealSubscriptionDetailModel
-                         ->where('user_id', session('user_id'))
-                         ->where('meal_type_id', 1)
-                         ->whereIn('status', ['ACTIVE', 'PENDING'])
-                         ->whereIn('subscription_date', $dates)
-                         ->countAllResults();
+        // Block duplicates (ACTIVE|PENDING) for those dates
+        $already = $this->subs
+            ->where('user_id', $userId)
+            ->where('meal_type_id', $mealTypeId)
+            ->whereIn('status', ['ACTIVE', 'PENDING'])
+            ->whereIn('subs_date', $dates)
+            ->countAllResults();
 
-        if ($existing > 0) {
-            session()->setFlashdata(
-                'error',
-                'You already have subscription(s) on one or more of those dates.'
-            );
-            return redirect()->back()->withInput();
+        if ($already > 0) {
+            return redirect()->back()->withInput()->with('error', 'Some of the dates are already subscribed.');
         }
 
-        // 11) Enqueue approval steps if needed
-        if ($status === 'PENDING' && $flow) {
-            $steps = $this->ApprovalStepModel
-                          ->where('flow_id', $flow['id'])
-                          ->orderBy('step_order','ASC')
-                          ->findAll();
+        // Pick status from approval flow (emp_type_id = 0 => ALL; here you set 1 for EMPLOYEE)
+        $flow = $this->db->table('approval_flows')
+            ->where('is_active', 1)
+            ->where('meal_type_id', $mealTypeId)
+            ->where('emp_type_id', $empTypeId)
+            ->orderBy('effective_date', 'DESC')
+            ->get(1)->getFirstRow('array');
+
+        $status = ($flow && strtoupper($flow['type']) === 'MANUAL') ? 'PENDING' : 'ACTIVE';
+
+        // User share from contributions (emp_type_id ALL; cafeteria match or NULL)
+        $userTk = $this->resolveUserTk($mealTypeId, $empTypeId, $cafeteriaId);
+        if ($userTk === null) {
+            return redirect()->back()->withInput()->with('error', 'Please configure Contributions for this meal type first.');
         }
 
-        if ($flow && $status === 'PENDING' && empty($steps)) {
-            return redirect()->back()->with('error', 'Approval flow defined, but no steps configured. Contact admin.');
-        }
+        // ---------------- insert subscriptions + approvals in a TX ----------------
+        $db = $this->db;
+        $db->transStart();
 
-        
-        // 9) Insert parent subscription
-        $subId = $this->MealSubscriptionModel->insert([
-            'user_id'           => $userId,
-            'meal_type_id'      => $mealTypeId,
-            'cafeteria_id'      => $cafeteriaId,
-            'start_date'        => $startDate,
-            'end_date'          => $endDate,
-            'status'            => $status,
-            'subscription_type' => $userType,
-            'remark'            => $this->request->getPost('remark'),
-            'created_by'        => session('user_id'),
-        ]);
-
-        // 5) If steps exist, insert into meal_approvals
-        if ($status === 'PENDING' && !empty($steps)) {
-            foreach ($steps as $step) {
-                $this->MealApprovalModel->insert([
-                    'subscription_id' => $subId,
-                    'step_id'         => $step['id'],
-                    'approver_role'   => $step['approver_role'],
-                    'status'          => 'PENDING',
-                ]);
-            }
-        }
-
-        // 10) Insert detail rows
+        $rows   = [];
+        $nowStr = date('Y-m-d H:i:s');
         foreach ($dates as $dstr) {
-            $this->MealSubscriptionDetailModel->insert([
-                'user_id'           => $userId,
-                'subscription_id'   => $subId,
-                'subscription_date' => $dstr,
-                'status'            => $status,
-                'meal_type_id'      => $mealTypeId,
-                'cafeteria_id'      => $cafeteriaId,
-                'remark'            => $this->request->getPost('remark'),
-                'created_by'        => session('user_id'),
-                'created_at'        => date('Y-m-d H:i:s'),
-                'updated_at'        => date('Y-m-d H:i:s'),
-            ]);
+            $rows[] = [
+                'user_id'      => $userId,
+                'meal_type_id' => $mealTypeId,
+                'emp_type_id'  => $empTypeId,                 // ALL employees bucket
+                'cafeteria_id' => $cafeteriaId,
+                'subs_date'    => $dstr,
+                'status'       => $status,
+                'price'        => number_format((float) $userTk, 2, '.', ''),
+                'created_by'   => (int) (session('user_id') ?? 0),
+                'unsubs_by'    => 0,
+                'created_at'   => $nowStr,
+                'updated_at'   => $nowStr,
+            ];
+        }
+        if (! empty($rows)) {
+            $this->subs->insertBatch($rows);
         }
 
-        //$this->dump_data([$status, $flow]);
-        
+        // ---------- create approvals for PENDING only ----------
+        if ($status === 'PENDING') {
 
-        // 12) Final redirect
-        $msg = $status === 'PENDING'
-             ? 'Subscription pending approval.'
-             : 'Subscription active.';
+            // get the first step of this flow (if configured)
+            $step = $flow
+                ? $db->table('approval_steps')
+                    ->where('flow_id', (int) $flow['id'])
+                    ->orderBy('step_order', 'ASC')
+                    ->get(1)->getFirstRow('array')
+                : null;
 
-        return redirect()->to('admin/subscription')
-                         ->with('success', $msg);
+            // Resolve approver target
+            $approverRole   = null;
+            $approverUserId = null;
+
+            if ($step) {
+                $type = strtoupper((string) $step['approver_type']);
+                if ($type === 'ROLE' && !empty($step['approver_role'])) {
+                    $approverRole = (int) $step['approver_role'];
+                } elseif ($type === 'USER' && !empty($step['approver_user_id'])) {
+                    $approverUserId = (int) $step['approver_user_id'];
+                } elseif ($type === 'LINE_MANAGER') {
+                    // find user's line manager
+                    $lm = $db->table('users')->select('line_manager_id')->where('id', $userId)->get()->getFirstRow('array');
+                    if (!empty($lm['line_manager_id'])) {
+                        $approverUserId = (int) $lm['line_manager_id'];
+                    } elseif (!empty($step['fallback_role'])) {
+                        $approverRole = (int) $step['fallback_role'];
+                    }
+                }
+            }            
+
+            // IDs we just created with PENDING status
+            $subsIds = array_column(
+                $db->table('meal_subscriptions')
+                    ->select('id')
+                    ->where('user_id', $userId)
+                    ->where('meal_type_id', $mealTypeId)
+                    ->where('cafeteria_id', $cafeteriaId)
+                    ->whereIn('subs_date', $dates)
+                    ->where('status', 'PENDING')
+                    ->get()->getResultArray(),
+                'id'
+            );
+
+            if ($subsIds) {
+                // skip ones that already have an approval row
+                $existingIds = array_column(
+                    $db->table('meal_approvals')->select('subs_id')->whereIn('subs_id', $subsIds)->get()->getResultArray(),
+                    'subs_id'
+                );
+                $subsToCreate = array_values(array_diff($subsIds, $existingIds));
+
+                if ($subsToCreate) {
+                    $apRows = [];
+                    foreach ($subsToCreate as $sid) {
+                        $apRows[] = [
+                            'subs_id'         => (int) $sid,
+                            'approver_role'   => $approverRole,           // may be null
+                            'approver_user_id'=> $approverUserId,        // may be null
+                            'approved_by'     => 0,
+                            'approval_status' => 'PENDING',
+                            'approved_at'     => null,
+                            'created_at'      => $nowStr,
+                            'updated_at'      => $nowStr,
+                        ];
+                    }
+                    $db->table('meal_approvals')->insertBatch($apRows);
+                }
+            }
+        }
+
+        $db->transComplete();
+        if ($db->transStatus() === false) {
+            return redirect()->back()->withInput()->with('error', 'Failed to save subscription.');
+        }
+
+        return redirect()->to('admin/subscription')->with('success', 'Subscription submitted.');
     }
 
-    /** Show my subscription history */
+
+    /** GET /admin/subscription (My subscriptions) */
     public function history()
     {
-        $subs = $this->MealSubscriptionDetailModel
-            ->select('meal_subscription_details.*,
-                    users.name            AS user_name,
-                    meal_types.name       AS meal_type_name,
-                    cafeterias.name       AS caffname,
-                    ct.cut_off_time       AS cutoff_time,
-                    ct.lead_days          AS lead_days')
-            ->join('users',       'users.id = meal_subscription_details.user_id', 'left')
-            ->join('meal_types',  'meal_types.id = meal_subscription_details.meal_type_id', 'left')
-            ->join('cafeterias',  'cafeterias.id = meal_subscription_details.cafeteria_id', 'left')
-            // adjust table/fields if your config table differs
-            ->join('cutoff_times ct', 'ct.meal_type_id = meal_subscription_details.meal_type_id AND ct.is_active = 1', 'left')
-            ->where('meal_subscription_details.user_id', session('user_id'))
-            ->where('meal_subscription_details.meal_type_id', 1) // lunch
-            ->orderBy('meal_subscription_details.id','DESC')
+        $uid = (int)(session('user_id') ?? 0);
+
+        // Last 1 year window based on created_at (Asia/Dhaka)
+        $tz         = new \DateTimeZone('Asia/Dhaka');
+        $oneYearAgo = (new \DateTime('now', $tz))->modify('-1 year')->format('Y-m-d H:i:s');
+
+        $rows = $this->subs
+            ->select("meal_subscriptions.*,
+                    meal_subscriptions.subs_date AS subscription_date,
+                    users.name,
+                    users.employee_id,
+                    meal_types.name AS meal_type_name,
+                    cafeterias.name AS caffname,
+                    ct.cut_off_time AS cutoff_time,
+                    ct.lead_days AS lead_days", false)
+            ->join('users', 'users.id = meal_subscriptions.user_id', 'left')
+            ->join('meal_types', 'meal_types.id = meal_subscriptions.meal_type_id', 'left')
+            ->join('cafeterias', 'cafeterias.id = meal_subscriptions.cafeteria_id', 'left')
+            ->join('cutoff_times ct', 'ct.meal_type_id = meal_subscriptions.meal_type_id AND ct.is_active = 1', 'left')
+            ->where('meal_subscriptions.user_id', $uid)
+            ->where('meal_subscriptions.meal_type_id', 1) // keep Lunch filter as before
+            ->where('meal_subscriptions.created_at >=', $oneYearAgo)
+            ->orderBy('meal_subscriptions.created_at','DESC')
+            ->orderBy('meal_subscriptions.id','DESC')
             ->findAll();
 
-        return view('admin/subscription/subscription_view', ['subs' => $subs]);
+        return view('admin/subscription/subscription_view', ['subs' => $rows]);
     }
 
 
-    public function view($subscription_id)
-    {
-        //$this->dump_data('sdfsd');
-        $subs = $this->MealSubscriptionDetailModel
-                    ->select('meal_subscription_details.*, users.name')
-                    ->join('users', 'users.id = meal_subscription_details.user_id', 'left')
-                     //->where('user_id', session('user_id'))
-                     ->where('subscription_id ', $subscription_id)
-                     ->orderBy('id','DESC')
-                     ->findAll();
-
-        return view('admin/subscription/subscription_view', [
-            'subs' => $subs,
-        ]);
-    }
-
-    public function unsubscribeSingle($id)
-    {
-        // Mark the request cancelled
-        $this->MealSubscriptionDetailModel->update($id, [
-            'status'=>'CANCELLED',
-            'unsubs_by'=>session('user_id'),
-        ]);
-        
-        return redirect()->back()
-                         ->with('success','Unsubscribed successfully.');
-    }
-
-    /** Cancel (unsubscribe) */
-    public function unsubscribe($id)
-    {
-        // Mark the request cancelled
-        $this->MealSubscriptionModel->update($id, ['status'=>'CANCELLED']);
-        $this->MealSubscriptionDetailModel
-            ->where('subscription_id', $id)
-            ->set('status', 'CANCELLED')
-            ->update();
-
-        return redirect()->back()
-                         ->with('success','Unsubscribed successfully.');
-    }
-
+    /** GET /admin/subscription/all-subscriptions */
     public function allSubscriptions()
     {
-        $subs = $this->MealSubscriptionDetailModel
-            ->select('meal_subscription_details.*,
+        // Last 1 year window based on created_at
+        $tz         = new \DateTimeZone('Asia/Dhaka');
+        $oneYearAgo = (new \DateTime('now', $tz))->modify('-1 year')->format('Y-m-d H:i:s');
+
+        $rows = $this->subs
+            ->select("meal_subscriptions.*,
+                    meal_subscriptions.subs_date AS subscription_date,
                     users.employee_id,
                     users.name,
-                    meal_types.name  AS meal_type_name,
-                    cafeterias.name  AS caffname,
-                    ct.cut_off_time  AS cutoff_time,
-                    ct.lead_days     AS lead_days')
-            ->join('users',       'users.id = meal_subscription_details.user_id', 'left')
-            ->join('meal_types',  'meal_types.id = meal_subscription_details.meal_type_id', 'left')
-            ->join('cafeterias',  'cafeterias.id = meal_subscription_details.cafeteria_id', 'left')
-            ->join('cutoff_times ct', 'ct.meal_type_id = meal_subscription_details.meal_type_id AND ct.is_active = 1', 'left')
-            ->where('meal_subscription_details.status <>', 'REDEEMED')
-            ->where('meal_subscription_details.meal_type_id', 1)
-            ->orderBy('meal_subscription_details.id','DESC')
+                    meal_types.name AS meal_type_name,
+                    cafeterias.name AS caffname,
+                    ct.cut_off_time AS cutoff_time,
+                    ct.lead_days AS lead_days", false)
+            ->join('users', 'users.id = meal_subscriptions.user_id', 'left')
+            ->join('meal_types', 'meal_types.id = meal_subscriptions.meal_type_id', 'left')
+            ->join('cafeterias', 'cafeterias.id = meal_subscriptions.cafeteria_id', 'left')
+            ->join('cutoff_times ct', 'ct.meal_type_id = meal_subscriptions.meal_type_id AND ct.is_active = 1', 'left')
+            ->where('meal_subscriptions.status <>', 'REDEEMED')
+            ->where('meal_subscriptions.meal_type_id', 1)
+            ->where('meal_subscriptions.created_at >=', $oneYearAgo)
+            ->orderBy('meal_subscriptions.created_at','DESC')
+            ->orderBy('meal_subscriptions.id','DESC')
             ->findAll();
 
-        return view('admin/subscription/all_subscription', ['subs' => $subs]);
+        return view('admin/subscription/all_subscription', ['subs' => $rows]);
     }
 
 
+    /** GET /admin/employees/active-list (unchanged; used by the form’s select) */
     public function activeList()
     {
-        $employees = $this->userModel
-                        ->where('status', 'ACTIVE')
-                        ->where('user_type', 'EMPLOYEE')
-                        ->select('id, name')
-                        ->orderBy('name')
-                        ->findAll();
+        $employees = $this->users
+            ->where('status', 'ACTIVE')
+            ->where('user_type', 'EMPLOYEE')
+            ->select('id, name')
+            ->orderBy('name')
+            ->findAll();
 
         return $this->response->setJSON($employees);
     }
 
+    /** POST /admin/subscription/unsubscribe_single/(:num) */
+    public function unsubscribeSingle($id)
+    {
+        $id = (int)$id;
+        $ok = $this->subs->update($id, [
+            'status'     => 'CANCELLED',
+            'unsubs_by'  => (int)(session('user_id') ?? 0),
+            'updated_at' => date('Y-m-d H:i:s'),
+        ]);
+
+        return redirect()->back()
+            ->with($ok ? 'success' : 'error', $ok ? 'Unsubscribed.' : 'Unable to unsubscribe.');
+    }
+
+    /** POST /admin/subscription/unsubscribe_bulk */
     public function unsubscribe_bulk()
     {
-        $ids = $this->request->getPost('subscription_ids');
-        $remark = $this->request->getPost('remark');
+        $ids    = array_values(array_filter((array) $this->request->getPost('subscription_ids'), 'is_numeric'));
+        $remark = trim((string) $this->request->getPost('remark'));
 
-        //$this->dd($remark);
-        if (!is_array($ids) || empty($ids)) {
+        if (empty($ids)) {
             return redirect()->back()->with('error', 'No subscriptions selected.');
         }
 
-        // Example: update all selected subscriptions to CANCELLED
-        $this->MealSubscriptionDetailModel
+        $now = date('Y-m-d H:i:s');
+
+        // 1) Bulk cancel subscriptions
+        $this->subs
             ->whereIn('id', $ids)
             ->set('status', 'CANCELLED')
-            ->set('approver_remark', $remark)
+            ->set('updated_at', $now)
+            ->set('unsubs_by', session('user_id') ?? 0)
             ->update();
 
+        // 2) Log a remark row for each subscription (AUTO_INCREMENT id)
+        $db      = db_connect();
+        $builder = $db->table('remarks');
+
+        $rows = [];
+        foreach ($ids as $sid) {
+            $rows[] = [
+                'subs_id'         => (int) $sid,
+                'remark'          => $remark,
+                'created_at'      => $now,
+            ];
+        }
+        if ($rows) {
+            $builder->insertBatch($rows);
+        }
+
         return redirect()->back()->with('success', 'Selected subscriptions unsubscribed.');
+    }
+
+
+
+    // --- Helper: user share from meal_contributions ---
+    /**
+     * Find the best matching user contribution (user share) for a meal type.
+     * Priority:
+     * 1) exact emp_type + exact cafeteria
+     * 2) exact emp_type + cafeteria NULL
+     * 3) emp_type = ALL(0) + exact cafeteria
+     * 4) emp_type = ALL(0) + cafeteria NULL
+     * Returns float or null when not configured.
+     */
+    private function resolveUserTk(int $mealTypeId, int $empTypeId, ?int $cafeteriaId): ?float
+    {
+        $b = $this->db->table('meal_contributions')
+            ->select('user_tk')
+            ->where('is_active', 1)
+            ->where('meal_type_id', $mealTypeId);
+
+        // ---- Preference ordering (no backticks) ----
+        // exact emp_type first, then ALL(0)
+        $b->orderBy("(emp_type_id = {$empTypeId})", 'DESC', false);
+
+        // exact cafeteria first, then NULL
+        if ($cafeteriaId === null) {
+            $b->orderBy("(cafeteria_id IS NULL)", 'DESC', false);
+        } else {
+            $cafeteriaId = (int) $cafeteriaId;
+            $b->orderBy("(cafeteria_id = {$cafeteriaId})", 'DESC', false);
+        }
+
+        // stable last tie-breaker
+        $b->orderBy('id', 'DESC');
+
+        // ---- Filters (match exact/NULL combos) ----
+        if ($cafeteriaId === null) {
+            $b->groupStart()
+                ->where('cafeteria_id', null)
+            ->groupEnd();
+        } else {
+            $b->groupStart()
+                ->where('cafeteria_id', $cafeteriaId)
+                ->orWhere('cafeteria_id', null)
+            ->groupEnd();
+        }
+
+        $b->groupStart()
+            ->where('emp_type_id', $empTypeId)
+            ->orWhere('emp_type_id', 0)   // ALL
+        ->groupEnd();
+
+        $row = $b->get(1)->getFirstRow('array');
+        return $row ? (float) $row['user_tk'] : null;
     }
 
 }

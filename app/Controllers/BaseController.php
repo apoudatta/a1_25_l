@@ -126,10 +126,9 @@ abstract class BaseController extends Controller
             // 6 digits, can be like '004217'
             $otp = str_pad((string) random_int(0, (10 ** $length) - 1), $length, '0', STR_PAD_LEFT);
 
-            $existsGuest  = $db->table('guest_subscriptions')->select('id')->where('otp', $otp)->get()->getFirstRow();
-            $existsIntern = $db->table('intern_subscriptions')->select('id')->where('otp', $otp)->get()->getFirstRow();
+            $existsOTP  = $db->table('meal_reference')->select('id')->where('otp', $otp)->get()->getFirstRow();
 
-            if (! $existsGuest && ! $existsIntern) {
+            if (! $existsOTP) {
                 return $otp; // unique across both tables
             }
         }

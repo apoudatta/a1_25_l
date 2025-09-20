@@ -80,7 +80,7 @@ $routes->group('admin', ['filter' => ['auth']], static function($routes) {
 
     // Guest Subscription
     $routes->get('guest-subscriptions',                        'Admin\GuestSubscription::index',         ['filter' => 'perm:admin.guest-subscriptions.history']);
-    $routes->get('guest-subscriptions/all-guest-list',         'Admin\GuestSubscription::allGuestList',  ['filter' => 'perm:admin.guest-subscriptions.all-guest-list']);
+    $routes->get('guest-subscriptions/all-guest-list',         'Admin\GuestSubscription::index/all',  ['filter' => 'perm:admin.guest-subscriptions.all-guest-list']);
     $routes->get('guest-subscriptions/new',                    'Admin\GuestSubscription::new',           ['filter' => 'perm:admin.guest-subscriptions.new']);
     $routes->post('guest-subscriptions/store',                 'Admin\GuestSubscription::store',         ['filter' => 'perm:admin.guest-subscriptions.store']);
     $routes->post('guest-subscriptions/unsubscribe/(:num)',    'Admin\GuestSubscription::unsubscribe/$1',['filter' => 'perm:admin.guest-subscriptions.unsubscribe']);
@@ -89,7 +89,7 @@ $routes->group('admin', ['filter' => ['auth']], static function($routes) {
     // Guest Bulk upload
     $routes->get('guest-subscriptions/bulk-upload',            'Admin\GuestSubscription::uploadForm',    ['filter' => 'perm:admin.guest-subscriptions.bulk-upload']);
     $routes->post('guest-subscriptions/process-upload',        'Admin\GuestSubscription::processUpload', ['filter' => 'perm:admin.guest-subscriptions.process-upload']);
-    $routes->get('guest-subscriptions/bulk-list',              'Admin\GuestSubscription::bulkList',      ['filter' => 'perm:admin.guest-subscriptions.bulk-list']);
+    $routes->get('guest-subscriptions/bulk-list',              'Admin\GuestSubscription::index/bulk',  ['filter' => 'perm:admin.guest-subscriptions.bulk-list']);
 
     // Intern Requisitions (bulk)
     $routes->get('intern-requisitions',                        'Admin\InternRequisition::index',         ['filter' => 'perm:admin.intern-requisitions.index']);
@@ -123,7 +123,8 @@ $routes->group('admin', ['filter' => ['auth']], static function($routes) {
     $routes->get(   'meal-costs/(:num)/edit',   'Admin\crud\MealCosts::edit/$1',  ['filter' => 'perm:admin.meal-costs.edit']);
     $routes->post(  'meal-costs/(:num)',        'Admin\crud\MealCosts::update/$1');
     //$routes->delete('meal-costs/(:num)',        'Admin\crud\MealCosts::delete/$1',['filter' => 'perm:admin.meal-costs.delete']);
-    $routes->post('meal-costs/(:num)/toggle', 'Admin\crud\MealCosts::toggle/$1');
+    $routes->post('meal-costs/(:num)/toggle',   'Admin\crud\MealCosts::toggle/$1');
+    $routes->get('meal-costs/horizon/(:num)',   'Admin\crud\MealCosts::horizon/$1');
 
 
     // Meal Contribution Rules
@@ -134,6 +135,7 @@ $routes->group('admin', ['filter' => ['auth']], static function($routes) {
     $routes->post(  'contributions/(:num)',           'Admin\crud\Contributions::update/$1');
     $routes->delete('contributions/(:num)',           'Admin\crud\Contributions::delete/$1',['filter' => 'perm:admin.contributions.delete']);
     $routes->get(   'contributions/get-base-price/(:num)', 'Admin\crud\Contributions::getBasePrice/$1');
+    $routes->post(  'contributions/(:num)/toggle',   'Admin\crud\Contributions::toggle/$1');
 
     // Occasions
     $routes->get(   'occasions',               'Admin\crud\Occasions::index',   ['filter' => 'perm:admin.occasions.index']);

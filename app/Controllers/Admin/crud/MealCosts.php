@@ -50,23 +50,26 @@ class MealCosts extends BaseController
     /** POST /admin/meal-costs */
     public function create()
     {
-        $cafeteriaId = $this->request->getPost('cafeteria_id') ?: null;
-        $mealTypeId  = $this->request->getPost('meal_type_id');
+        $cafeteriaId = $this->request->getPost('cafeteria_id');
+        $mealTypeId  = (int) $this->request->getPost('meal_type_id');
         $base        = (float) $this->request->getPost('base_price');
         $effective   = $this->request->getPost('effective_date');
         $isActive    = $this->request->getPost('is_active') ? 1 : 0;
 
-
-        $this->model->insert([
-            'cafeteria_id'   => $cafeteriaId,
+        $data = [
+            'cafeteria_id'   => ($cafeteriaId === '' || $cafeteriaId === null) ? null : (int) $cafeteriaId,
             'meal_type_id'   => $mealTypeId,
-            'base_price'     => $base,
+            'base_price'     => number_format($base, 2, '.', ''),
             'effective_date' => $effective,
             'is_active'      => $isActive,
-        ]);
+            // created_at omitted; DB will set CURRENT_TIMESTAMP
+        ];
 
-        return redirect()->to('admin/meal-costs')
-                         ->with('success','Meal cost created.');
+        if (! $this->model->insert($data)) {
+            return redirect()->back()->withInput()->with('error', implode(' ', $this->model->errors()));
+        }
+
+        return redirect()->to('admin/meal-costs')->with('success', 'Meal cost created.');
     }
 
     /** GET /admin/meal-costs/{id}/edit */
@@ -90,32 +93,26 @@ class MealCosts extends BaseController
     /** POST /admin/meal-costs/{id} */
     public function update($id)
     {
-        $cost = $this->model->find($id);
-        if (! $cost) {
-            throw new PageNotFoundException("Meal Cost #{$id} not found");
-        }
-
-        $cafeteriaId = $this->request->getPost('cafeteria_id') ?: null;
-        //$mealTypeId  = $this->request->getPost('meal_type_id');
+        $cafeteriaId = $this->request->getPost('cafeteria_id');
+        $mealTypeId  = (int) $this->request->getPost('meal_type_id');
         $base        = (float) $this->request->getPost('base_price');
-        $pct         = (int)   $this->request->getPost('subsidy_pct');
         $effective   = $this->request->getPost('effective_date');
         $isActive    = $this->request->getPost('is_active') ? 1 : 0;
 
-        $final = round($base * (1 - $pct/100), 2);
-
-        $this->model->update($id, [
-            'cafeteria_id'   => $cafeteriaId,
-            //'meal_type_id'   => $mealTypeId,
-            'base_price'     => $base,
-            'subsidy_pct'    => $pct,
-            'final_price'    => $final,
+        $data = [
+            'cafeteria_id'   => ($cafeteriaId === '' || $cafeteriaId === null) ? null : (int) $cafeteriaId,
+            'meal_type_id'   => $mealTypeId,
+            'base_price'     => number_format($base, 2, '.', ''),
             'effective_date' => $effective,
             'is_active'      => $isActive,
-        ]);
+            // no updated_at column to set
+        ];
 
-        return redirect()->to('admin/meal-costs')
-                         ->with('success','Meal cost updated.');
+        if (! $this->model->update((int) $id, $data)) {
+            return redirect()->back()->withInput()->with('error', implode(' ', $this->model->errors()));
+        }
+
+        return redirect()->to('admin/meal-costs')->with('success', 'Meal cost updated.');
     }
 
     /** DELETE /admin/meal-costs/{id} */
@@ -141,5 +138,24 @@ class MealCosts extends BaseController
         return redirect()->back()->with('success', 'Status updated.');
     }
 
+    public function horizon($mealTypeId)
+    {
+        $mealTypeId = (int) $mealTypeId;
+        $db = db_connect();
+
+        // Pick the most recent active cutoff for this meal type
+        $row = $db->table('cutoff_times')
+            ->select('max_horizon_days')
+            ->where('meal_type_id', $mealTypeId)
+            ->where('is_active', 1)
+            ->orderBy('cutoff_date', 'DESC')   // may be NULL, that's ok
+            ->orderBy('updated_at', 'DESC')
+            ->orderBy('id', 'DESC')
+            ->get(1)
+            ->getFirstRow('array');
+
+        $days = (int) ($row['max_horizon_days'] ?? 0);
+        return $this->response->setJSON(['max_horizon_days' => $days]);
+    }
 
 }

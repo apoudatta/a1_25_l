@@ -8,7 +8,7 @@
 <?php foreach($rows as $index => $r): ?>
   <?php
     // meal date
-    $mealDate = new DateTime($r['subscription_date']);
+    $mealDate = new DateTime($r['subs_date']);
 
     // cutoff settings (with safe defaults)
     $leadDays = isset($r['lead_days']) ? (int)$r['lead_days'] : 0;
@@ -41,7 +41,7 @@
     
     <!-- Guest Type -->
     <?php if(isset($guest_type) && $guest_type == true): ?>
-      <td><?= esc($r['guest_type']) ?></td>
+      <td><?= esc($r['emp_type_name']) ?></td>
     <?php endif ?>
 
     <!-- Subscription Type -->
@@ -60,21 +60,18 @@
     <?php endif ?>
 
     <!-- Name & Phone -->
-    <?php if(isset($list) && $list == 'intern'): ?>
-      <td><?= esc($r['intern_name']) ?></td>
-      <td><?= esc($r['phone']) ?></td>
-    <?php elseif(isset($list) && $list != 'ramadan'): ?>
-      <td><?= esc($r['guest_name']) ?></td>
-      <td><?= esc($r['phone']) ?></td>
+    <?php if(isset($list) && (($list == 'intern') || ($list != 'ramadan'))): ?>
+      <td><?= esc($r['ref_name']) ?></td>
+      <td><?= esc($r['ref_phone']) ?></td>
     <?php endif ?>
 
     <!-- Meal Date -->
     <td
       class="meal-date-cell"
-      data-meal-date="<?= esc(date('Y-m-d', strtotime($r['subscription_date'])), 'attr') ?>"
-      data-order="<?= esc(date('Y-m-d', strtotime($r['subscription_date'])), 'attr') ?>"
+      data-meal-date="<?= esc(date('Y-m-d', strtotime($r['subs_date'])), 'attr') ?>"
+      data-order="<?= esc(date('Y-m-d', strtotime($r['subs_date'])), 'attr') ?>"
     >
-      <?= esc(date('d M Y', strtotime($r['subscription_date']))) ?>
+      <?= esc(date('d M Y', strtotime($r['subs_date']))) ?>
     </td>
 
     <!-- Meal Type Name -->

@@ -45,6 +45,7 @@
   <thead class="table-light">
     <tr>
       <th>#</th>
+      <th>Emp. Id</th>
       <th>User Name</th>
       <th>Subs/Unsubs date</th>
       <th>Meal Date</th>
@@ -74,7 +75,8 @@
     ?>
     <tr id="row-<?= $s['id'] ?>">
       <td><?= esc($index + 1) ?></td>
-      <td><?= esc($s['user_name']) ?></td>
+      <td><?= esc($s['employee_id']) ?></td>
+      <td><?= esc($s['name']) ?></td>
       <td><?= esc(date('d M Y', strtotime(($s['status']=='CANCELLED') ? $s['updated_at'] : $s['created_at']))) ?></td>
       <td data-order="<?= esc($s['subscription_date']) ?>"><?= date('d M Y', strtotime($s['subscription_date'])) ?></td>
       <td><?= esc($s['meal_type_name']) ?></td>

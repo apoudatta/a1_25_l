@@ -115,11 +115,11 @@
     ['path'=>'admin/cafeterias',      'icon'=>'bi bi-house-fill',      'label'=>'Cafeterias', 'perm' => 'admin.cafeterias.index'],
     ['path'=>'admin/meal-types',      'icon'=>'bi bi-cup',             'label'=>'Meal Types', 'perm' => 'admin.meal-types.index'],
     ['path'=>'admin/employment-types','icon'=>'bi bi-shield-lock',     'label'=>'Employment Types', 'perm' => 'admin.employment-types.index'],
+    ['path'=>'admin/cutoff-times',    'icon'=>'bi bi-hourglass-split', 'label'=>'Meal Cut-Off Times', 'perm' => 'admin.cutoff-times.index'],
     ['path'=>'admin/meal-costs',      'icon'=>'bi bi-currency-dollar', 'label'=>'Meal Costs', 'perm' => 'admin.meal-costs.index'],
     ['path'=>'admin/contributions',   'icon'=>'bi bi-percent',         'label'=>'Contributions', 'perm' => 'admin.contributions.index'],
     ['path'=>'admin/public-holidays', 'icon'=>'bi bi-calendar-event',  'label'=>'Public Holidays', 'perm' => 'admin.public-holidays.index'],
     ['path'=>'admin/occasions',       'icon'=>'bi bi-gift',            'label'=>'Occasions', 'perm' => 'admin.occasions.index'],
-    ['path'=>'admin/cutoff-times',    'icon'=>'bi bi-hourglass-split', 'label'=>'Meal Cut-Off Times', 'perm' => 'admin.cutoff-times.index'],
     ['path'=>'admin/ramadan-periods', 'icon'=>'bi bi-moon-stars',      'label'=>'Ramadan Periods', 'perm' => 'admin.ramadan-periods.index'],
   ]
 ]) ?>

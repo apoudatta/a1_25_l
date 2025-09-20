@@ -16,7 +16,7 @@
 
   <div class="col-md-3">
     <label class="form-label">Meal Type</label>
-    <select name="meal_type_id" class="form-select" required>
+    <select name="meal_type_id" id="mealTypeSelect" class="form-select" required>
       <?php foreach($mealTypes as $mt): ?>
       <option value="<?= esc($mt['id']) ?>"
         <?= $isEdit && $cost['meal_type_id']==$mt['id'] ? 'selected' : '' ?>>
@@ -28,13 +28,12 @@
 
   <div class="col-md-3">
     <label class="form-label">Effective Date</label>
-    <?php $today = date('Y-m-d'); ?>
     <input
       name="effective_date"
-      type="date"
+      id="effectiveDateInput"
+      type="text"            
       class="form-control"
       required
-      min="<?= $today ?>"
       value="<?= $isEdit ? esc($cost['effective_date']) : '' ?>">
   </div>
 
@@ -56,7 +55,7 @@
            id="isActive"
            class="form-check-input"
            <?= !$isEdit ? 'checked' : '' ?>
-        <?= $isEdit && $cost['is_active'] ? 'checked' : '' ?>>
+           <?= $isEdit && $cost['is_active'] ? 'checked' : '' ?>>
     <label class="form-check-label" for="isActive">Active</label>
   </div>
 
@@ -65,24 +64,81 @@
     <a href="<?= site_url('admin/meal-costs')?>" class="btn btn-outline-secondary">Cancel</a>
   </div>
 </form>
+<?= $this->endSection() ?>
 
+<?= $this->section('scripts') ?>
+<!-- JS: flatpickr + AJAX logic -->
 <script>
-// auto‐calculate final price
-document.addEventListener('DOMContentLoaded', function(){
-  const base = document.getElementById('basePrice');
-  const pct  = document.getElementById('subsidyPct');
-  const out  = document.getElementById('finalPrice');
+(function () {
+  // REQUIREMENT: flatpickr library must be loaded globally.
+  // If not already included in your layout, add the scripts/styles there.
 
-  function calc(){
-    const b = parseFloat(base.value) || 0;
-    const p = parseFloat(pct.value)  || 0;
-    out.value = (b * (1 - p/100)).toFixed(2);
+  const $mealType  = document.getElementById('mealTypeSelect');
+  const $dateInput = document.getElementById('effectiveDateInput');
+
+  // helpers
+  const fmtYmd = d => {
+    const z = n => (n < 10 ? '0' + n : n);
+    return d.getFullYear() + '-' + z(d.getMonth() + 1) + '-' + z(d.getDate());
+  };
+  const addDays = (date, n) => {
+    const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    d.setDate(d.getDate() + n);
+    return d;
+  };
+
+  const today = new Date(); today.setHours(0,0,0,0);
+
+  // init flatpickr
+  let fp = null;
+  if (window.flatpickr) {
+    fp = flatpickr($dateInput, {
+      dateFormat: 'Y-m-d',
+      // temporary minDate; will be updated after AJAX
+      minDate: fmtYmd(today),
+      // keep current value if editing
+      defaultDate: '<?= $isEdit ? esc($cost['effective_date'] ?? '', 'attr') : '' ?>' || null,
+      disableMobile: true
+    });
+  } else {
+    // graceful fallback if flatpickr is not present
+    $dateInput.setAttribute('type', 'date');
+    $dateInput.setAttribute('min', fmtYmd(today));
   }
 
-  base.addEventListener('input', calc);
-  pct.addEventListener('input', calc);
-  calc();
-});
+  async function refreshMin() {
+    const mealTypeId = $mealType.value;
+    if (!mealTypeId) return;
+
+    try {
+      const url = '<?= site_url('admin/meal-costs/horizon') ?>/' + encodeURIComponent(mealTypeId);
+      const res = await fetch(url, { headers: { 'Accept': 'application/json' }});
+      const json = await res.json();
+
+      const horizon = parseInt(json.max_horizon_days ?? 0, 10);
+      // "Effective Date starts AFTER max_horizon_days":
+      // e.g., horizon=30  => next 30 days disabled, earliest is day 31.
+      const minDate = addDays(today, (isNaN(horizon) ? 0 : horizon) + 1);
+
+      if (fp) {
+        fp.set('minDate', fmtYmd(minDate));
+      } else {
+        $dateInput.setAttribute('min', fmtYmd(minDate));
+      }
+    } catch (e) {
+      // fallback to today if endpoint fails
+      if (fp) fp.set('minDate', fmtYmd(addDays(today, 1)));
+      else $dateInput.setAttribute('min', fmtYmd(addDays(today, 1)));
+      console.warn('Failed to load horizon:', e);
+    }
+  }
+
+  // when meal type changes → fetch horizon & update minDate
+  $mealType.addEventListener('change', refreshMin);
+
+  // run once on load (for the initially selected meal type)
+  refreshMin();
+})();
 </script>
 
 <?= $this->endSection() ?>

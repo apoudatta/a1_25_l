@@ -19,9 +19,9 @@ class MealCards extends BaseController
     {
         // Build once, no server paging
         $builder = $this->cards->builder()
-            ->select('meal_card.*, users.name AS user_name, users.email AS user_email')
-            ->join('users', 'users.id = meal_card.user_id', 'left')
-            ->orderBy('meal_card.id', 'DESC');
+            ->select('meal_cards.*, users.name AS user_name, users.email AS user_email')
+            ->join('users', 'users.id = meal_cards.user_id', 'left')
+            ->orderBy('meal_cards.id', 'DESC');
 
         $rows = $builder->get()->getResultArray();
 

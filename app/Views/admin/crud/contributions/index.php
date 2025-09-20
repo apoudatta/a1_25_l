@@ -1,70 +1,79 @@
 <?= $this->extend('layouts/admin') ?>
 <?= $this->section('content') ?>
+<?= view('partials/flash_message') ?>
 
-<div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
-  <h2 class="mb-0">Contribution Rules</h2>
 
-  <?php if (can('admin.contributions.new')): ?>
-  <a href="<?= site_url('admin/contributions/new') ?>" class="btn btn-primary">
-    <i class="bi bi-plus-lg"></i> New Rule
-  </a>
-  <?php endif; ?>
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h4 class="mb-0">Contributions</h4>
+  <a href="<?= site_url('admin/contributions/new') ?>" class="btn btn-primary btn-sm">New</a>
 </div>
 
 
-<table id="dtContrib" class="table table-sm table-striped table-hover align-middle" style="width:100%">
-  <thead class="table-light">
-    <tr>
-      <th>ID</th>
-      <th>Meal Type</th>
-      <th>User Type</th>
-      <th>Base Price</th>
-      <th>Company %</th>
-      <th>User %</th>
-      <th>Company TK</th>
-      <th>User TK</th>
-      <th>Effective Date</th>
-      <th style="width:140px">Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    <?php foreach ($rows as $r): ?>
-      <tr>
-        <td><?= (int)$r['id'] ?></td>
-        <td><?= esc($r['meal_type']) ?></td>
-        <td><?= esc($r['user_type']) ?></td>
-        <td><?= number_format((float)$r['base_price'], 2) ?></td>
-        <td><?= number_format((float)$r['company_contribution'], 2) ?>%</td>
-        <td><?= number_format((float)$r['user_contribution'], 2) ?>%</td>
-        <td><?= number_format((float)$r['company_tk'], 2) ?></td>
-        <td><?= number_format((float)$r['user_tk'], 2) ?></td>
-        <td><?= esc(date('d M Y', strtotime($r['effective_date']))) ?></td>
-        <td>
-          <?php if (can('admin.contributions.edit')): ?>
-            <a href="<?= site_url("admin/contributions/{$r['id']}/edit") ?>" class="btn btn-sm btn-secondary me-1">Edit</a>
-          <?php endif; ?>
-
-          <form action="<?= site_url("admin/contributions/{$r['id']}") ?>" method="post" class="d-inline" onsubmit="return confirm('Delete this rule?')">
-            <?= csrf_field() ?>
-            <input type="hidden" name="_method" value="DELETE">
-            <button class="btn btn-sm btn-danger">Delete</button>
-          </form>
-        </td>
+<div class="table-responsive">
+  <table id="dtContrib" class="table table-striped align-middle">
+    <thead>
+      <tr class="table-danger">
+        <th style="width:80px;">ID</th>
+        <th>Meal Type</th>
+        <th>User Type</th>
+        <th>Cafeteria</th>
+        <th class="text-end">Base Price</th>
+        <th class="text-end">Company Tk</th>
+        <th class="text-end">User Tk</th>
+        <th style="width:140px;">Active?</th>
+        <!-- <th style="width:220px;">Actions</th> -->
       </tr>
-    <?php endforeach; ?>
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+
+      <?php foreach ($rows as $r): ?>
+        <tr data-id="<?= (int) $r['id'] ?>">
+          <td><?= esc($r['id']) ?></td>
+          <td><?= esc($r['meal_type_name'] ?? (new \App\Models\MealTypeModel())->find($r['meal_type_id'])['name'] ?? 'Unknown') ?></td>
+          <td><?= esc($r['emp_type_name'] ?? 'ALL') ?></td>
+          <td><?= esc($r['cafeteria_name'] ?? 'All Cafeterias') ?></td>
+          <td class="text-end"><?= number_format((float)$r['base_price'], 2) ?></td>
+          <td class="text-end"><?= number_format((float)$r['company_tk'], 2) ?></td>
+          <td class="text-end"><?= number_format((float)$r['user_tk'], 2) ?></td>
+          <td>
+            <!-- Toggle button (works with JS or plain POST) -->
+            <form action="<?= site_url('admin/contributions/'.$r['id'].'/toggle') ?>" method="post" class="d-inline js-toggle-form">
+              <?= csrf_field() ?>
+              <button type="submit"
+                class="btn btn-sm <?= $r['is_active'] ? 'btn-success' : 'btn-outline-secondary' ?> js-toggle-btn">
+                <?= $r['is_active'] ? 'Active' : 'Inactive' ?>
+              </button>
+            </form>
+          </td>
+          <!-- <td>
+            <a href="<?= site_url('admin/contributions/'.$r['id'].'/edit') ?>" class="btn btn-sm btn-secondary">Edit</a>
+            <form action="<?= site_url('admin/contributions/'.$r['id']) ?>" method="post" class="d-inline">
+              <?= csrf_field() ?>
+              <input type="hidden" name="_method" value="DELETE">
+              <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this contribution?')">Delete</button>
+            </form>
+          </td> -->
+        </tr>
+      <?php endforeach; ?>
+    </tbody>
+  </table>
+</div>
+
+<?= $pager->links('group1', 'bootstrap_pagination') ?>
 
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
 <script>
   $(function () {
+    // Only run if DataTables is available
+    if (!$.fn.DataTable) return;
+
     const dt = $('#dtContrib').DataTable({
       pageLength: 25,
       lengthMenu: [[10,25,50,100,-1],[10,25,50,100,"All"]],
       order: [[0, 'desc']], // ID desc
-      // Header layout: left = length dropdown, right = search box
+      // keep your header layout; we’ll manually move the button next to the search above
       dom: '<"row mb-2"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>' +
            't' +
            '<"row mt-2"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
@@ -75,14 +84,15 @@
         titleAttr: 'Download as Excel',
         title: 'Contribution Rules',
         filename: 'contribution_rules',
-        exportOptions: { columns: [0,1,2,3,4,5,6,7,8] } // exclude Actions
+        // 9 columns total (0..8); exclude Actions (index 8)
+        exportOptions: { columns: [0,1,2,3,4,5,6,7] }
       }]
     });
 
-    // Move the Excel button next to the search input (right side)
-    const $filter = $('#dtContrib_wrapper .dataTables_filter');
-    dt.buttons().container().appendTo($filter).addClass('ms-2');
-    $filter.addClass('d-flex align-items-center justify-content-end gap-2');
+    // Put the Excel button next to the server-side search bar you already have
+    const $filterRowRight = $('.input-group').parent(); // right column holding your "Search" button
+    dt.buttons().container().appendTo($filterRowRight).addClass('ms-2');
   });
 </script>
 <?= $this->endSection() ?>
+

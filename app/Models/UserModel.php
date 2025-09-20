@@ -6,15 +6,29 @@ use CodeIgniter\Model;
 
 class UserModel extends Model
 {
-    protected $table      = 'users';
-    protected $primaryKey = 'id';
+    protected $table            = 'users';
+    protected $primaryKey       = 'id';
+    protected $useAutoIncrement = true;
 
-    protected $useTimestamps = true;
-    protected $createdField  = 'created_at';
-    protected $updatedField  = 'updated_at';
+    protected $returnType    = 'array';
+    protected $protectFields = true;
+
+    // ENUMS
+    public const USER_EMPLOYEE = 'EMPLOYEE';
+    public const USER_VENDOR   = 'VENDOR';
+    public const USER_ADMIN    = 'ADMIN';
+
+    public const LOGIN_SSO   = 'SSO';
+    public const LOGIN_LOCAL = 'LOCAL';
+
+    public const LOCAL_SYSTEM = 'SYSTEM';
+    public const LOCAL_VENDOR = 'VENDOR';
+    public const LOCAL_ADFS   = 'ADFS';
+
+    public const STATUS_ACTIVE   = 'ACTIVE';
+    public const STATUS_INACTIVE = 'INACTIVE';
 
     protected $allowedFields = [
-        'azure_id',
         'employee_id',
         'name',
         'email',
@@ -24,41 +38,34 @@ class UserModel extends Model
         'division',
         'user_type',
         'login_method',
+        'local_user_type',
+        'password',
         'status',
         'line_manager_id',
-        'password',
+        'password_hash',
+        'created_at',
+        'updated_at',
     ];
 
-    /**
-     * Compare relevant columns to decide if an update is needed.
-     */
-    public function needsUpdate(array $lms, array $mapped): bool
-    {
-        $keys = [
-            'employee_id','azure_id','name','phone',
-            'department','designation','division',
-            'user_type','login_method','local_user_type','status'
-        ];
-        foreach ($keys as $k) {
-            $a = (string) ($lms[$k]    ?? '');
-            $b = (string) ($mapped[$k] ?? '');
-            if ($a !== $b) return true;
-        }
-        return false;
-    }
+    // TIMESTAMP columns exist in table
+    protected $useTimestamps = true;
+    protected $createdField  = 'created_at';
+    protected $updatedField  = 'updated_at';
 
-
-    public function getRolesFor(int $userId): array
-    {
-        $rows = $this->db
-            ->table('user_roles as ur')
-            ->select('r.name')
-            ->join('roles as r', 'r.id = ur.role_id')
-            ->where('ur.user_id', $userId)
-            ->get()
-            ->getResultArray();
-
-        // Extract just the names:
-        return array_column($rows, 'name');
-    }
+    protected $validationRules = [
+        'employee_id'    => 'permit_empty|string|max_length[20]',
+        'name'           => 'permit_empty|string|max_length[100]',
+        'email'          => 'required|valid_email|max_length[150]|is_unique[users.email,id,{id}]',
+        'phone'          => 'permit_empty|string|max_length[20]',
+        'department'     => 'permit_empty|string|max_length[100]',
+        'designation'    => 'permit_empty|string|max_length[100]',
+        'division'       => 'permit_empty|string|max_length[100]',
+        'user_type'      => 'permit_empty|in_list[EMPLOYEE,VENDOR,ADMIN]',
+        'login_method'   => 'permit_empty|in_list[SSO,LOCAL]',
+        'local_user_type'=> 'required|in_list[SYSTEM,VENDOR,ADFS]',
+        'password'       => 'permit_empty|string|max_length[25]',
+        'status'         => 'permit_empty|in_list[ACTIVE,INACTIVE]',
+        'line_manager_id'=> 'permit_empty|integer',
+        'password_hash'  => 'permit_empty|string|max_length[255]',
+    ];
 }

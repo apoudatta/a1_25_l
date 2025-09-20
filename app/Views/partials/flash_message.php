@@ -1,31 +1,40 @@
+<?php
+// app/Views/partials/flash_message.php
 
-<!-- then, after SweetAlert2’s JS include, add: -->
-<?php if ($msg = session()->getFlashdata('success')): ?>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      Swal.fire({
-        toast: true,                 // make it a toast
-        position: 'top-end',
-        icon: 'success',
-        title: <?= json_encode($msg) ?>, // safely inject your PHP string
-        showConfirmButton: false,
-        timer: 8000,
-        timerProgressBar: true
-      });
-    });
-  </script>
-<?php endif; ?>
+$success = session()->getFlashdata('success');
+$error   = session()->getFlashdata('error');
 
+if ($success || $error): ?>
+<script>
+(function () {
+  const successMsg = <?= json_encode($success) ?>;
+  const errorMsg   = <?= json_encode($error) ?>;
 
-<?php if ($err = session()->getFlashdata('error')): ?>
-  <script>
+  function fireToast(icon, title, timer) {
+    if (!window.Swal) {              // SweetAlert2 not ready yet → try again shortly
+      return setTimeout(() => fireToast(icon, title, timer), 50);
+    }
     Swal.fire({
       toast: true,
       position: 'top-end',
-      icon: 'error',
-      title: <?= json_encode($err) ?>,
+      icon: icon,
+      title: title,
       showConfirmButton: false,
-      timer: 10000
+      timer: timer,
+      timerProgressBar: true
     });
-  </script>
+  }
+
+  function onReady() {
+    if (successMsg) fireToast('success', successMsg, 8000);
+    if (errorMsg)   fireToast('error',   errorMsg,   10000);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', onReady);
+  } else {
+    onReady();
+  }
+})();
+</script>
 <?php endif; ?>
