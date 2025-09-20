@@ -55,16 +55,16 @@ $routes->group('admin', ['filter' => ['auth']], static function($routes) {
     $routes->post('subscription/unsubscribe_bulk',    'Admin\Subscription::unsubscribe_bulk', ['filter' => 'perm:admin.subscriptions.unsubscribe_bulk']);
 
     // Ramadan - Iftar
-    $routes->get('ifter-subscription',                    'Admin\IfterSubscription::history',             ['filter' => 'perm:admin.ramadan.ifter-subscription.history']);
-    $routes->get('ifter-subscription/all-ifter-list',     'Admin\IfterSubscription::allIfterList',        ['filter' => 'perm:admin.ramadan.ifter-subscription.all-ifter-list']);
+    $routes->get('ifter-subscription',                    'Admin\IfterSubscription::index/me',             ['filter' => 'perm:admin.ramadan.ifter-subscription.history']);
+    $routes->get('ifter-subscription/all-ifter-list',     'Admin\IfterSubscription::index/all',        ['filter' => 'perm:admin.ramadan.ifter-subscription.all-ifter-list']);
     $routes->get('ifter-subscription/new',                'Admin\IfterSubscription::new',                 ['filter' => 'perm:admin.ramadan.ifter-subscription.new']);
     $routes->post('ifter-subscription/store',             'Admin\IfterSubscription::store',               ['filter' => 'perm:admin.ifter-subscription.store']);
     $routes->post('ifter-subscription/unsubscribe/(:num)','Admin\IfterSubscription::unsubscribeSingle/$1',['filter' => 'perm:admin.ifter-subscription.unsubscribe']);
     $routes->post('ifter-subscription/unsubscribe_bulk',  'Admin\IfterSubscription::unsubscribe_bulk',    ['filter' => 'perm:admin.ifter-subscription.unsubscribe_bulk']);
 
     // Ramadan - Sehri
-    $routes->get('sehri-subscription',                 'Admin\SehriSubscription::history',       ['filter' => 'perm:admin.ramadan.sehri-subscription.history']);
-    $routes->get('sehri-subscription/all-sehri-list',  'Admin\SehriSubscription::allSehriList',  ['filter' => 'perm:admin.ramadan.sehri-subscription.all-sehri-list']);
+    $routes->get('sehri-subscription',                 'Admin\SehriSubscription::browse/me',       ['filter' => 'perm:admin.ramadan.sehri-subscription.history']);
+    $routes->get('sehri-subscription/all-sehri-list',  'Admin\SehriSubscription::browse/all',  ['filter' => 'perm:admin.ramadan.sehri-subscription.all-sehri-list']);
     $routes->get('sehri-subscription/new',             'Admin\SehriSubscription::new',           ['filter' => 'perm:admin.ramadan.sehri-subscription.new']);
     $routes->post('sehri-subscription/store',                  'Admin\SehriSubscription::store',         ['filter' => 'perm:admin.sehri-subscription.store']);
     $routes->post('sehri-subscription/unsubscribe/(:num)',     'Admin\SehriSubscription::unsubscribeSingle/$1', ['filter' => 'perm:admin.sehri-subscription.unsubscribe']);
@@ -88,13 +88,13 @@ $routes->group('admin', ['filter' => ['auth']], static function($routes) {
 
     // Guest Bulk upload
     $routes->get('guest-subscriptions/bulk-upload',            'Admin\GuestSubscription::uploadForm',    ['filter' => 'perm:admin.guest-subscriptions.bulk-upload']);
-    $routes->post('guest-subscriptions/process-upload',        'Admin\GuestSubscription::processUpload', ['filter' => 'perm:admin.guest-subscriptions.process-upload']);
+    $routes->post('guest-subscriptions/process-upload',        'Admin\GuestSubscription::processUpload');
     $routes->get('guest-subscriptions/bulk-list',              'Admin\GuestSubscription::index/bulk',  ['filter' => 'perm:admin.guest-subscriptions.bulk-list']);
 
     // Intern Requisitions (bulk)
     $routes->get('intern-requisitions',                        'Admin\InternRequisition::index',         ['filter' => 'perm:admin.intern-requisitions.index']);
     $routes->get('intern-requisitions/new',                    'Admin\InternRequisition::new',           ['filter' => 'perm:admin.intern-requisitions.new']);
-    $routes->post('intern-requisitions/process-upload',        'Admin\InternRequisition::processUpload', ['filter' => 'perm:admin.intern-requisitions.process-upload']);
+    $routes->post('intern-requisitions/process-upload',        'Admin\InternRequisition::processUpload');
     $routes->post('intern-subscriptions/unsubscribe/(:num)',   'Admin\InternRequisition::unsubscribeSingle/$1', ['filter' => 'perm:admin.intern-subscriptions.unsubscribe_single']);
     $routes->get('intern-subscriptions/cutoffinfo/(:num)',     'Admin\InternRequisition::getCutOffInfo/$1');
     // $routes->get('intern-requisitions/template',               'Admin\InternRequisition::downloadTemplate', ['filter' => 'perm:admin.intern-requisitions.template']);

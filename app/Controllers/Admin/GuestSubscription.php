@@ -467,7 +467,6 @@ class GuestSubscription extends BaseController
         $rows = [];
         foreach ($ids as $sid) {
             $rows[] = [
-                'id'              => $this->nextRemarkId(),
                 'subs_id'         => (int)$sid,
                 'remark'          => $remark,
                 'approver_remark' => '',
@@ -741,10 +740,4 @@ class GuestSubscription extends BaseController
         return $row ? (float)$row['user_tk'] : null;
     }
 
-    private function nextRemarkId(): int
-    {
-        // support remarks.id when it's not AUTO_INCREMENT
-        $row = $this->db->table('remarks')->selectMax('id','max_id')->get()->getFirstRow('array');
-        return (int)($row['max_id'] ?? 0) + 1;
-    }
 }
