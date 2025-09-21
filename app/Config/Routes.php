@@ -55,8 +55,8 @@ $routes->group('admin', ['filter' => ['auth']], static function($routes) {
     $routes->post('subscription/unsubscribe_bulk',    'Admin\Subscription::unsubscribe_bulk', ['filter' => 'perm:admin.subscriptions.unsubscribe_bulk']);
 
     // Ramadan - Iftar
-    $routes->get('ifter-subscription',                    'Admin\IfterSubscription::index/me',             ['filter' => 'perm:admin.ramadan.ifter-subscription.history']);
-    $routes->get('ifter-subscription/all-ifter-list',     'Admin\IfterSubscription::index/all',        ['filter' => 'perm:admin.ramadan.ifter-subscription.all-ifter-list']);
+    $routes->get('ifter-subscription',                    'Admin\IfterSubscription::index/me',            ['filter' => 'perm:admin.ramadan.ifter-subscription.history']);
+    $routes->get('ifter-subscription/all-ifter-list',     'Admin\IfterSubscription::index/all',           ['filter' => 'perm:admin.ramadan.ifter-subscription.all-ifter-list']);
     $routes->get('ifter-subscription/new',                'Admin\IfterSubscription::new',                 ['filter' => 'perm:admin.ramadan.ifter-subscription.new']);
     $routes->post('ifter-subscription/store',             'Admin\IfterSubscription::store');
     $routes->post('ifter-subscription/unsubscribe/(:num)','Admin\IfterSubscription::unsubscribeSingle/$1',['filter' => 'perm:admin.ifter-subscription.unsubscribe']);
@@ -92,13 +92,12 @@ $routes->group('admin', ['filter' => ['auth']], static function($routes) {
     $routes->get('guest-subscriptions/bulk-list',              'Admin\GuestSubscription::index/bulk',  ['filter' => 'perm:admin.guest-subscriptions.bulk-list']);
 
     // Intern Requisitions (bulk)
-    $routes->get('intern-requisitions',                        'Admin\InternRequisition::index',         ['filter' => 'perm:admin.intern-requisitions.index']);
-    $routes->get('intern-requisitions/new',                    'Admin\InternRequisition::new',           ['filter' => 'perm:admin.intern-requisitions.new']);
-    $routes->post('intern-requisitions/process-upload',        'Admin\InternRequisition::processUpload');
-    $routes->post('intern-subscriptions/unsubscribe/(:num)',   'Admin\InternRequisition::unsubscribeSingle/$1', ['filter' => 'perm:admin.intern-subscriptions.unsubscribe_single']);
-    $routes->get('intern-subscriptions/cutoffinfo/(:num)',     'Admin\InternRequisition::getCutOffInfo/$1');
-    // $routes->get('intern-requisitions/template',               'Admin\InternRequisition::downloadTemplate', ['filter' => 'perm:admin.intern-requisitions.template']);
-    $routes->post('intern-subscription/unsubscribe_bulk',      'Admin\InternRequisition::unsubscribe_bulk', ['filter' => 'perm:admin.intern-subscriptions.unsubscribe_bulk']);
+    $routes->get('intern-subscriptions',                        'Admin\InternSubscription::index',         ['filter' => 'perm:admin.intern-requisitions.index']);
+    $routes->get('intern-subscriptions/new',                    'Admin\InternSubscription::new',           ['filter' => 'perm:admin.intern-requisitions.new']);
+    $routes->post('intern-subscriptions/process-upload',        'Admin\InternSubscription::processUpload');
+    $routes->post('intern-subscriptions/unsubscribe/(:num)',   'Admin\InternSubscription::unsubscribeSingle/$1', ['filter' => 'perm:admin.intern-subscriptions.unsubscribe_single']);
+    $routes->get('intern-subscriptions/cutoffinfo/(:num)',     'Admin\InternSubscription::getCutOffInfo/$1');
+    $routes->post('intern-subscriptions/unsubscribe_bulk',      'Admin\InternSubscription::unsubscribe_bulk', ['filter' => 'perm:admin.intern-subscriptions.unsubscribe_bulk']);
 
     // Cafeteria CRUD
     $routes->get(   'cafeterias',               'Admin\crud\Cafeterias::index',    ['filter' => 'perm:admin.cafeterias.index']);
@@ -204,10 +203,10 @@ $routes->group('admin', ['filter' => ['auth']], static function($routes) {
     // Approval Queue
     $routes->group('approvals', ['filter' => 'perm:admin.approvals'], static function($routes) {
         $routes->get('',                           'Admin\MealApprovals::index');
-        $routes->post('bulk-approve',              'Admin\MealApprovals::bulkApprove');
-        $routes->post('bulk-reject',               'Admin\MealApprovals::bulkReject');
-        $routes->post('approve/(:segment)/(:num)', 'Admin\MealApprovals::approveSingle/$1/$2');
-        $routes->post('reject/(:segment)/(:num)',  'Admin\MealApprovals::rejectSingle/$1/$2');
+        $routes->post('bulk-approve',              'Admin\MealApprovals::bulkAct/approve');
+        $routes->post('bulk-reject',               'Admin\MealApprovals::bulkAct/reject');
+        $routes->post('approve/(:num)', 'Admin\MealApprovals::act/approve/$1');
+        $routes->post('reject/(:num)',  'Admin\MealApprovals::act/reject/$1');
 
     });
 

@@ -4,36 +4,22 @@ declare(strict_types=1);
 namespace App\Controllers\Admin;
 
 use App\Controllers\BaseController;
-use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
-use Psr\Log\LoggerInterface;
 
 class ReportController extends BaseController
 {
     /** Fetch dropdown data once */
-    private const EMP_TYPES = [1];
-    private const GUEST_TYPES = [8,9,10];
-    private const INTERN_TYPES = [2,3,4,5,6];
-    protected \CodeIgniter\Database\BaseConnection $db;
-
-    public function initController(
-        RequestInterface $request,
-        ResponseInterface $response,
-        LoggerInterface $logger
-    ): void {
-        parent::initController($request, $response, $logger);
-        $this->db = \Config\Database::connect(); // or db_connect();
-    }
-
     protected function getLookups(): array
     {
-        $mealTypes = $this->db->table('meal_types')
+        $db = db_connect();
+
+        $mealTypes = $db->table('meal_types')
             ->select('id, name')
             ->where('is_active', 1)
             ->orderBy('name', 'ASC')
             ->get()->getResultArray();
 
-        $cafeterias = $this->db->table('cafeterias')
+        $cafeterias = $db->table('cafeterias')
             ->select('id, name')
             ->where('is_active', 1)
             ->orderBy('name', 'ASC')
@@ -43,15 +29,6 @@ class ReportController extends BaseController
             'mealTypes'  => $mealTypes,
             'cafeterias' => $cafeterias,
         ];
-    }
-
-    protected function getEmploymentTypes() {
-        return $this->db->table('employment_types')
-        ->select('id, name')
-        ->where('is_active', 1)
-        ->orderBy('name', 'ASC')
-        ->get()
-        ->getResultArray();
     }
 
     /** Default landing – redirect to first report */
@@ -66,10 +43,87 @@ class ReportController extends BaseController
         $month = (int) ($this->request->getGet('month') ?? date('n'));   // 1..12
         $year  = (int) ($this->request->getGet('year')  ?? date('Y'));
         $empId = trim((string) $this->request->getGet('employee_id'));
+        $type  = trim((string) $this->request->getGet('type')); // EMPLOYEE / INTERN / GUEST / etc.
 
-        // Selected type from UI (value = employment_types.id)
-        $typeRaw = (string) ($this->request->getGet('type') ?? '');
-        $typeId  = ctype_digit($typeRaw) ? (int) $typeRaw : 0;
+        // First & last date of the selected month
+        $start = sprintf('%04d-%02d-01', $year, $month);
+        $end   = (new \DateTimeImmutable($start))->modify('last day of this month')->format('Y-m-d');
+
+        $db = db_connect();
+
+        // NOTE:
+        // - We count chargeable days from meal_subscription_details (exclude CANCELLED/PENDING)
+        // - We sum per-day user_tk from meal_contributions chosen by effective_date <= subscription_date
+        //   (so if contribution changes mid-month, it’s still exact).
+        $sql = "
+            SELECT
+                u.employee_id                           AS emp_id,
+                COALESCE(u.name,'')                     AS emp_name,
+                COALESCE(u.designation,'')              AS designation,
+                COALESCE(u.division, u.department, '')  AS division,
+                u.department                            AS job_location,
+                DATE_FORMAT(?, '%M''%Y')                AS month_year,   -- << fixed
+                COUNT(msd.id)                           AS day_count,
+                ROUND(SUM(COALESCE(mc.user_tk,0)),2)    AS meal_charge
+            FROM meal_subscription_details msd
+            JOIN meal_subscriptions ms ON ms.id = msd.subscription_id
+            JOIN users u               ON u.id  = msd.user_id
+            LEFT JOIN meal_contributions mc
+                ON mc.meal_type_id  = msd.meal_type_id
+                AND (mc.cafeteria_id IS NULL OR mc.cafeteria_id = msd.cafeteria_id)
+                AND mc.user_type     = ms.subscription_type
+                AND mc.effective_date = (
+                        SELECT MAX(m2.effective_date)
+                        FROM meal_contributions m2
+                        WHERE m2.meal_type_id  = msd.meal_type_id
+                        AND (m2.cafeteria_id IS NULL OR m2.cafeteria_id = msd.cafeteria_id)
+                        AND m2.user_type     = ms.subscription_type
+                        AND m2.effective_date <= msd.subscription_date
+                )
+            WHERE msd.subscription_date BETWEEN ? AND ?
+            AND msd.status IN ('ACTIVE','REDEEMED','NO_SHOW')
+        ";
+
+        $binds = [$start, $start, $end];
+
+        if ($empId !== '') {
+            $sql   .= " AND u.employee_id = ? ";
+            $binds[] = $empId;
+        }
+        if ($type !== '') {
+            $sql   .= " AND ms.subscription_type = ? ";
+            $binds[] = $type;
+        }
+
+        $sql .= "
+            GROUP BY u.id, u.employee_id, u.name, u.designation, u.division, u.department, ms.subscription_type
+            ORDER BY u.employee_id
+        ";
+
+        $rows = $db->query($sql, $binds)->getResultArray();
+
+        // Lookups for possible future dropdowns (meal types, cafeterias) not needed here
+        $payload = [
+            'title'   => "Meal Charge list for payroll",
+            'filters' => [
+                'month'       => $month,
+                'year'        => $year,
+                'employee_id' => $empId,
+                'type'        => $type,
+            ],
+            'rows'    => $rows,
+        ];
+
+        return $this->response->setBody(view('admin/report/meal_charge_list_for_payroll', $payload));
+    }
+
+
+    /** 2) Meal Report for billing (e.g., vendor/cafeteria billing) */
+    public function mealReportForBilling(): \CodeIgniter\HTTP\ResponseInterface
+    {
+        $month = (int) ($this->request->getGet('month') ?? date('n'));   // 1..12
+        $year  = (int) ($this->request->getGet('year')  ?? date('Y'));
+        $type  = trim((string) $this->request->getGet('type')); // EMPLOYEE/INTERN/GUEST/OS/Security Guard/Support Staff
 
         $start = sprintf('%04d-%02d-01', $year, $month);
         $end   = (new \DateTimeImmutable($start))->modify('last day of this month')->format('Y-m-d');
@@ -77,77 +131,139 @@ class ReportController extends BaseController
 
         $db = db_connect();
 
-        // Main query
-        $b  = $db->table('meal_subscriptions ms')
-            ->select("
-                u.employee_id                           AS emp_id,
-                COALESCE(u.name,'')                     AS emp_name,
-                COALESCE(u.designation,'')              AS designation,
-                COALESCE(u.division, '')                AS division,
-                u.department                            AS job_location,
-                COUNT(ms.id)                            AS day_count,
-                ROUND(SUM(COALESCE(ms.price,0)),2)      AS meal_charge
-            ", false)
-            ->join('users u', 'u.id = ms.user_id', 'left')
-            ->where('ms.subs_date >=', $start)
-            ->where('ms.subs_date <=', $end)
-            ->whereIn('ms.status', ['ACTIVE','REDEEMED'])
-            ->groupBy('u.id')
-            ->orderBy('u.employee_id', 'ASC');
+        $employeeTypes = ['EMPLOYEE', 'OS', 'Security Guard', 'Support Staff'];
+        $wantEmp    = ($type === '' || in_array($type, $employeeTypes, true));
+        $wantIntern = ($type === '' || $type === 'INTERN');
+        $wantGuest  = ($type === '' || $type === 'GUEST');
 
-        if ($empId !== '') {
-            $b->where('u.employee_id', $empId);
-        }
-        if ($typeId > 0) {
-            // assumes ms.emp_type_id references employment_types.id
-            $b->where('ms.emp_type_id', $typeId);
+        /* ----------------- EMPLOYEE LIST (meal_subscription_details) ----------------- */
+        $empRows = [];
+        if ($wantEmp) {
+            $sql = "
+                SELECT
+                    u.employee_id  AS emp_id,
+                    u.name         AS emp_name,
+                    u.designation  AS designation,
+                    u.division     AS division,
+                    u.phone        AS mobile,
+                    COUNT(msd.id)                           AS day_count,
+                    ROUND(SUM(COALESCE(mc.user_tk,0) + COALESCE(mc.company_tk,0)),2) AS full_meal_cost
+                FROM meal_subscription_details msd
+                JOIN meal_subscriptions ms  ON ms.id  = msd.subscription_id
+                JOIN users u                ON u.id   = msd.user_id
+                LEFT JOIN meal_contributions mc
+                    ON mc.meal_type_id  = msd.meal_type_id
+                    AND (mc.cafeteria_id IS NULL OR mc.cafeteria_id = msd.cafeteria_id)
+                    AND mc.user_type     = ms.subscription_type
+                    AND mc.effective_date = (
+                            SELECT MAX(m2.effective_date)
+                            FROM meal_contributions m2
+                            WHERE m2.meal_type_id  = msd.meal_type_id
+                            AND (m2.cafeteria_id IS NULL OR m2.cafeteria_id = msd.cafeteria_id)
+                            AND m2.user_type     = ms.subscription_type
+                            AND m2.effective_date <= msd.subscription_date
+                    )
+                WHERE msd.subscription_date BETWEEN ? AND ?
+                AND msd.status IN ('ACTIVE','REDEEMED')   -- was: = 'REDEEMED'
+
+            ";
+            $binds = [$start, $end];
+
+            if ($type !== '' && in_array($type, $employeeTypes, true)) {
+                $sql   .= " AND ms.subscription_type = ? ";
+                $binds[] = $type;
+            }
+
+            $sql .= "
+                GROUP BY u.id, u.employee_id, u.name, u.designation, u.division, u.department, u.phone
+                ORDER BY u.employee_id
+            ";
+
+            $empRows = $db->query($sql, $binds)->getResultArray();
+            foreach ($empRows as &$r) { $r['month_year'] = $monthYearLabel; }
+            unset($r);
         }
 
-        $rows = $b->get()->getResultArray();
-
-        foreach ($rows as &$r) {
-            $r['month_year'] = $monthYearLabel; // add month label
+        /* ----------------- INTERN LIST (intern_subscriptions) ----------------- */
+        // Per requirement: no Designation/Division columns for Intern
+        $internRows = [];
+        if ($wantIntern) {
+            $sql = "
+                SELECT
+                    isub.user_reference_id AS intern_id,
+                    COALESCE(isub.intern_name,'') AS intern_name,
+                    COUNT(isub.id) AS day_count,
+                    ROUND(SUM(COALESCE(mc.user_tk,0) + COALESCE(mc.company_tk,0)),2) AS full_meal_cost
+                FROM intern_subscriptions isub
+                LEFT JOIN meal_contributions mc
+                    ON mc.meal_type_id  = isub.meal_type_id
+                    AND (mc.cafeteria_id IS NULL OR mc.cafeteria_id = isub.cafeteria_id)
+                    AND mc.user_type     = 'INTERN'
+                    AND mc.effective_date = (
+                            SELECT MAX(m2.effective_date)
+                            FROM meal_contributions m2
+                            WHERE m2.meal_type_id  = isub.meal_type_id
+                            AND (m2.cafeteria_id IS NULL OR m2.cafeteria_id = isub.cafeteria_id)
+                            AND m2.user_type     = 'INTERN'
+                            AND m2.effective_date <= isub.subscription_date
+                    )
+                WHERE isub.subscription_date BETWEEN ? AND ?
+                AND isub.status IN ('ACTIVE','REDEEMED')
+                GROUP BY isub.user_reference_id, isub.intern_name
+                ORDER BY isub.user_reference_id
+            ";
+            $internRows = $db->query($sql, [$start, $end])->getResultArray();
+            foreach ($internRows as &$r) { $r['month_year'] = $monthYearLabel; }
+            unset($r);
         }
-        unset($r);
+
+        /* ----------------- GUEST LIST (guest_subscriptions + cafeterias + users) ----------------- */
+        $guestRows = [];
+        if ($wantGuest) {
+            $sql = "
+                SELECT
+                    gs.guest_name  AS guest_name,
+                    c.name         AS location,
+                    u.employee_id  AS requestor_emp_id,
+                    u.name         AS requestor_name,
+                    u.division     AS requestor_division,
+                    gs.guest_type     AS guest_type,
+                    COUNT(gs.id)   AS day_count,
+                    ROUND(SUM(COALESCE(mc.user_tk,0) + COALESCE(mc.company_tk,0)),2) AS full_meal_cost
+                FROM guest_subscriptions gs
+                LEFT JOIN cafeterias c ON c.id = gs.cafeteria_id
+                LEFT JOIN users u      ON u.id = gs.user_id  -- requestor
+                LEFT JOIN meal_contributions mc
+                    ON mc.meal_type_id  = gs.meal_type_id
+                    AND (mc.cafeteria_id IS NULL OR mc.cafeteria_id = gs.cafeteria_id)
+                    AND mc.user_type     = 'GUEST'
+                    AND mc.effective_date = (
+                            SELECT MAX(m2.effective_date)
+                            FROM meal_contributions m2
+                            WHERE m2.meal_type_id  = gs.meal_type_id
+                            AND (m2.cafeteria_id IS NULL OR m2.cafeteria_id = gs.cafeteria_id)
+                            AND m2.user_type     = 'GUEST'
+                            AND m2.effective_date <= gs.subscription_date
+                    )
+                WHERE gs.subscription_date BETWEEN ? AND ?
+                AND gs.status IN ('ACTIVE','REDEEMED')
+            ";
+            $binds = [$start, $end];
+
+            // If user selected Type=GUEST we still show; if selected an employee subtype, guest table will be empty anyway
+            $sql .= "
+                GROUP BY gs.guest_name, c.name, u.employee_id, u.name, u.division, u.department
+                ORDER BY gs.guest_name
+            ";
+
+            $guestRows = $db->query($sql, $binds)->getResultArray();
+            foreach ($guestRows as &$r) { $r['month_year'] = $monthYearLabel; }
+            unset($r);
+        }
 
         $payload = [
-            'title'   => "Meal Charge list for payroll",
+            'title'   => "Meal Report for billing",
             'filters' => [
-                'month'       => $month,
-                'year'        => $year,
-                'employee_id' => $empId,
-                'type'        => $typeRaw, // keep original (string) for the form
-            ],
-            'rows'             => $rows,
-            'employmentTypes'  => $this->getEmploymentTypes(),
-        ];
-
-        return $this->response->setBody(view('admin/report/meal_charge_list_for_payroll', $payload));
-    }
-
-    
-
-
-    /** 2) Meal Report for billing (e.g., vendor/cafeteria billing) */
-    public function mealReportForBilling(): \CodeIgniter\HTTP\ResponseInterface
-    {
-        $type  = trim((string) $this->request->getGet('type')); // kept for UI; not filtering here
-        
-        $month = (int) ($this->request->getGet('month') ?? date('n'));   // 1..12
-        $year  = (int) ($this->request->getGet('year')  ?? date('Y'));
-        $start = sprintf('%04d-%02d-01', $year, $month);
-        $end   = (new \DateTimeImmutable($start))->modify('last day of this month')->format('Y-m-d');
-        
-
-        
-        // Aggregate by employee for the month using single-table ms
-        $empRows = $this->mealReportQueryForBilling(self::EMP_TYPES, $start, $end);
-        $internRows = $this->mealReportQueryForBilling(self::INTERN_TYPES, $start, $end);
-        $guestRows = $this->mealReportQueryForBilling(self::GUEST_TYPES, $start, $end);
-
-        $payload = [
-            'title'      => "Meal Report for billing",
-            'filters'    => [
                 'month' => $month,
                 'year'  => $year,
                 'type'  => $type,
@@ -155,50 +271,10 @@ class ReportController extends BaseController
             'rowsEmp'    => $empRows,
             'rowsIntern' => $internRows,
             'rowsGuest'  => $guestRows,
-            'employmentTypes'  => $this->getEmploymentTypes(),
         ];
 
         return $this->response->setBody(view('admin/report/meal_report_for_billing', $payload));
     }
-
-    private function mealReportQueryForBilling($empTypeId, $start, $end){
-        $db = db_connect();
-        $monthYearLabel = date("F'Y", strtotime($start));
-        $rows = $db->table('meal_subscriptions ms')
-            ->select("
-                u.employee_id  AS emp_id,
-                u.name         AS emp_name,
-                u.designation  AS designation,
-                u.division     AS division,
-                u.department   AS department,
-                u.phone        AS phone,
-                c.name         AS caff_name,
-                et.name         AS emp_type_name,
-                mr.ref_id,
-                mr.ref_name,
-                COUNT(ms.id)   AS day_count,
-                ROUND(SUM(COALESCE(ms.price,0)),2) AS full_meal_cost
-            ", false)
-            ->join('users u',           'u.id = ms.user_id',       'left')
-            ->join('meal_reference mr', 'mr.subs_id = ms.id',      'left')
-            ->join('cafeterias c',      'c.id = ms.cafeteria_id',  'left')
-            ->join('employment_types et',      'et.id = ms.emp_type_id',  'left')
-            ->where('ms.subs_date >=', $start)
-            ->where('ms.subs_date <=', $end)
-            ->whereIn('ms.emp_type_id', $empTypeId)
-            ->whereIn('ms.status', ['ACTIVE','REDEEMED'])
-            ->groupBy('u.id')
-            ->orderBy('u.employee_id', 'ASC')
-            ->get()->getResultArray();
-
-        foreach ($rows as &$r) {
-            $r['month_year'] = $monthYearLabel;
-        }
-        unset($r);
-
-        return $rows;
-    }
-
 
 
     /** 3) Meal Detail Report (line items) */

@@ -82,8 +82,8 @@
   'collapseName' => 'intern',
   'perm' => 'admin.intern-requisitions',
   'subMenu' => [
-    ['label' => 'Bulk Subscription',    'path' => 'admin/intern-requisitions/new', 'icon' => 'bi bi-clock-history', 'perm' => 'admin.intern-requisitions.new'],
-    ['label' => 'Subscription List',   'path' => 'admin/intern-requisitions',  'icon' => 'bi bi-journal-plus', 'perm' => 'admin.intern-requisitions.index'],
+    ['label' => 'Bulk Subscription',    'path' => 'admin/intern-subscriptions/new', 'icon' => 'bi bi-clock-history', 'perm' => 'admin.intern-requisitions.new'],
+    ['label' => 'Subscription List',   'path' => 'admin/intern-subscriptions',  'icon' => 'bi bi-journal-plus', 'perm' => 'admin.intern-requisitions.index'],
   ]
 ]) ?>
 

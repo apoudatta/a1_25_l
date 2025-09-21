@@ -25,17 +25,18 @@
     </select>
   </div>
 
-  <div class="col-12 col-md-3">
+  <div class="col-6 col-md-3">
     <label class="form-label small mb-1">Type</label>
-    <?php $curType = (string) ($filters['type'] ?? '') ?>
     <select class="form-select form-select-sm" name="type" id="filterType">
+      <?php $curType = (string)($filters['type'] ?? '') ?>
       <option value="">All</option>
-      <option value="EMPLOYEE"       <?= $curType==='EMPLOYEE'?'selected':'' ?>>Employee</option>
-      <option value="OS"             <?= $curType==='OS'?'selected':'' ?>>OS</option>
-      <option value="Security Guard" <?= $curType==='Security Guard'?'selected':'' ?>>Security Guard</option>
-      <option value="Support Staff"  <?= $curType==='Support Staff'?'selected':'' ?>>Support Staff</option>
-      <option value="INTERN"         <?= $curType==='INTERN'?'selected':'' ?>>Intern</option>
-      <option value="GUEST"          <?= $curType==='GUEST'?'selected':'' ?>>Guest</option>
+      <?php if (!empty($employmentTypes)): ?>
+        <?php foreach ($employmentTypes as $t): ?>
+          <option value="<?= (int)$t['id'] ?>" <?= $curType === (string)$t['id'] ? 'selected' : '' ?>>
+            <?= esc($t['name']) ?>
+          </option>
+        <?php endforeach; ?>
+      <?php endif; ?>
     </select>
   </div>
 
@@ -68,7 +69,7 @@
           <td><?= esc($r['designation']) ?></td>
           <td><?= esc($r['division']) ?></td>
           <td><?= esc($r['month_year']) ?></td>
-          <td><?= esc($r['mobile']) ?></td>
+          <td><?= esc($r['phone']) ?></td>
           <td class="text-end"><?= (int) $r['day_count'] ?></td>
           <td class="text-end"><?= number_format((float) $r['full_meal_cost'], 2) ?></td>
         </tr>
@@ -93,8 +94,8 @@
     <tbody>
       <?php foreach (($rowsIntern ?? []) as $r): ?>
         <tr>
-          <td><?= esc($r['intern_id']) ?></td>
-          <td><?= esc($r['intern_name']) ?></td>
+          <td><?= esc($r['ref_id']) ?></td>
+          <td><?= esc($r['ref_name']) ?></td>
           <td><?= esc($r['month_year']) ?></td>
           <td class="text-end"><?= (int) $r['day_count'] ?></td>
           <td class="text-end"><?= number_format((float) $r['full_meal_cost'], 2) ?></td>
@@ -124,12 +125,12 @@
     <tbody>
       <?php foreach (($rowsGuest ?? []) as $r): ?>
         <tr>
-          <td><?= esc($r['guest_name']) ?></td>
-          <td><?= esc($r['location']) ?></td>
-          <td><?= esc($r['requestor_emp_id']) ?></td>
-          <td><?= esc($r['requestor_name']) ?></td>
-          <td><?= esc($r['requestor_division']) ?></td>
-          <td><?= esc(mb_convert_case((string)($r['guest_type'] ?? ''), MB_CASE_TITLE, 'UTF-8')) ?></td>
+          <td><?= esc($r['ref_name']) ?></td>
+          <td><?= esc($r['caff_name']) ?></td>
+          <td><?= esc($r['emp_id']) ?></td>
+          <td><?= esc($r['emp_name']) ?></td>
+          <td><?= esc($r['division']) ?></td>
+          <td><?= esc(mb_convert_case((string)($r['emp_type_name'] ?? ''), MB_CASE_TITLE, 'UTF-8')) ?></td>
           <td><?= esc($r['month_year']) ?></td>
           <td class="text-end"><?= (int) $r['day_count'] ?></td>
           <td class="text-end"><?= number_format((float) $r['full_meal_cost'], 2) ?></td>

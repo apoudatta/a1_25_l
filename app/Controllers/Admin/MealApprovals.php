@@ -40,404 +40,294 @@ class MealApprovals extends BaseController
     /** GET /admin/approvals */
     public function index()
     {
-        $db = db_connect();
-        $today = date('Y-m-d'); // only show today or future meal dates
+        $db    = db_connect();
+        $uid   = (int) (session('user_id') ?? 0);
+        $today = date('Y-m-d');
 
-        // Base approvals for this approver
-        $qb = $this->approvalModel
-            //->join('users u', 'u.id = meal_approvals.approver_user_id', 'left')
-            //->select('meal_approvals.*, u.name AS approver_name');
-            ->select('meal_approvals.*');
-
-        if (session('user_id') !== '1') {    // 1 = SUPER ADMIN
-            $qb->where('meal_approvals.approver_user_id', session('user_id'));
+        // Collect role IDs from session if available (supports single or array)
+        $roleIds = [];
+        if (is_array(session('role_ids') ?? null)) {
+            $roleIds = array_map('intval', (array) session('role_ids'));
+        } elseif (session('role_id')) {
+            $roleIds = [ (int) session('role_id') ];
         }
 
-        $approvals = $qb->orderBy('meal_approvals.created_at', 'DESC')
-                        ->asArray()->findAll();
-// $this->dd($approvals);
+        $builder = $db->table('meal_approvals ma')
+            ->select("
+                ma.id                 AS approval_id,
+                ma.subs_id,
+                ma.approver_user_id,
+                ma.approver_role,
+                ma.approval_status,
+                ma.created_at         AS approval_created_at,
 
-        if (!$approvals) {
-            return view('admin/approvals/index', ['approvals' => []]);
-        }
+                ms.user_id,
+                ms.emp_type_id,
+                ms.meal_type_id,
+                ms.cafeteria_id,
+                ms.subs_date,
+                ms.status             AS subs_status,
+                ms.price,
+                ms.created_at,
+                ms.updated_at,
 
-        // Collect header IDs by type
-        $empIds = $guestIds = $internIds = [];
-        foreach ($approvals as $row) {
-            $sid = (int) $row['subscription_id'];
-            switch ($row['subscription_type']) {
-                case 'EMPLOYEE': $empIds[]    = $sid; break; // meal_subscriptions.id
-                case 'GUEST':    $guestIds[]  = $sid; break; // guest_batches.id
-                case 'INTERN':   $internIds[] = $sid; break; // intern_batches.id
-            }
-        }
-        $empIds    = $empIds    ? array_values(array_unique($empIds))    : [];
-        $guestIds  = $guestIds  ? array_values(array_unique($guestIds))  : [];
-        $internIds = $internIds ? array_values(array_unique($internIds)) : [];
+                u.name                AS employee_name,
+                u.employee_id,
 
-        // ---------------- EMPLOYEE: ALL future/today detail rows per header -------
-        $empDetails = []; // [subscription_id] => [ {detail...}, ... ]
-        if ($empIds) {
-            $rows = $db->table('meal_subscription_details msd')
-                ->select("
-                    msd.id               AS detail_id,
-                    msd.subscription_id,
-                    msd.subscription_date,
-                    msd.status           AS d_status,
-                    msd.created_at       AS d_created_at,
-                    msd.updated_at       AS d_updated_at,
-                    mt.name              AS meal_type,
-                    c.name               AS cafeteria,
-                    u.employee_id        AS emp_id
-                ")
-                ->join('meal_subscriptions ms', 'ms.id = msd.subscription_id', 'left')
-                ->join('users u',               'u.id = ms.user_id', 'left')
-                ->join('meal_types mt',         'mt.id = msd.meal_type_id', 'left')
-                ->join('cafeterias c',          'c.id = msd.cafeteria_id', 'left')
-                ->whereIn('msd.subscription_id', $empIds)
-                ->where('msd.subscription_date >=', $today) // <— keep only today/future
-                ->orderBy('msd.subscription_id', 'ASC')
-                ->orderBy('msd.created_at', 'DESC')
-                ->get()->getResultArray();
+                mt.name               AS meal_type_name,
+                et.name               AS emp_type_name,
+                c.name                AS cafeteria_name,
 
-            foreach ($rows as $r) {
-                $sid = (int) $r['subscription_id'];
-                $eventAt = ($r['d_status'] === 'CANCELLED')
-                    ? ($r['d_updated_at'] ?? $r['d_created_at'])
-                    : $r['d_created_at'];
+                ct.cut_off_time       AS cutoff_time,
+                ct.lead_days          AS lead_days,
 
-                $empDetails[$sid][] = [
-                    'emp_id'     => (string) ($r['emp_id'] ?? ''),
-                    'meal_type'  => (string) ($r['meal_type'] ?? ''),
-                    'meal_date'  => (string) ($r['subscription_date'] ?? ''),
-                    'cafeteria'  => (string) ($r['cafeteria'] ?? ''),
-                    'status'     => (string) ($r['d_status'] ?? ''),
-                    'event_at'   => (string) $eventAt,
-                    'detail_id'  => (int) $r['detail_id'],
-                ];
+                mr.ref_name,
+                mr.ref_phone
+            ", false)
+            ->join('meal_subscriptions ms', 'ms.id = ma.subs_id', 'left')
+            ->join('users u',               'u.id = ms.user_id', 'left')
+            ->join('meal_types mt',         'mt.id = ms.meal_type_id', 'left')
+            ->join('cafeterias c',          'c.id = ms.cafeteria_id', 'left')
+            ->join('employment_types et',   'et.id = ms.emp_type_id', 'left')
+            ->join('cutoff_times ct',       'ct.meal_type_id = ms.meal_type_id AND ct.is_active = 1', 'left')
+            // meal_reference is optional (guest/intern metadata)
+            ->join('meal_reference mr',     'mr.subs_id = ms.id', 'left')
+            ->where('ma.approval_status', 'PENDING')
+            ->where('ms.subs_date >=', $today);
+
+        // Access control
+        if ($uid !== 1) { // 1 = SUPER ADMIN
+            if (!empty($roleIds)) {
+                $builder->groupStart()
+                    ->where('ma.approver_user_id', $uid)
+                    ->orWhereIn('ma.approver_role', $roleIds)
+                ->groupEnd();
+            } else {
+                $builder->where('ma.approver_user_id', $uid);
             }
         }
 
-        // ---------------- GUEST: ALL future/today rows per batch ------------------
-        $guestDetails = [];
-        if ($guestIds) {
-            $rows = $db->table('guest_subscriptions gs')
-                ->select("
-                    gs.id                AS detail_id,
-                    gs.batch_id          AS header_id,
-                    gs.subscription_date,
-                    gs.status            AS d_status,
-                    gs.created_at        AS d_created_at,
-                    gs.updated_at        AS d_updated_at,
-                    mt.name              AS meal_type,
-                    c.name               AS cafeteria,
-                    u.employee_id        AS emp_id
-                ")
-                ->join('users u',         'u.id = gs.user_id', 'left')
-                ->join('meal_types mt',   'mt.id = gs.meal_type_id', 'left')
-                ->join('cafeterias c',    'c.id = gs.cafeteria_id', 'left')
-                ->whereIn('gs.batch_id', $guestIds)
-                ->where('gs.subscription_date >=', $today) // <—
-                ->orderBy('gs.batch_id', 'ASC')
-                ->orderBy('gs.created_at', 'DESC')
-                ->get()->getResultArray();
+        // (Optional) Hide cancelled subscriptions from the approval queue
+        // $builder->where('ms.status !=', 'CANCELLED');
 
-            foreach ($rows as $r) {
-                $hid = (int) $r['header_id'];
-                $eventAt = ($r['d_status'] === 'CANCELLED')
-                    ? ($r['d_updated_at'] ?? $r['d_created_at'])
-                    : $r['d_created_at'];
+        $approvals = $builder
+            ->orderBy('ms.subs_date', 'ASC')
+            ->orderBy('ma.created_at', 'DESC')
+            ->get()
+            ->getResultArray();
 
-                $guestDetails[$hid][] = [
-                    'emp_id'     => (string) ($r['emp_id'] ?? ''),
-                    'meal_type'  => (string) ($r['meal_type'] ?? ''),
-                    'meal_date'  => (string) ($r['subscription_date'] ?? ''),
-                    'cafeteria'  => (string) ($r['cafeteria'] ?? ''),
-                    'status'     => (string) ($r['d_status'] ?? ''),
-                    'event_at'   => (string) $eventAt,
-                    'detail_id'  => (int) $r['detail_id'],
-                ];
-            }
-        }
-
-        // ---------------- INTERN: ALL future/today rows per batch -----------------
-        $internDetails = [];
-        if ($internIds) {
-            $rows = $db->table('intern_subscriptions ins')
-                ->select("
-                    ins.id               AS detail_id,
-                    ins.batch_id         AS header_id,
-                    ins.subscription_date,
-                    ins.status           AS d_status,
-                    ins.created_at       AS d_created_at,
-                    ins.updated_at       AS d_updated_at,
-                    mt.name              AS meal_type,
-                    c.name               AS cafeteria,
-                    u.employee_id        AS emp_id
-                ")
-                ->join('users u',         'u.id = ins.user_id', 'left')
-                ->join('meal_types mt',   'mt.id = ins.meal_type_id', 'left')
-                ->join('cafeterias c',    'c.id = ins.cafeteria_id', 'left')
-                ->whereIn('ins.batch_id', $internIds)
-                ->where('ins.subscription_date >=', $today) // <—
-                ->orderBy('ins.batch_id', 'ASC')
-                ->orderBy('ins.created_at', 'DESC')
-                ->get()->getResultArray();
-
-            foreach ($rows as $r) {
-                $hid = (int) $r['header_id'];
-                $eventAt = ($r['d_status'] === 'CANCELLED')
-                    ? ($r['d_updated_at'] ?? $r['d_created_at'])
-                    : $r['d_created_at'];
-
-                $internDetails[$hid][] = [
-                    'emp_id'     => (string) ($r['emp_id'] ?? ''),
-                    'meal_type'  => (string) ($r['meal_type'] ?? ''),
-                    'meal_date'  => (string) ($r['subscription_date'] ?? ''),
-                    'cafeteria'  => (string) ($r['cafeteria'] ?? ''),
-                    'status'     => (string) ($r['d_status'] ?? ''),
-                    'event_at'   => (string) $eventAt,
-                    'detail_id'  => (int) $r['detail_id'],
-                ];
-            }
-        }
-
-        // -------- Expand approvals into one row per (future) detail ---------------
-        $rowsForView = [];
-        foreach ($approvals as $app) {
-            $sid  = (int) $app['subscription_id'];
-            $type = $app['subscription_type'];
-
-            $details = [];
-            if ($type === 'EMPLOYEE')   $details = $empDetails[$sid]    ?? [];
-            elseif ($type === 'GUEST')  $details = $guestDetails[$sid]  ?? [];
-            elseif ($type === 'INTERN') $details = $internDetails[$sid] ?? [];
-
-            // ONLY add rows if we have at least one future/today detail
-            if (!$details) continue;
-
-            foreach ($details as $d) {
-                $rowsForView[] = array_merge($app, [
-                    'disp_emp_id'    => $d['emp_id'],
-                    'disp_meal_type' => $d['meal_type'],
-                    'disp_meal_date' => $d['meal_date'],
-                    'disp_cafe'      => $d['cafeteria'],
-                    'disp_status'    => $d['status'],
-                    'disp_event_at'  => $d['event_at'],
-                    'detail_id'      => $d['detail_id'],
-                ]);
-            }
-        }
-        return view('admin/approvals/index', ['approvals' => $rowsForView]);
+        return view('admin/approvals/index', ['approvals' => $approvals]);
     }
 
-    // In App\Controllers\Employee\MealApprovals
-    public function bulkApprove()
-    {
-        $detailIds = (array) $this->request->getPost('detail_ids');
-        $types     = (array) $this->request->getPost('types');
-        $remark    = (string) $this->request->getPost('remark', FILTER_UNSAFE_RAW);
 
-        if (count($detailIds) !== count($types) || count($detailIds) === 0) {
+    /**
+     * POST /admin/approvals/bulk-act/{approve|reject}
+     * Body:
+     *   - detail_ids[] : array of meal_subscriptions.id (selected rows)
+     *   - types[]      : legacy; ignored (kept for compatibility)
+     *   - remark       : optional approver remark (stored in remarks.approver_remark)
+     */
+    public function bulkAct(string $action)
+    {
+        $db     = db_connect();
+        $uid    = (int) (session('user_id') ?? 0);
+        $now    = date('Y-m-d H:i:s');
+        $remark = trim((string) $this->request->getPost('remark', FILTER_UNSAFE_RAW));
+
+        $action = strtolower($action);
+        if (!in_array($action, ['approve', 'reject'], true)) {
+            return redirect()->back()->with('error', 'Invalid action.');
+        }
+
+        // Collect IDs (keep legacy param names)
+        $subsIds = array_map('intval', (array) $this->request->getPost('detail_ids'));
+        $subsIds = array_values(array_unique(array_filter($subsIds, fn ($v) => $v > 0)));
+        if (empty($subsIds)) {
             return redirect()->back()->with('error', 'No items selected.');
         }
 
-        //$this->dd([$detailIds, $types]);
+        // Roles from session (supports single or array)
+        $roleIds = [];
+        if (is_array(session('role_ids') ?? null)) {
+            $roleIds = array_map('intval', (array) session('role_ids'));
+        } elseif (session('role_id')) {
+            $roleIds = [ (int) session('role_id') ];
+        }
 
-        // Build sets per type; dedupe with associative array
-        $empIds = $guestIds = $internIds = [];
-        for ($i = 0, $n = count($detailIds); $i < $n; $i++) {
-            $id   = (int) $detailIds[$i];
-            $type = strtoupper((string) $types[$i]);
+        // Fetch approvable PENDING approvals for these subs, respecting access
+        $ab = $db->table('meal_approvals ma')
+            ->select('ma.id AS approval_id, ma.subs_id')
+            ->join('meal_subscriptions ms', 'ms.id = ma.subs_id', 'left')
+            ->whereIn('ma.subs_id', $subsIds)
+            ->where('ma.approval_status', 'PENDING');
+            // Optional: block acting on past meals
+            // ->where('ms.subs_date >=', date('Y-m-d'));
 
-            if ($id <= 0) continue;
-            switch ($type) {
-                case 'EMPLOYEE': $empIds[$id]   = true; break; // meal_subscription_details.id
-                case 'GUEST':    $guestIds[$id] = true; break; // guest_subscriptions.id
-                case 'INTERN':   $internIds[$id]= true; break; // intern_subscriptions.id
-                default: /* ignore bad type */ break;
+        if ($uid !== 1) { // 1 = SUPER ADMIN
+            if (!empty($roleIds)) {
+                $ab->groupStart()
+                    ->where('ma.approver_user_id', $uid)
+                    ->orWhereIn('ma.approver_role', $roleIds)
+                ->groupEnd();
+            } else {
+                $ab->where('ma.approver_user_id', $uid);
             }
         }
-        $empIds    = array_map('intval', array_keys($empIds));
-        $guestIds  = array_map('intval', array_keys($guestIds));
-        $internIds = array_map('intval', array_keys($internIds));
 
-        if (!$empIds && !$guestIds && !$internIds) {
-            return redirect()->back()->with('error', 'No valid items to approve.');
+        $rows = $ab->get()->getResultArray();
+        if (empty($rows)) {
+            $msg = ($action === 'approve') ? 'No pending items available for approval.' : 'No pending items available for rejection.';
+            return redirect()->back()->with('error', $msg);
         }
 
-        $db = db_connect();
+        $approvalIds = array_map('intval', array_column($rows, 'approval_id'));
+        $targetIds   = array_map('intval', array_column($rows, 'subs_id'));
+
+        // Decide target statuses/messages
+        $newApprovalStatus = ($action === 'approve') ? 'APPROVED' : 'REJECTED';
+        $newSubsStatus     = ($action === 'approve') ? 'ACTIVE'   : 'CANCELLED';
+        $successMsg        = ($action === 'approve')
+            ? 'Approved %d of %d selected item(s).'
+            : 'Rejected %d of %d selected item(s).';
+
+        // TX
         $db->transStart();
 
-        // Approve detail rows only if currently PENDING
-        if ($empIds) {
-            $this->mealSubscriptionDetailModel
-                ->whereIn('id', $empIds)
-                ->where('status', 'PENDING')
-                ->set(['status' => 'ACTIVE', 'approver_remark' => $remark])
-                ->update();
-        }
-        if ($guestIds) {
-            $this->guestSubscriptionModel
-                ->whereIn('id', $guestIds)
-                ->where('status', 'PENDING')
-                ->set(['status' => 'ACTIVE', 'approver_remark' => $remark])
-                ->update();
-        }
-        if ($internIds) {
-            $this->internSubscriptionModel
-                ->whereIn('id', $internIds)
-                ->where('status', 'PENDING')
-                ->set(['status' => 'ACTIVE', 'approver_remark' => $remark])
-                ->update();
+        // 1) Update approvals
+        $db->table('meal_approvals')
+            ->whereIn('id', $approvalIds)
+            ->set('approval_status', $newApprovalStatus)
+            ->set('approved_by', $uid)
+            ->set('approved_at', $now)
+            ->set('updated_at', $now)
+            ->update();
+
+        // 2) Update subscriptions
+        $db->table('meal_subscriptions')
+            ->whereIn('id', $targetIds)
+            ->set('status', $newSubsStatus)
+            ->set('updated_at', $now)
+            ->update();
+
+        // 3) Optional: add a new approver remark per subs_id
+        if ($remark !== '') {
+            $batch = [];
+            foreach ($targetIds as $sid) {
+                $batch[] = [
+                    'subs_id'         => $sid,
+                    'remark'          => null,
+                    'approver_remark' => $remark,
+                    'created_at'      => $now,
+                ];
+            }
+            if ($batch) {
+                $db->table('remarks')->insertBatch($batch);
+            }
         }
 
         $db->transComplete();
 
-        $total = count($empIds) + count($guestIds) + count($internIds);
-        return redirect()->back()->with('success', "Approved: {$total} item(s).");
+        if ($db->transStatus() === false) {
+            $failMsg = ($action === 'approve') ? 'Bulk approval failed. Please try again.' : 'Bulk rejection failed. Please try again.';
+            return redirect()->back()->with('error', $failMsg);
+        }
+
+        return redirect()->back()->with('success', sprintf($successMsg, count($targetIds), count($subsIds)));
     }
 
-    public function bulkReject()
-    {
-        $detailIds = (array) $this->request->getPost('detail_ids');
-        $types     = (array) $this->request->getPost('types');
-        $remark    = (string) $this->request->getPost('remark', FILTER_UNSAFE_RAW);
 
-        if (count($detailIds) !== count($types) || count($detailIds) === 0) {
-            return redirect()->back()->with('error', 'No items selected.');
+
+    /**
+     * POST /admin/approvals/act/{approve|reject}/{subsId}
+     */
+    public function act(string $action, int $subsId)
+    {
+        $db     = db_connect();
+        $uid    = (int) (session('user_id') ?? 0);
+        $now    = date('Y-m-d H:i:s');
+        $remark = trim((string) $this->request->getPost('remark'));
+
+        $action  = strtolower($action);
+        if (!in_array($action, ['approve','reject'], true)) {
+            return redirect()->back()->with('error', 'Invalid action.');
         }
 
-        $empIds = $guestIds = $internIds = [];
-        for ($i = 0, $n = count($detailIds); $i < $n; $i++) {
-            $id   = (int) $detailIds[$i];
-            $type = strtoupper((string) $types[$i]);
+        // Collect role IDs from session (supports single or array)
+        $roleIds = [];
+        if (is_array(session('role_ids') ?? null)) {
+            $roleIds = array_map('intval', (array) session('role_ids'));
+        } elseif (session('role_id')) {
+            $roleIds = [ (int) session('role_id') ];
+        }
 
-            if ($id <= 0) continue;
-            switch ($type) {
-                case 'EMPLOYEE': $empIds[$id]   = true; break;
-                case 'GUEST':    $guestIds[$id] = true; break;
-                case 'INTERN':   $internIds[$id]= true; break;
-                default: /* ignore bad type */ break;
+        // Find a PENDING approval for this subscription that this approver can action
+        $ab = $db->table('meal_approvals')
+            ->where('subs_id', $subsId)
+            ->where('approval_status', 'PENDING');
+
+        // Access control: super admin (id=1) sees all; others by user or role
+        if ($uid !== 1) {
+            if (!empty($roleIds)) {
+                $ab->groupStart()
+                    ->where('approver_user_id', $uid)
+                    ->orWhereIn('approver_role', $roleIds)
+                ->groupEnd();
+            } else {
+                $ab->where('approver_user_id', $uid);
             }
         }
-        $empIds    = array_map('intval', array_keys($empIds));
-        $guestIds  = array_map('intval', array_keys($guestIds));
-        $internIds = array_map('intval', array_keys($internIds));
 
-        if (!$empIds && !$guestIds && !$internIds) {
-            return redirect()->back()->with('error', 'No valid items to reject.');
+        $approval = $ab->get(1)->getRowArray();
+        if (!$approval) {
+            return redirect()->back()->with('error', 'Approval not found, already processed, or not assigned to you.');
         }
 
-        $db = db_connect();
+        // Decide statuses based on action
+        $newApprovalStatus = ($action === 'approve') ? 'APPROVED'  : 'REJECTED';
+        $newSubsStatus     = ($action === 'approve') ? 'ACTIVE'    : 'CANCELLED';
+        $successMsg        = ($action === 'approve') ? 'Subscription approved.' : 'Subscription rejected.';
+
+        // Do it in a TX
         $db->transStart();
 
-        // Reject (cancel) detail rows only if currently PENDING
-        if ($empIds) {
-            $this->mealSubscriptionDetailModel
-                ->whereIn('id', $empIds)
-                ->where('status', 'PENDING')
-                ->set(['status' => 'CANCELLED', 'approver_remark' => $remark])
-                ->update();
-        }
-        if ($guestIds) {
-            $this->guestSubscriptionModel
-                ->whereIn('id', $guestIds)
-                ->where('status', 'PENDING')
-                ->set(['status' => 'CANCELLED', 'approver_remark' => $remark])
-                ->update();
-        }
-        if ($internIds) {
-            $this->internSubscriptionModel
-                ->whereIn('id', $internIds)
-                ->where('status', 'PENDING')
-                ->set(['status' => 'CANCELLED', 'approver_remark' => $remark])
-                ->update();
+        // 1) Update approval row
+        $db->table('meal_approvals')
+            ->where('id', (int) $approval['id'])
+            ->update([
+                'approval_status' => $newApprovalStatus,
+                'approved_by'     => $uid,
+                'approved_at'     => $now,
+                'updated_at'      => $now,
+            ]);
+
+        // 2) Update subscription status
+        $db->table('meal_subscriptions')
+            ->where('id', $subsId)
+            ->update([
+                'status'     => $newSubsStatus,
+                'updated_at' => $now,
+            ]);
+
+        // 3) Optional: store approver remark as a new row
+        if ($remark !== '') {
+            $db->table('remarks')->insert([
+                'subs_id'         => $subsId,
+                'remark'          => null,
+                'approver_remark' => $remark,
+                'created_at'      => $now,
+            ]);
         }
 
         $db->transComplete();
 
-        $total = count($empIds) + count($guestIds) + count($internIds);
-        return redirect()->back()->with('success', "Rejected: {$total} item(s).");
-    }
-
-
-
-
-
-    public function approveSingle($subscriptionType, $subsId)
-    {
-        $subscriptionType = strtoupper($subscriptionType);
-        $remark = $this->request->getPost('remark');
-        
-        switch ($subscriptionType) {
-            case 'INTERN':
-                $subscription = $this->internSubscriptionModel->find($subsId);
-                if ($subscription) {
-                    $this->internSubscriptionModel->update($subsId, ['status' => 'ACTIVE', 'approver_remark' => $remark]);
-                    return redirect()->back()->with('success', 'Intern subscription approved.');
-                }
-                break;
-
-            case 'GUEST':
-                $subscription = $this->guestSubscriptionModel->find($subsId);
-                if ($subscription) {
-                    $this->guestSubscriptionModel->update($subsId, ['status' => 'ACTIVE', 'approver_remark' => $remark]);
-                    return redirect()->back()->with('success', 'Guest subscription approved.');
-                }
-                break;
-
-            case 'EMPLOYEE':
-                $subscription = $this->mealSubscriptionDetailModel->find($subsId);
-                if ($subscription) {
-                    $this->mealSubscriptionDetailModel->update($subsId, ['status' => 'ACTIVE', 'approver_remark' => $remark]);
-                    return redirect()->back()->with('success', 'Employee subscription approved.');
-                }
-                break;
-
-            default:
-                return redirect()->back()->with('error', 'Invalid subscription type.');
+        if ($db->transStatus() === false) {
+            return redirect()->back()->with('error', 'Action failed. Please try again.');
         }
 
-        return redirect()->back()->with('error', 'Subscription not found.');
+        return redirect()->back()->with('success', $successMsg);
     }
 
-    public function rejectSingle($subscriptionType, $subsId)
-    {
-        $subscriptionType = strtoupper($subscriptionType);
-        $remark = $this->request->getPost('remark');
 
-        switch ($subscriptionType) {
-            case 'INTERN':
-                $subscription = $this->internSubscriptionModel->find($subsId);
-                if ($subscription) {
-                    $this->internSubscriptionModel->update($subsId, ['status' => 'CANCELLED', 'approver_remark' => $remark]);
-                    return redirect()->back()->with('success', 'Intern subscription rejected.');
-                }
-                break;
-
-            case 'GUEST':
-                $subscription = $this->guestSubscriptionModel->find($subsId);
-                if ($subscription) {
-                    $this->guestSubscriptionModel->update($subsId, ['status' => 'CANCELLED', 'approver_remark' => $remark]);
-                    return redirect()->back()->with('success', 'Guest subscription rejected.');
-                }
-                break;
-
-            case 'EMPLOYEE':
-                $subscription = $this->mealSubscriptionDetailModel->find($subsId);
-                if ($subscription) {
-                    $this->mealSubscriptionDetailModel->update($subsId, ['status' => 'CANCELLED', 'approver_remark' => $remark]);
-                    return redirect()->back()->with('success', 'Employee subscription rejected.');
-                }
-                break;
-
-            default:
-                return redirect()->back()->with('error', 'Invalid subscription type.');
-        }
-
-        return redirect()->back()->with('error', 'Subscription not found.');
-    }
 
 
 }

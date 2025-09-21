@@ -57,7 +57,7 @@
     </tr>
   </thead>
   <?= view('partials/admin/subs_list_tbody', [
-    'rows' => $rows, 'list'=>'guest', 'guest_type' => true, 'unsubs' => 'guest-subscriptions',
+    'rows' => $rows, 'list'=>'guest', 'subs_type' => true, 'unsubs' => 'guest-subscriptions',
     'showUnsubs'=> true,
     ]) ?>
 </table>

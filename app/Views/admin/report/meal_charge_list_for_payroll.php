@@ -60,21 +60,19 @@
 
   <div class="col-6 col-md-3">
     <label class="form-label small mb-1">Type</label>
-    <select
-      class="form-select form-select-sm"
-      name="type"
-      id="filterType"
-    >
-      <?php $curType = (string) ($filters['type'] ?? '') ?>
+    <select class="form-select form-select-sm" name="type" id="filterType">
+      <?php $curType = (string)($filters['type'] ?? '') ?>
       <option value="">All</option>
-      <option value="EMPLOYEE" <?= $curType==='EMPLOYEE' ? 'selected':'' ?>>EMPLOYEE</option>
-      <option value="INTERN"   <?= $curType==='INTERN'   ? 'selected':'' ?>>INTERN</option>
-      <option value="GUEST"    <?= $curType==='GUEST'    ? 'selected':'' ?>>GUEST</option>
-      <option value="OS"    <?= $curType==='OS'    ? 'selected':'' ?>>OS</option>
-      <option value="Security Guard"    <?= $curType==='Security Guard'    ? 'selected':'' ?>>Security Guard</option>
-      <option value="Support Staff"    <?= $curType==='Support Staff'    ? 'selected':'' ?>>Support Staff</option>
+      <?php if (!empty($employmentTypes)): ?>
+        <?php foreach ($employmentTypes as $t): ?>
+          <option value="<?= (int)$t['id'] ?>" <?= $curType === (string)$t['id'] ? 'selected' : '' ?>>
+            <?= esc($t['name']) ?>
+          </option>
+        <?php endforeach; ?>
+      <?php endif; ?>
     </select>
   </div>
+
 
   <div class="col-12 col-md-2">
     <button type="submit" class="btn btn-primary btn-sm w-100">Apply</button>

@@ -31,44 +31,45 @@ class EidSubscription extends BaseController
         $this->db          = db_connect();
     }
 
-    public function history()
+    /**
+     * Unified list: my history (me) or all (admin)
+     * Routes:
+     *   GET eid-subscription                           -> browse('me')
+     *   GET eid-subscription/all-eid-subscription-list -> browse('all')
+     */
+    public function browse(string $scope = 'me')
     {
-        $subs = $this->MealSubscriptionModel
-            ->select('meal_subscriptions.*,
-                    cafeterias.name  AS caffname,
-                    meal_types.name  AS meal_type_name,
-                    ct.cut_off_time  AS cutoff_time,
-                    ct.lead_days     AS lead_days')
-            ->join('cafeterias', 'cafeterias.id = meal_subscription_details.cafeteria_id', 'left')
-            ->join('meal_types', 'meal_types.id = meal_subscription_details.meal_type_id', 'left')
-            ->join('cutoff_times ct', 'ct.meal_type_id = meal_subscription_details.meal_type_id', 'left')
-            ->where('meal_subscription_details.user_id', session('user_id'))
-            ->whereIn('meal_subscription_details.meal_type_id', self::MEAL_TYPE_ID) // EID types
-            ->orderBy('meal_subscription_details.id', 'DESC')
-            ->findAll();
+        $uid          = (int) (session('user_id') ?? 0);
+        $mealTypeIds  = is_array(self::MEAL_TYPE_ID) ? self::MEAL_TYPE_ID : [self::MEAL_TYPE_ID];
 
-        return view('admin/eid_subscription/history', ['subs' => $subs]);
-    }
-
-    public function allEidSubsList()
-    {
-        $subs = $this->MealSubscriptionModel
-            ->select('meal_subscriptions.*,
-                    cafeterias.name  AS caffname,
-                    meal_types.name  AS meal_type_name,
+        $builder = $this->MealSubscriptionModel
+            ->select("meal_subscriptions.*,
+                    cafeterias.name     AS caffname,
+                    meal_types.name     AS meal_type_name,
                     users.employee_id,
                     users.name,
-                    ct.cut_off_time  AS cutoff_time,
-                    ct.lead_days     AS lead_days')
-            ->join('cafeterias', 'cafeterias.id = meal_subscription_details.cafeteria_id', 'left')
-            ->join('meal_types', 'meal_types.id = meal_subscription_details.meal_type_id', 'left')
-            ->join('users',      'users.id = meal_subscription_details.user_id', 'left')
-            ->join('cutoff_times ct', 'ct.meal_type_id = meal_subscription_details.meal_type_id', 'left')
-            ->whereIn('meal_subscription_details.meal_type_id', self::MEAL_TYPE_ID) // EID types
-            ->orderBy('meal_subscription_details.id', 'DESC')
+                    ct.cut_off_time     AS cutoff_time,
+                    ct.lead_days        AS lead_days", false)
+            ->join('cafeterias', 'cafeterias.id = meal_subscriptions.cafeteria_id', 'left')
+            ->join('meal_types', 'meal_types.id = meal_subscriptions.meal_type_id', 'left')
+            ->join('users',      'users.id = meal_subscriptions.user_id', 'left')
+            ->join('cutoff_times ct', 'ct.meal_type_id = meal_subscriptions.meal_type_id AND ct.is_active = 1', 'left')
+            ->whereIn('meal_subscriptions.meal_type_id', $mealTypeIds);
+
+        if ($scope === 'me') {
+            $builder->where('meal_subscriptions.user_id', $uid);
+        }
+
+        $subs = $builder
+            ->orderBy('meal_subscriptions.created_at', 'DESC')
+            ->orderBy('meal_subscriptions.id', 'DESC')
             ->findAll();
 
-        return view('admin/eid_subscription/all_eid_subscriptions', ['subs' => $subs]);
+        $view = ($scope === 'all')
+            ? 'admin/eid_subscription/all_eid_subscriptions'
+            : 'admin/eid_subscription/history';
+
+        return view($view, ['subs' => $subs]);
     }
 
 
@@ -122,7 +123,7 @@ class EidSubscription extends BaseController
         $existing = $this->MealSubscriptionModel
             ->where('user_id', $userId)
             ->whereIn('meal_type_id', $mealTypeIds)
-            ->where('subscription_date', $meal_date)
+            ->where('subs_date', $meal_date)
             ->whereIn('status', ['ACTIVE', 'PENDING'])
             ->countAllResults();
 
@@ -214,24 +215,51 @@ class EidSubscription extends BaseController
 
     public function unsubscribe_bulk()
     {
-        $ids = $this->request->getPost('subscription_ids');
-        $remark = $this->request->getPost('remark');
+        $ids    = array_map('intval', (array) $this->request->getPost('subscription_ids'));
+        $remark = trim((string) $this->request->getPost('remark'));
 
-        //$this->dd($remark);
-        if (!is_array($ids) || empty($ids)) {
+        if (empty($ids)) {
             return redirect()->back()->with('error', 'No subscriptions selected.');
         }
 
-        // Example: update all selected subscriptions to CANCELLED
+        $now = date('Y-m-d H:i:s');
+
+        $this->db->transStart();
+
+        // 1) Cancel selected subscriptions
         $this->MealSubscriptionModel
             ->whereIn('id', $ids)
             ->set('status', 'CANCELLED')
-            ->set('approver_remark', $remark)
-            ->set('unsubs_by', session('user_id'))
+            ->set('unsubs_by', (int) session('user_id'))
+            ->set('updated_at', $now)
             ->update();
+
+        // 2) Always INSERT a new remark row per subs_id (skip if remark empty)
+        if ($remark !== '') {
+            $rows = [];
+            foreach ($ids as $sid) {
+                $rows[] = [
+                    'subs_id'         => $sid,
+                    'remark'          => $remark,
+                    'approver_remark' => null,
+                    'created_at'      => $now,
+                ];
+            }
+            if (! empty($rows)) {
+                $this->db->table('remarks')->insertBatch($rows);
+            }
+        }
+
+        $this->db->transComplete();
+
+        if ($this->db->transStatus() === false) {
+            return redirect()->back()->with('error', 'Unsubscribe failed. Please try again.');
+        }
 
         return redirect()->back()->with('success', 'Selected subscriptions unsubscribed.');
     }
+
+
 
     // --- Helper: user share from meal_contributions ---
     /**

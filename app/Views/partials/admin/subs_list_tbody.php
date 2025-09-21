@@ -38,20 +38,15 @@
       <td><?= esc($r['name']) ?></td>
     <?php endif ?>
 
-    
-    <!-- Guest Type -->
-    <?php if(isset($guest_type) && $guest_type == true): ?>
-      <td><?= esc($r['emp_type_name']) ?></td>
-    <?php endif ?>
 
     <!-- Subscription Type -->
     <?php if(isset($subs_type) && $subs_type == true): ?>
-      <td><?= esc($r['employment_type_name']) ?></td>
+      <td><?= esc($r['emp_type_name']) ?></td>
     <?php endif ?>
 
     <!-- Intern Emp. ID -->
     <?php if(isset($list) && $list == 'intern'): ?>
-      <td><?= esc($r['user_reference_id']) ?></td>
+      <td><?= esc($r['ref_id']) ?></td>
     <?php endif ?>
     
     <!-- Subs/Unsubs Date -->

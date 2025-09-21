@@ -301,7 +301,7 @@ class IfterSubscription extends BaseController
         }
 
         $msg = ($status === 'PENDING') ? 'Subscriptions pending approval.' : 'Subscriptions active.';
-        return redirect()->to('admin/ifter_subscription')->with('success', $msg);
+        return redirect()->to('admin/ifter-subscription')->with('success', $msg);
     }
 
     /**

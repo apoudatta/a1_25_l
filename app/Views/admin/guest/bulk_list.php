@@ -62,7 +62,7 @@
   <?= view('partials/admin/subs_list_tbody', [
     'rows' => $rows, 
     'list'=>'guest', 
-    'guest_type' => true, 
+    'subs_type' => true, 
     'employee_id' => true, 
     'unsubs' => 'guest-subscriptions',
     'showUnsubs' => can('admin.guest-subscriptions.unsubscribe'),

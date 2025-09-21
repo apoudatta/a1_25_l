@@ -71,7 +71,7 @@
   <tbody>
     <?php foreach ($approvals as $index => $a): ?>
       <?php
-        $status = $a['subs_status'] ?? '';
+        $status = $a['disp_status'] ?? '';
         $badge  = 'bg-secondary';
         if ($status === 'PENDING')                                  $badge = 'bg-warning text-dark';
         if ($status === 'ACTIVE' || $status === 'APPROVED')         $badge = 'bg-success';
@@ -82,7 +82,7 @@
         data-subscription-type="<?= $a['emp_type_id'] ?>"
       >
         <td>
-          <?php if (($a['approval_status'] ?? '') === 'PENDING' && ($a['subs_status'] ?? '') === 'PENDING'): ?>
+          <?php if (($a['approval_status'] ?? '') === 'PENDING' && ($a['disp_status'] ?? '') === 'PENDING'): ?>
             <input type="checkbox" class="row-check form-check-input">
           <?php endif; ?>
         </td>
@@ -100,14 +100,14 @@
         </td>
         <td><span class="badge <?= $badge ?>"><?= esc($status) ?></span></td>
         <td>
-          <?php if (($a['approval_status'] ?? '') === 'PENDING' && ($a['subs_status'] ?? '') === 'PENDING'): ?>
-            <form action="<?= site_url('admin/approvals/approve/'.$a['subs_id']) ?>"
+          <?php if (($a['approval_status'] ?? '') === 'PENDING' && ($a['disp_status'] ?? '') === 'PENDING'): ?>
+            <form action="<?= site_url('admin/approvals/approve/'.$a['emp_type_id'].'/'.$a['subs_id']) ?>"
                   method="post" class="d-inline action-form">
               <?= csrf_field() ?>
               <button class="btn btn-sm btn-success btn-approve">Approve</button>
             </form>
 
-            <form action="<?= site_url('admin/approvals/reject/'.$a['subs_id']) ?>"
+            <form action="<?= site_url('admin/approvals/reject/'.$a['emp_type_id'].'/'.$a['subs_id']) ?>"
                   method="post" class="d-inline action-form">
               <?= csrf_field() ?>
               <button class="btn btn-sm btn-danger btn-reject">Reject</button>
