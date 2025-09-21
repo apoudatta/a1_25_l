@@ -58,7 +58,7 @@ $routes->group('admin', ['filter' => ['auth']], static function($routes) {
     $routes->get('ifter-subscription',                    'Admin\IfterSubscription::index/me',             ['filter' => 'perm:admin.ramadan.ifter-subscription.history']);
     $routes->get('ifter-subscription/all-ifter-list',     'Admin\IfterSubscription::index/all',        ['filter' => 'perm:admin.ramadan.ifter-subscription.all-ifter-list']);
     $routes->get('ifter-subscription/new',                'Admin\IfterSubscription::new',                 ['filter' => 'perm:admin.ramadan.ifter-subscription.new']);
-    $routes->post('ifter-subscription/store',             'Admin\IfterSubscription::store',               ['filter' => 'perm:admin.ifter-subscription.store']);
+    $routes->post('ifter-subscription/store',             'Admin\IfterSubscription::store');
     $routes->post('ifter-subscription/unsubscribe/(:num)','Admin\IfterSubscription::unsubscribeSingle/$1',['filter' => 'perm:admin.ifter-subscription.unsubscribe']);
     $routes->post('ifter-subscription/unsubscribe_bulk',  'Admin\IfterSubscription::unsubscribe_bulk',    ['filter' => 'perm:admin.ifter-subscription.unsubscribe_bulk']);
 
@@ -66,15 +66,15 @@ $routes->group('admin', ['filter' => ['auth']], static function($routes) {
     $routes->get('sehri-subscription',                 'Admin\SehriSubscription::browse/me',       ['filter' => 'perm:admin.ramadan.sehri-subscription.history']);
     $routes->get('sehri-subscription/all-sehri-list',  'Admin\SehriSubscription::browse/all',  ['filter' => 'perm:admin.ramadan.sehri-subscription.all-sehri-list']);
     $routes->get('sehri-subscription/new',             'Admin\SehriSubscription::new',           ['filter' => 'perm:admin.ramadan.sehri-subscription.new']);
-    $routes->post('sehri-subscription/store',                  'Admin\SehriSubscription::store',         ['filter' => 'perm:admin.sehri-subscription.store']);
+    $routes->post('sehri-subscription/store',                  'Admin\SehriSubscription::store');
     $routes->post('sehri-subscription/unsubscribe/(:num)',     'Admin\SehriSubscription::unsubscribeSingle/$1', ['filter' => 'perm:admin.sehri-subscription.unsubscribe']);
     $routes->post('sehri-subscription/unsubscribe_bulk',       'Admin\SehriSubscription::unsubscribe_bulk',    ['filter' => 'perm:admin.sehri-subscription.unsubscribe_bulk']);
 
     // Eid Subscription
-    $routes->get('eid-subscription',                           'Admin\EidSubscription::history',         ['filter' => 'perm:admin.eid-subscription.history']);
-    $routes->get('eid-subscription/all-eid-subscription-list', 'Admin\EidSubscription::allEidSubsList',  ['filter' => 'perm:admin.eid-subscription.all-eid-subscription-list']);
+    $routes->get('eid-subscription',                           'Admin\EidSubscription::browse/me',         ['filter' => 'perm:admin.eid-subscription.history']);
+    $routes->get('eid-subscription/all-eid-subscription-list', 'Admin\EidSubscription::browse/all',  ['filter' => 'perm:admin.eid-subscription.all-eid-subscription-list']);
     $routes->get('eid-subscription/new',                       'Admin\EidSubscription::new',             ['filter' => 'perm:admin.eid-subscription.new']);
-    $routes->post('eid-subscription/store',                    'Admin\EidSubscription::store',           ['filter' => 'perm:admin.eid-subscription.store']);
+    $routes->post('eid-subscription/store',                    'Admin\EidSubscription::store');
     $routes->post('eid-subscription/unsubscribe/(:num)',       'Admin\EidSubscription::unsubscribeSingle/$1', ['filter' => 'perm:admin.eid-subscription.unsubscribe']);
     $routes->post('eid-subscription/unsubscribe_bulk',         'Admin\EidSubscription::unsubscribe_bulk',  ['filter' => 'perm:admin.eid-subscription.unsubscribe_bulk']);
 
@@ -82,7 +82,7 @@ $routes->group('admin', ['filter' => ['auth']], static function($routes) {
     $routes->get('guest-subscriptions',                        'Admin\GuestSubscription::index',         ['filter' => 'perm:admin.guest-subscriptions.history']);
     $routes->get('guest-subscriptions/all-guest-list',         'Admin\GuestSubscription::index/all',  ['filter' => 'perm:admin.guest-subscriptions.all-guest-list']);
     $routes->get('guest-subscriptions/new',                    'Admin\GuestSubscription::new',           ['filter' => 'perm:admin.guest-subscriptions.new']);
-    $routes->post('guest-subscriptions/store',                 'Admin\GuestSubscription::store',         ['filter' => 'perm:admin.guest-subscriptions.store']);
+    $routes->post('guest-subscriptions/store',                 'Admin\GuestSubscription::store');
     $routes->post('guest-subscriptions/unsubscribe/(:num)',    'Admin\GuestSubscription::unsubscribe/$1',['filter' => 'perm:admin.guest-subscriptions.unsubscribe']);
     $routes->post('guest-subscriptions/unsubscribe_bulk',      'Admin\GuestSubscription::unsubscribe_bulk', ['filter' => 'perm:admin.guest-subscriptions.unsubscribe_bulk']);
 

@@ -1,47 +1,40 @@
 <?php namespace App\Controllers\Admin;
 
 use App\Controllers\BaseController;
-use App\Models\MealSubscriptionDetailModel;
 use App\Models\MealSubscriptionModel;
-use App\Models\ApprovalFlowModel;
-use App\Models\ApprovalStepModel;
 use App\Models\MealApprovalModel;
 use App\Models\CutoffTimeModel;
 use App\Models\PublicHolidayModel;
 use App\Models\MealTypeModel;
 use App\Models\CafeteriaModel;
 use App\Models\OccasionModel;
-use CodeIgniter\Exceptions\PageForbiddenException;
-use DateTime;
-use DateTimeZone;
 
 class EidSubscription extends BaseController
 {
+    private const MEAL_TYPE_ID = [4,5,6,7];  // eid meal types
+    private const EMPLOYEE_ID  = 1;  // EMPLOYEE
+
     protected $MealSubscriptionModel;
-    protected $ApprovalFlowModel;
-    protected $ApprovalStepModel;
     protected $MealApprovalModel;
     protected $CutoffTimeModel;
     protected $PublicHolidayModel;
-    protected $MealSubscriptionDetailModel;
     protected $OccasionModel;
+    protected $db;
 
     public function __construct()
     {
         $this->MealSubscriptionModel      = new MealSubscriptionModel();
-        $this->MealSubscriptionDetailModel= new MealSubscriptionDetailModel();
-        $this->ApprovalFlowModel          = new ApprovalFlowModel();
-        $this->ApprovalStepModel          = new ApprovalStepModel();
         $this->MealApprovalModel          = new MealApprovalModel();
         $this->CutoffTimeModel            = new CutoffTimeModel();
         $this->PublicHolidayModel         = new PublicHolidayModel();
         $this->OccasionModel              = new OccasionModel();
+        $this->db          = db_connect();
     }
 
     public function history()
     {
-        $subs = $this->MealSubscriptionDetailModel
-            ->select('meal_subscription_details.*,
+        $subs = $this->MealSubscriptionModel
+            ->select('meal_subscriptions.*,
                     cafeterias.name  AS caffname,
                     meal_types.name  AS meal_type_name,
                     ct.cut_off_time  AS cutoff_time,
@@ -50,7 +43,7 @@ class EidSubscription extends BaseController
             ->join('meal_types', 'meal_types.id = meal_subscription_details.meal_type_id', 'left')
             ->join('cutoff_times ct', 'ct.meal_type_id = meal_subscription_details.meal_type_id', 'left')
             ->where('meal_subscription_details.user_id', session('user_id'))
-            ->whereIn('meal_subscription_details.meal_type_id', [4,5,6,7]) // EID types
+            ->whereIn('meal_subscription_details.meal_type_id', self::MEAL_TYPE_ID) // EID types
             ->orderBy('meal_subscription_details.id', 'DESC')
             ->findAll();
 
@@ -59,8 +52,8 @@ class EidSubscription extends BaseController
 
     public function allEidSubsList()
     {
-        $subs = $this->MealSubscriptionDetailModel
-            ->select('meal_subscription_details.*,
+        $subs = $this->MealSubscriptionModel
+            ->select('meal_subscriptions.*,
                     cafeterias.name  AS caffname,
                     meal_types.name  AS meal_type_name,
                     users.employee_id,
@@ -71,7 +64,7 @@ class EidSubscription extends BaseController
             ->join('meal_types', 'meal_types.id = meal_subscription_details.meal_type_id', 'left')
             ->join('users',      'users.id = meal_subscription_details.user_id', 'left')
             ->join('cutoff_times ct', 'ct.meal_type_id = meal_subscription_details.meal_type_id', 'left')
-            ->whereIn('meal_subscription_details.meal_type_id', [4,5,6,7]) // EID types
+            ->whereIn('meal_subscription_details.meal_type_id', self::MEAL_TYPE_ID) // EID types
             ->orderBy('meal_subscription_details.id', 'DESC')
             ->findAll();
 
@@ -96,7 +89,7 @@ class EidSubscription extends BaseController
         }
 
         return view('admin/eid_subscription/new', [
-            'mealTypes'       => $mealM->whereIn('id', [4,5,6,7])->findAll(),
+            'mealTypes'       => $mealM->whereIn('id', self::MEAL_TYPE_ID)->findAll(),
             'cafeterias'      => $cafM->findAll(),
             'occasion_date'   => $eidDay['occasion_date'],
             'validation'      => \Config\Services::validation(),
@@ -126,7 +119,7 @@ class EidSubscription extends BaseController
         $userType    = 'ADMIN';
 
         // 3) Overlap check
-        $existing = $this->MealSubscriptionDetailModel
+        $existing = $this->MealSubscriptionModel
             ->where('user_id', $userId)
             ->whereIn('meal_type_id', $mealTypeIds)
             ->where('subscription_date', $meal_date)
@@ -143,30 +136,43 @@ class EidSubscription extends BaseController
 
         // 4) Insert for each meal type
         foreach ($mealTypeIds as $meal_type_id) {
-            $subId = $this->MealSubscriptionModel->insert([
-                'user_id'           => $userId,
-                'meal_type_id'      => $meal_type_id,
-                'cafeteria_id'      => $cafeteriaId,
-                'start_date'        => $meal_date,
-                'end_date'          => $meal_date,
-                'status'            => $status,
-                'subscription_type' => $userType,
-                'remark'            => $remark,
-                'created_by'        => session('user_id'),
-            ]);
 
-            $this->MealSubscriptionDetailModel->insert([
-                'user_id'           => $userId,
-                'subscription_id'   => $subId,
-                'subscription_date' => $meal_date,
-                'status'            => $status,
-                'meal_type_id'      => $meal_type_id,
-                'cafeteria_id'      => $cafeteriaId,
-                'remark'            => $remark,
-                'created_by'        => session('user_id'),
-                'created_at'        => date('Y-m-d H:i:s'),
-                'updated_at'        => date('Y-m-d H:i:s'),
-            ]);
+            // User share from contributions (emp_type_id ALL; cafeteria match or NULL)
+            $userTk = $this->resolveUserTk($meal_type_id, 1, $cafeteriaId);
+            if ($userTk === null) {
+                return redirect()->back()->withInput()->with('error', 'Please configure Contributions for this meal type first.');
+            }
+
+            $insertId = $this->MealSubscriptionModel->insert([
+                'user_id'      => $userId,
+                'meal_type_id' => $meal_type_id,
+                'emp_type_id'  => self::EMPLOYEE_ID,
+                'cafeteria_id' => $cafeteriaId,
+                'subs_date'    => $meal_date,
+                'status'       => $status,
+                'price'        => round((float) $userTk, 2), // store numeric, not formatted string
+                'created_by'   => (int) session('user_id'),
+                'created_at'   => date('Y-m-d H:i:s'),
+                'updated_at'   => date('Y-m-d H:i:s'),
+            ], true); // returns insert id (or true if no AI PK, or false on failure)
+
+            // Handle possible boolean return
+            if (!$insertId || !is_numeric($insertId)) {
+                // optional: throw or handle error/rollback
+                // throw new \RuntimeException('Failed to insert subscription.');
+            } else {
+                $insertId = (int) $insertId;
+
+                if (!empty($remark)) {
+                    $this->db->table('remarks')->insert([
+                        'subs_id'         => $insertId,
+                        'remark'          => $remark,
+                        'approver_remark' => null,
+                        'created_at'      => date('Y-m-d H:i:s'),
+                    ]);
+                }
+            }
+
         }
 
         // 5) Final Redirect
@@ -181,7 +187,7 @@ class EidSubscription extends BaseController
     public function unsubscribeSingle($id)
     {
         // Mark the request cancelled
-        $this->MealSubscriptionDetailModel->update($id, ['status'=>'CANCELLED','unsubs_by'=>session('user_id')]);
+        $this->MealSubscriptionModel->update($id, ['status'=>'CANCELLED','unsubs_by'=>session('user_id')]);
         
         return redirect()->back()
                          ->with('success','Unsubscribed successfully.');
@@ -217,7 +223,7 @@ class EidSubscription extends BaseController
         }
 
         // Example: update all selected subscriptions to CANCELLED
-        $this->MealSubscriptionDetailModel
+        $this->MealSubscriptionModel
             ->whereIn('id', $ids)
             ->set('status', 'CANCELLED')
             ->set('approver_remark', $remark)
@@ -225,6 +231,59 @@ class EidSubscription extends BaseController
             ->update();
 
         return redirect()->back()->with('success', 'Selected subscriptions unsubscribed.');
+    }
+
+    // --- Helper: user share from meal_contributions ---
+    /**
+     * Find the best matching user contribution (user share) for a meal type.
+     * Priority:
+     * 1) exact emp_type + exact cafeteria
+     * 2) exact emp_type + cafeteria NULL
+     * 3) emp_type = ALL(0) + exact cafeteria
+     * 4) emp_type = ALL(0) + cafeteria NULL
+     * Returns float or null when not configured.
+     */
+    private function resolveUserTk(int $mealTypeId, int $empTypeId, ?int $cafeteriaId): ?float
+    {
+        $b = $this->db->table('meal_contributions')
+            ->select('user_tk')
+            ->where('is_active', 1)
+            ->where('meal_type_id', $mealTypeId);
+
+        // ---- Preference ordering (no backticks) ----
+        // exact emp_type first, then ALL(0)
+        $b->orderBy("(emp_type_id = {$empTypeId})", 'DESC', false);
+
+        // exact cafeteria first, then NULL
+        if ($cafeteriaId === null) {
+            $b->orderBy("(cafeteria_id IS NULL)", 'DESC', false);
+        } else {
+            $cafeteriaId = (int) $cafeteriaId;
+            $b->orderBy("(cafeteria_id = {$cafeteriaId})", 'DESC', false);
+        }
+
+        // stable last tie-breaker
+        $b->orderBy('id', 'DESC');
+
+        // ---- Filters (match exact/NULL combos) ----
+        if ($cafeteriaId === null) {
+            $b->groupStart()
+                ->where('cafeteria_id', null)
+            ->groupEnd();
+        } else {
+            $b->groupStart()
+                ->where('cafeteria_id', $cafeteriaId)
+                ->orWhere('cafeteria_id', null)
+            ->groupEnd();
+        }
+
+        $b->groupStart()
+            ->where('emp_type_id', $empTypeId)
+            ->orWhere('emp_type_id', 0)   // ALL
+        ->groupEnd();
+
+        $row = $b->get(1)->getFirstRow('array');
+        return $row ? (float) $row['user_tk'] : null;
     }
 
 }
