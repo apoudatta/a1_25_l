@@ -18,12 +18,12 @@
 
   <div class="col">
     <label class="form-label small mb-1">Employment Type</label>
-    <?php $t = (string) ($filters['type'] ?? '') ?>
+    <?php $eid = (int) ($filters['emp_type_id'] ?? 0) ?>
     <select name="type" id="filterType" class="form-select form-select-sm minw-220">
       <option value="">All</option>
       <?php foreach (($employmentTypes ?? []) as $et): ?>
         <?php $name = (string) $et['name']; ?>
-        <option value="<?= esc($name) ?>" <?= $t === $name ? 'selected' : '' ?>>
+        <option value="<?= (int)$et['id'] ?>" <?= $eid === (int)$et['id'] ? 'selected' : '' ?>>
           <?= esc($name) ?>
         </option>
       <?php endforeach; ?>
@@ -79,8 +79,8 @@
       <?php foreach (($rows ?? []) as $r): ?>
         <tr>
           <td><?= esc($r['id']) ?></td>
-          <td><?= esc($r['name']) ?></td>
-          <td class="text-nowrap"><?= esc(date('d-M-Y', strtotime($r['date_val']))) ?></td>
+          <td><?= esc($r['emp_name']) ?></td>
+          <td class="text-nowrap"><?= esc(date('d-M-Y', strtotime($r['subs_date']))) ?></td>
           <td><?= esc(mb_convert_case($r['emp_type'], MB_CASE_TITLE, 'UTF-8')) ?></td>
           <td><?= esc($r['meal_type']) ?></td>
           <td><?= esc($r['location']) ?></td>

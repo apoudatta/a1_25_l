@@ -34,16 +34,15 @@
 
   <div class="col">
     <label class="form-label small mb-1">Employment Type</label>
-    <?php $t = (string) ($filters['type'] ?? '') ?>
-    <select name="type" id="fType" class="form-select form-select-sm minw-220">
+    <?php $eid = (int) ($filters['emp_type_id'] ?? 0) ?>
+    <select name="type" id="filterType" class="form-select form-select-sm minw-220">
       <option value="">All</option>
       <?php foreach (($employmentTypes ?? []) as $et): ?>
         <?php $name = (string) $et['name']; ?>
-        <option value="<?= esc($name) ?>" <?= $t === $name ? 'selected' : '' ?>>
+        <option value="<?= (int)$et['id'] ?>" <?= $eid === (int)$et['id'] ? 'selected' : '' ?>>
           <?= esc($name) ?>
         </option>
       <?php endforeach; ?>
-
     </select>
   </div>
 
@@ -94,7 +93,7 @@
     <tbody>
       <?php foreach (($rows ?? []) as $r): ?>
         <tr>
-          <td class="text-nowrap"><?= esc($r['date']) ?></td>
+          <td class="text-nowrap"><?= esc($r['subs_date']) ?></td>
           <td><?= esc($r['month']) ?></td>
           <td><?= esc($r['year']) ?></td>
           <td class="text-end"><?= (int) $r['subscription_count'] ?></td>
