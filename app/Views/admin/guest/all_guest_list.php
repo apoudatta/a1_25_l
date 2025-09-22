@@ -37,7 +37,7 @@
   </div>
 </div>
 
-<form method="post" action="<?= site_url('admin/guest-subscriptions/unsubscribe_bulk') ?>" id="bulkUnsubscribeForm">
+<form method="post" action="<?= site_url('guest-subscriptions/unsubscribe_bulk') ?>" id="bulkUnsubscribeForm">
 
 <table id="subscriptionTable" class="table table-bordered table-striped nowrap w-100">
   <thead class="table-light">

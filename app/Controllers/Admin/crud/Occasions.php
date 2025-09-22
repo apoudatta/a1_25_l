@@ -13,7 +13,6 @@ class Occasions extends BaseController
         $this->model = new OccasionModel();
     }
 
-    /** GET /admin/occasions */
     public function index()
     {
         // Show from (current year - 1) Jan 1 through all future dates
@@ -30,13 +29,11 @@ class Occasions extends BaseController
     }
 
 
-    /** GET /admin/occasions/new */
     public function new()
     {
         return view('admin/crud/occasions/form', ['row'=>null]);
     }
 
-    /** POST /admin/occasions */
     private function occasionDateExists(string $date, ?int $exceptId = null): bool
     {
         $b = $this->model->where('occasion_date', $date);
@@ -63,10 +60,9 @@ class Occasions extends BaseController
             'occasion_date' => $date,
         ]);
 
-        return redirect()->to('admin/occasions')->with('success', 'Occasion added.');
+        return redirect()->to('occasions')->with('success', 'Occasion added.');
     }
 
-    /** GET /admin/occasions/{id}/edit */
     public function edit($id)
     {
         $row = $this->model->find($id);
@@ -76,7 +72,6 @@ class Occasions extends BaseController
         return view('admin/crud/occasions/form', ['row' => $row]);
     }
 
-    /** POST /admin/occasions/{id} */
     public function update($id)
     {
         $row = $this->model->find($id);
@@ -99,14 +94,13 @@ class Occasions extends BaseController
             'occasion_date' => $date,
         ]);
 
-        return redirect()->to('admin/occasions')->with('success', 'Occasion updated.');
+        return redirect()->to('occasions')->with('success', 'Occasion updated.');
     }
 
-    /** DELETE /admin/occasions/{id} */
     public function delete($id)
     {
         $this->model->delete($id);
-        return redirect()->to('admin/occasions')
+        return redirect()->to('occasions')
                          ->with('success','Occasion deleted.');
     }
 }

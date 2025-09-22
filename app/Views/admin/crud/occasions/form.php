@@ -5,8 +5,8 @@
 <h2 class="mb-4"><?= $isEdit ? 'Edit' : 'New' ?> Occasion</h2>
 
 <form action="<?= $isEdit
-    ? site_url("admin/occasions/{$row['id']}")
-    : site_url('admin/occasions') ?>"
+    ? site_url("occasions/{$row['id']}")
+    : site_url('occasions') ?>"
   method="post" class="row g-3">
 
   <?= csrf_field() ?>
@@ -33,7 +33,7 @@
 
   <div class="col-12">
     <button class="btn btn-success"><?= $isEdit ? 'Update' : 'Create' ?></button>
-    <a href="<?= site_url('admin/occasions')?>" class="btn btn-secondary">Cancel</a>
+    <a href="<?= site_url('occasions')?>" class="btn btn-secondary">Cancel</a>
   </div>
 </form>
 

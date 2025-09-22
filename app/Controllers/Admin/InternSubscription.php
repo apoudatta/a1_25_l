@@ -46,7 +46,7 @@ class InternSubscription extends BaseController
         $this->db = db_connect();
     }
 
-    /** GET /admin/intern-subscriptions/new */
+    /** GET /intern-subscriptions/new */
     public function new()
     {
         // default Lunch (1) like your view
@@ -127,7 +127,7 @@ class InternSubscription extends BaseController
         return view('admin/intern_subscription/index', ['subs' => $rows]);
     }
 
-    /** POST /admin/guest-subscriptions/process-upload */
+    /** POST /guest-subscriptions/process-upload */
     public function processUpload()
     {
         if (! $this->validateUpload()) {               // <- call the helper (don’t pass its return into validate())
@@ -149,13 +149,13 @@ class InternSubscription extends BaseController
         // Insert everything
         $result = $this->insertSubscriptionsBulk($mealTypeId, $dates, $rows);
         if ($result[0] !== true) {
-            return redirect()->to('admin/intern-subscriptions')->with('success', $result[1]);
+            return redirect()->to('intern-subscriptions')->with('success', $result[1]);
         }
 
-        return redirect()->to('admin/intern-subscriptions')->with('success', 'Excel processed and subscriptions created.');
+        return redirect()->to('intern-subscriptions')->with('success', 'Excel processed and subscriptions created.');
     }
 
-    /** POST /admin/intern-subscriptions/unsubscribe/(:num) */
+    /** POST /intern-subscriptions/unsubscribe/(:num) */
     public function unsubscribe($id)
     {
         $ok = $this->subs->update((int)$id, [
@@ -167,7 +167,7 @@ class InternSubscription extends BaseController
         return redirect()->back()->with($ok ? 'success' : 'error', $ok ? 'Unsubscribed successfully.' : 'Unable to unsubscribe.');
     }
 
-    /** POST /admin/intern-subscriptions/unsubscribe-bulk */
+    /** POST /intern-subscriptions/unsubscribe-bulk */
     public function unsubscribe_bulk()
     {
         $ids    = array_values(array_filter((array)$this->request->getPost('subscription_ids'), 'is_numeric'));

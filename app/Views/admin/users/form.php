@@ -21,7 +21,7 @@
 <?php endif; ?>
 
 <form
-  action="<?= site_url($isEdit ? "admin/users/update/{$user['id']}" : 'admin/users/store') ?>"
+  action="<?= site_url($isEdit ? "users/update/{$user['id']}" : 'users/store') ?>"
   method="post"
 >
   <?= csrf_field() ?>
@@ -153,7 +153,7 @@
   <button type="submit" class="btn btn-primary">
     <?= $isEdit ? 'Update' : 'Create' ?>
   </button>
-  <a href="<?= site_url('admin/users') ?>" class="btn btn-outline-secondary">Cancel</a>
+  <a href="<?= site_url('users') ?>" class="btn btn-outline-secondary">Cancel</a>
 </form>
 
 <?= $this->endSection() ?>

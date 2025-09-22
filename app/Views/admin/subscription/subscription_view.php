@@ -84,7 +84,7 @@
       <td class="status-cell"><?= esc($s['status']) ?></td>
       <td>
         <?php if ($canUnsubscribe): ?>
-          <form method="post" action="<?= site_url("admin/subscription/unsubscribe_single/{$s['id']}") ?>" class="d-inline">
+          <form method="post" action="<?= site_url("subscription/unsubscribe_single/{$s['id']}") ?>" class="d-inline">
             <?= csrf_field() ?>
             <button type="submit" id="unsubscribe_btn_<?= esc($s['id'], 'attr') ?>" class="btn btn-sm btn-danger">Unsubscribe</button>
           </form>
@@ -123,8 +123,8 @@
 
     // Get ISO meal date from the 4th column's data-order attribute
     const rowNode = table.row(dataIndex).node();
-    const isoMealDate = $('td:eq(3)', rowNode).attr('data-order') || ''; // col 3 = Meal Date
-    const cafeteria   = data[5]; // col 5 = Cafeteria
+    const isoMealDate = $('td:eq(4)', rowNode).attr('data-order') || ''; // col 4 = Meal Date
+    const cafeteria   = data[6]; // col 5 = Cafeteria
 
     // Date range (string compare is fine for YYYY-MM-DD)
     if (from && isoMealDate < from) return false;

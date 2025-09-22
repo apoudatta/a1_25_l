@@ -23,7 +23,9 @@ class Users extends BaseController
     // List users
     public function index()
     {
-        $data['users'] = $this->userModel->findAll();
+        $data['users'] = $this->userModel
+                    ->where('id !=', 1)
+                    ->findAll();
         return view('admin/users/index', $data);
     }
 
@@ -69,7 +71,7 @@ class Users extends BaseController
 
         // Sync: only for LOCAL users
         $syncMsg = $this->syncPortalIfLocal($user, 'created');
-        return redirect()->to('admin/users')->with('success', 'User created. ' . $syncMsg);
+        return redirect()->to('users')->with('success', 'User created. ' . $syncMsg);
     }
 
     // Show edit form
@@ -103,7 +105,7 @@ class Users extends BaseController
         // Sync: only for LOCAL users
         $syncMsg = $this->syncPortalIfLocal($user, 'updated');
 
-        return redirect()->to('admin/users')
+        return redirect()->to('users')
             ->with('success', 'User updated. ' . $syncMsg);
     }
 
@@ -113,7 +115,7 @@ class Users extends BaseController
         $this->userModel->update($id, ['status' => 'ACTIVE']);$user    = $this->userModel->find((int) $id);
         $syncMsg = $this->syncPortalIfLocal($user, 'activated');
 
-        return redirect()->to('admin/users')->with('success', 'User Activated! ' . $syncMsg);
+        return redirect()->to('users')->with('success', 'User Activated! ' . $syncMsg);
     }
     // Inactive user
     public function inactive($id)
@@ -122,7 +124,7 @@ class Users extends BaseController
         $user    = $this->userModel->find((int) $id);
         $syncMsg = $this->syncPortalIfLocal($user, 'inactivated');
 
-        return redirect()->to('admin/users')->with('success', 'User deactivated! ' . $syncMsg);
+        return redirect()->to('users')->with('success', 'User deactivated! ' . $syncMsg);
     }
 
     public function getEmpId($id)
@@ -300,7 +302,7 @@ class Users extends BaseController
             'employee'    => $employee,
             'allUsers'    => $allUsers,
             'currentLmId' => $currentLmId,
-            'action'      => site_url('admin/users/'.$employeeId.'/line-manager'),
+            'action'      => site_url('users/'.$employeeId.'/line-manager'),
         ]);
     }
 
@@ -337,7 +339,7 @@ class Users extends BaseController
             // 'lm_source' => 'MANUAL',
         ]);
 
-        return redirect()->to(site_url('admin/users'))
+        return redirect()->to(site_url('users'))
             ->with('message', 'Line Manager saved successfully.');
     }
 

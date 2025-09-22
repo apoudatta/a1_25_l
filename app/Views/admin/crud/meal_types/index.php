@@ -7,7 +7,7 @@
   <h2 class="mb-0">Meal Types</h2>
 
   <?php if (can('admin.meal-types.new')): ?>
-    <a href="<?= site_url('admin/meal-types/new') ?>" class="btn btn-primary">
+    <a href="<?= site_url('meal-types/new') ?>" class="btn btn-primary">
       <i class="bi bi-plus-lg"></i> New Meal Type
     </a>
   <?php endif; ?>
@@ -36,11 +36,11 @@
         <td>
 
         <?php if (can('admin.meal-types.edit')): ?>
-          <a href="<?= site_url("admin/meal-types/{$t['id']}/edit") ?>"
+          <a href="<?= site_url("meal-types/{$t['id']}/edit") ?>"
              class="btn btn-sm btn-secondary">Edit</a>
         <?php endif; ?>
 
-          <!-- <form action="<?= site_url("admin/meal-types/{$t['id']}/delete") ?>"
+          <!-- <form action="<?= site_url("meal-types/{$t['id']}/delete") ?>"
                 method="post"
                 class="d-inline"
                 onsubmit="return confirm('Delete this meal type?')">

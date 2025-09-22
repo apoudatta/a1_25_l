@@ -11,8 +11,8 @@
 <?php endif; ?>
 
 <form method="post" action="<?= $mode==='create'
-  ? site_url('admin/meal-cards')
-  : site_url('admin/meal-cards/'.$row['id'].'/update') ?>">
+  ? site_url('meal-cards')
+  : site_url('meal-cards/'.$row['id'].'/update') ?>">
   <?= csrf_field() ?>
 
   <div class="row g-3">
@@ -61,7 +61,7 @@
     <button class="btn btn-primary" type="submit">
       <?= $mode==='create' ? 'Create' : 'Update' ?>
     </button>
-    <a class="btn btn-outline-secondary" href="<?= site_url('admin/meal-cards') ?>">Cancel</a>
+    <a class="btn btn-outline-secondary" href="<?= site_url('meal-cards') ?>">Cancel</a>
   </div>
 </form>
 
@@ -81,7 +81,7 @@ $(function () {
 
   $user.empty().append($('<option>', { value: '', text: 'Select employee…' }));
 
-  $.getJSON("<?= site_url('admin/employees/active-list') ?>")
+  $.getJSON("<?= site_url('employees/active-list') ?>")
     .done(function (res) {
       res.forEach(function (emp) {
         $user.append(new Option(emp.name, emp.id));
@@ -91,7 +91,7 @@ $(function () {
         // If the current user isn’t in the active list (e.g., inactive), append it so it can be selected
         if ($user.find('option[value="'+selectedUserId+'"]').length === 0) {
           // optional: hit a lookup endpoint that returns {id,name}
-          $.getJSON("<?= site_url('admin/employees/lookup') ?>/" + selectedUserId)
+          $.getJSON("<?= site_url('employees/lookup') ?>/" + selectedUserId)
             .done(function (emp) {
               if (emp && emp.id) $user.append(new Option(emp.name + ' (inactive)', emp.id));
             })
@@ -110,7 +110,7 @@ $(function () {
   $user.on('change', function () {
     const userId = this.value;
     if (!userId) { $empId.val(''); return; }
-    $.getJSON("<?= site_url('admin/user/getEmpId') ?>/" + userId)
+    $.getJSON("<?= site_url('user/getEmpId') ?>/" + userId)
       .done(function (res) { $empId.val(res.employee_id || ''); })
       .fail(function () { $empId.val(''); });
   });

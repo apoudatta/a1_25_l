@@ -32,7 +32,7 @@
   </div>
 </div>
 
-<form method="post" action="<?= site_url('admin/eid-subscription/unsubscribe_bulk') ?>" id="bulkUnsubscribeForm">
+<form method="post" action="<?= site_url('eid-subscription/unsubscribe_bulk') ?>" id="bulkUnsubscribeForm">
 <table id="subscriptionTable" class="table table-bordered table-striped nowrap w-100">
   <thead class="table-light">
     <tr>

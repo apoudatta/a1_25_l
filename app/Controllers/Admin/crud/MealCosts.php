@@ -19,7 +19,6 @@ class MealCosts extends BaseController
         $this->mealTypeModel  = new MealTypeModel();
     }
 
-    /** GET /admin/meal-costs */
     public function index()
     {
         // Client-side table: load all rows (with joins for labels)
@@ -34,7 +33,6 @@ class MealCosts extends BaseController
     }
 
 
-    /** GET /admin/meal-costs/new */
     public function new()
     {
         $cafeterias = $this->cafModel->findAll();
@@ -47,7 +45,6 @@ class MealCosts extends BaseController
         ]);
     }
 
-    /** POST /admin/meal-costs */
     public function create()
     {
         $cafeteriaId = $this->request->getPost('cafeteria_id');
@@ -69,10 +66,9 @@ class MealCosts extends BaseController
             return redirect()->back()->withInput()->with('error', implode(' ', $this->model->errors()));
         }
 
-        return redirect()->to('admin/meal-costs')->with('success', 'Meal cost created.');
+        return redirect()->to('meal-costs')->with('success', 'Meal cost created.');
     }
 
-    /** GET /admin/meal-costs/{id}/edit */
     public function edit($id)
     {
         $cost = $this->model->find($id);
@@ -90,7 +86,6 @@ class MealCosts extends BaseController
         ]);
     }
 
-    /** POST /admin/meal-costs/{id} */
     public function update($id)
     {
         $cafeteriaId = $this->request->getPost('cafeteria_id');
@@ -105,21 +100,19 @@ class MealCosts extends BaseController
             'base_price'     => number_format($base, 2, '.', ''),
             'effective_date' => $effective,
             'is_active'      => $isActive,
-            // no updated_at column to set
         ];
 
         if (! $this->model->update((int) $id, $data)) {
             return redirect()->back()->withInput()->with('error', implode(' ', $this->model->errors()));
         }
 
-        return redirect()->to('admin/meal-costs')->with('success', 'Meal cost updated.');
+        return redirect()->to('meal-costs')->with('success', 'Meal cost updated.');
     }
 
-    /** DELETE /admin/meal-costs/{id} */
     public function delete($id)
     {
         $this->model->delete($id);
-        return redirect()->to('admin/meal-costs')
+        return redirect()->to('meal-costs')
                          ->with('success','Meal cost deleted.');
     }
 

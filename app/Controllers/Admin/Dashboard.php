@@ -4,9 +4,20 @@ namespace App\Controllers\Admin;
 use App\Controllers\BaseController;
 use App\Models\MealTypeModel;
 use CodeIgniter\Database\BaseBuilder;
+use DateTime;
+use DateTimeZone;
 
 class Dashboard extends BaseController
 {
+    private const EMPLOYEE_TYPE = 1;
+    private const GUEST_TYPES   = [8, 9, 10];
+
+    protected \CodeIgniter\Database\BaseConnection $db;
+
+    public function __construct()
+    {
+        $this->db = \Config\Database::connect();
+    }
     /**
      * Dashboard main view
      */
@@ -128,7 +139,7 @@ class Dashboard extends BaseController
 
         $pending = (int) ($qb3->get()->getFirstRow('array')['c'] ?? 0);
 
-        return view('admin/dashboard/index', [
+        return view('dashboard/admin_dashboard', [
             'registrations'  => $registrations,
             'consumed'       => $consumed,
             'pending'        => $pending,
@@ -256,5 +267,111 @@ class Dashboard extends BaseController
             'labels' => $labels,
             'data'   => $data,
         ]);
+    }
+
+    public function employeeDashboard()
+    {
+        // Inputs (Y-m-d). Defaults to current month in Asia/Dhaka.
+        $startDateIn = trim((string) ($this->request->getGet('start_date') ?? ''));
+        $endDateIn   = trim((string) ($this->request->getGet('end_date') ?? ''));
+        $cafeteriaId = (int) ($this->request->getGet('cafeteria_id') ?? 0);
+
+        $tz = new DateTimeZone('Asia/Dhaka');
+        if ($startDateIn === '' || $endDateIn === '') {
+            $today     = new DateTime('now', $tz);
+            $startDate = (clone $today)->modify('first day of this month')->format('Y-m-d');
+            $endDate   = (clone $today)->modify('last day of this month')->format('Y-m-d');
+        } else {
+            $startDate = $startDateIn;
+            $endDate   = $endDateIn;
+        }
+
+        $userId = (int) (session('user_id') ?? 0);
+
+        // Cafeteria dropdown
+        $cafeterias = $this->db->table('cafeterias')
+            ->select('id, name')
+            ->where('is_active', 1)
+            ->orderBy('name', 'ASC')
+            ->get()->getResultArray();
+
+        // Common WHERE for date/cafeteria
+        $periodWhere = [
+            'subs_date >=' => $startDate,
+            'subs_date <=' => $endDate,
+        ];
+        if ($cafeteriaId > 0) {
+            $periodWhere['cafeteria_id'] = $cafeteriaId;
+        }
+
+        // ===== Employee (self) stats =====
+        $empWhere = $periodWhere + [
+            'user_id'     => $userId,
+            'emp_type_id' => self::EMPLOYEE_TYPE,
+        ];
+        $empCounts = $this->countByStatus($empWhere);
+
+        // Map to legacy keys
+        $totalActive    = $empCounts['ACTIVE']   ?? 0;
+        $totalPending   = $empCounts['PENDING']  ?? 0;
+        $totalConsumed  = $empCounts['REDEEMED'] ?? 0;
+        $totalCancelled = $empCounts['CANCELLED']?? 0;
+
+        // ===== Guests created by me (guest types only) =====
+        $guestWhere = $periodWhere + [
+            'created_by' => $userId,
+        ];
+        $guestCounts = $this->countByStatus($guestWhere, true); // restrict to guest types
+
+        $guestActive   = $guestCounts['ACTIVE']   ?? 0;
+        $guestConsumed = $guestCounts['REDEEMED'] ?? 0;
+
+        return view('dashboard/employee_dashboard', [
+            // unchanged payload
+            'registrations'   => $totalActive,
+            'pending'         => $totalPending,
+            'cancelled'       => $totalCancelled,
+            'consumed'        => $totalConsumed,
+
+            // unchanged guest keys
+            'guest'           => $guestActive,
+            'guest_consumed'  => $guestConsumed,
+
+            // unchanged filter data
+            'cafeterias'      => $cafeterias,
+            'cafeteria_id'    => $cafeteriaId,
+            'start_date'      => $startDate,
+            'end_date'        => $endDate,
+        ]);
+    }
+
+    /**
+     * Returns counts by status from `meal_subscriptions`.
+     * If $guestOnly is true, restricts to guest emp_type_ids.
+     *
+     * @param array $where   Column => value pairs
+     * @param bool  $guestOnly
+     * @return array         ['ACTIVE'=>n,'PENDING'=>n,'REDEEMED'=>n,'CANCELLED'=>n,'NO_SHOW'=>n]
+     */
+    private function countByStatus(array $where, bool $guestOnly = false): array
+    {
+        $tb = $this->db->table('meal_subscriptions')
+            ->select('status, COUNT(*) AS c', false)
+            ->where($where);
+
+        if ($guestOnly) {
+            $tb->whereIn('emp_type_id', self::GUEST_TYPES);
+        }
+
+        $rows = $tb->groupBy('status')->get()->getResultArray();
+
+        $out = [];
+        foreach ($rows as $r) {
+            $out[$r['status']] = (int) $r['c'];
+        }
+        foreach (['ACTIVE','PENDING','REDEEMED','CANCELLED','NO_SHOW'] as $k) {
+            $out[$k] = $out[$k] ?? 0;
+        }
+        return $out;
     }
 }

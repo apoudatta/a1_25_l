@@ -5,7 +5,7 @@
 <?php $isEdit = isset($contrib); ?>
 <h4 class="mb-4"><?= $isEdit ? 'Edit' : 'New' ?> Contribution</h4>
 
-<form action="<?= $isEdit ? site_url('admin/contributions/'.$contrib['id']) : site_url('admin/contributions') ?>"
+<form action="<?= $isEdit ? site_url('contributions/'.$contrib['id']) : site_url('contributions') ?>"
       method="post" class="row g-3">
   <?= csrf_field() ?>
   <?php if ($isEdit): ?>
@@ -65,7 +65,7 @@
 
   <div class="col-12">
     <button class="btn btn-primary"><?= $isEdit ? 'Update' : 'Create' ?></button>
-    <a href="<?= site_url('admin/contributions') ?>" class="btn btn-outline-secondary">Cancel</a>
+    <a href="<?= site_url('contributions') ?>" class="btn btn-outline-secondary">Cancel</a>
   </div>
 </form>
 
@@ -74,7 +74,7 @@
 <?= $this->section('scripts') ?>
 <script>
 (function ($) {
-  const ENDPOINT = '<?= site_url('admin/contributions/get-base-price') ?>';
+  const ENDPOINT = '<?= site_url('contributions/get-base-price') ?>';
   const $meal    = $('#mealTypeSelect');
   const $base    = $('#basePrice');
   const $company = $('#companyTk');

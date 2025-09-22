@@ -1,6 +1,7 @@
 <?php 
   $adminMenus = [
     ['name' => "Dashboard", 'perm' => "admin.dashboard"],
+    ['name' => "Employee Dashboard", 'perm' => "admin.employee-dashboard"],
     [
       'name' => "Employee Management", 'perm' => "admin.users",
       'option'=> [
@@ -12,7 +13,6 @@
             ['name' => "Set Line Manager", 'perm' => "admin.users.line-manager-set"],
       ]
     ],
-    ['name' => "Meal Approvals", 'perm' => "admin.approvals"],
     [
       'name' => "Lunch Management", 'perm' => "meal.subscriptions",
       'sub_menu' => [
@@ -54,6 +54,7 @@
     [
       'name' => "Ramadan Meal", 'perm' => "admin.ramadan",
       'sub_menu' => [
+        ['name' => "Meal Approvals", 'perm' => "admin.approvals"],
         [
           'name' => "Subscribe Ifter", 'perm' => "admin.ramadan.ifter-subscription.history",
           'option'=> [
@@ -198,65 +199,6 @@
   ];
 
 
-  $employeeMenus = [
-    ['name' => "Dashboard", 'perm' => "employee.dashboard"],
-    ['name' => "Meal Approvals", 'perm' => "employee.approvals"],
-    [
-      'name' => "Employee Lunch", 'perm' => "employee.meal.subscriptions",
-      'sub_menu' => [
-        ['name' => "Lunch Subscriptions", 'perm' => "employee.subscriptions.new"],
-        [
-          'name' => "My Subscriptions", 'perm' => "employee.subscriptions.history",
-          'option'=> [
-            ['name' => "Unsubscribe",        'perm' => "employee.subscriptions.unsubscribe"],
-          ],
-        ],
-      ],
-    ],
-    [
-      'name' => "Guest Subscription", 'perm' => "employee.guest-subscriptions",
-      'sub_menu' => [
-        ['name' => "Personal Guest Subscription", 'perm' => "employee.guests.new"],
-        [
-          'name' => "Personal Guest List", 'perm' => "employee.guests.index",
-          'option'=> [
-            ['name' => "Unsubscribe",      'perm' => "employee.guests.unsubscribe"],
-          ]
-        ],
-      ],
-    ],
-    [
-      'name' => "Ramadan Meal", 'perm' => "employee.ramadan",
-      'sub_menu' => [
-        ['name' => "Subscribe Ifter",   'perm' => "employee.ifter.new"],
-        [
-          'name' => "Ifter List", 'perm' => "employee.ifter.history",
-          'option'=> [
-            ['name' => "Unsubscribe",        'perm' => "employee.ifter.unsubscribe"],
-          ]
-        ],
-        ['name' => "Subscribe Sehri",   'perm' => "employee.sehri.new"],
-        [
-          'name' => "Sehri List", 'perm' => "employee.sehri.history",
-          'option'=> [
-            ['name' => "Unsubscribe",        'perm' => "employee.sehri.unsubscribe"],
-          ]
-        ]
-      ],
-    ],
-    [
-      'name' => "Eid Meal", 'perm' => "employee.eid-subscription",
-      'sub_menu' => [
-        ['name' => "Subscribe Meal", 'perm' => "employee.eid.new"],
-        [
-          'name' => "Subscriptions List", 'perm' => "employee.eid.history",
-          'option'=> [
-            ['name' => "Unsubscribe",     'perm' => "employee.eid.unsubscribe"],
-          ]
-        ],
-      ],
-    ],
-  ];
 
   $vendorMenus = [
     ['name' => "Dashboard", 'perm' => "vendor.dashboard"],
@@ -278,9 +220,7 @@
     ['name' => "My Profile", 'perm' => "vendor.profile.view"],
   ];
 
-  if($role['id'] == '3') {
-    $menus = $employeeMenus;
-  } elseif($role['id'] == '4') {
+  if($role['id'] == '4') {
     $menus = $vendorMenus;
   } else {
     $menus = $adminMenus;
@@ -292,7 +232,7 @@
 
 <h5>Role Permissions — <?= esc($role['name']) ?></h5>
 
-<form method="post" action="<?= site_url('admin/roles/'.$role['id'].'/permissions') ?>">
+<form method="post" action="<?= site_url('roles/'.$role['id'].'/permissions') ?>">
   <?= csrf_field() ?>
 
 
@@ -410,7 +350,7 @@ $renderOptions = function (array $opts) use ($renderPerm) {
 
   <div class="mt-3">
     <button class="btn btn-primary">Save Changes</button>
-    <a class="btn btn-light" href="<?= site_url('admin/roles') ?>">Back</a>
+    <a class="btn btn-light" href="<?= site_url('roles') ?>">Back</a>
   </div>
 </form>
 

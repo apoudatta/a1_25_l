@@ -8,7 +8,7 @@
   <h2 class="mb-0">Cafeterias</h2>
 
   <?php if (can('admin.cafeterias.new')): ?>
-    <a href="<?= site_url('admin/cafeterias/new') ?>" class="btn btn-primary">
+    <a href="<?= site_url('cafeterias/new') ?>" class="btn btn-primary">
       <i class="bi bi-plus-lg"></i> New Cafeteria
     </a>
   <?php endif; ?>
@@ -34,10 +34,10 @@
         <td><?= $c['is_active'] ? 'Yes' : 'No' ?></td>
         <td>
           <?php if (can('admin.cafeterias.edit')): ?>
-            <a href="<?= site_url("admin/cafeterias/{$c['id']}/edit") ?>" class="btn btn-sm btn-secondary">Edit</a>
+            <a href="<?= site_url("cafeterias/{$c['id']}/edit") ?>" class="btn btn-sm btn-secondary">Edit</a>
           <?php endif; ?>
 
-          <form action="<?= site_url("admin/cafeterias/{$c['id']}") ?>" method="post" class="d-inline"
+          <form action="<?= site_url("cafeterias/{$c['id']}") ?>" method="post" class="d-inline"
                 onsubmit="return confirm('Delete this cafeteria?')">
             <?= csrf_field() ?>
             <input type="hidden" name="_method" value="DELETE">

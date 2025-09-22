@@ -4,9 +4,9 @@
 <h2>Steps for Flow #<?= esc($flowId) ?></h2>
 
 <p>
-  <a href="<?= site_url("admin/approval-flows/$flowId/steps/new") ?>"
+  <a href="<?= site_url("approval-flows/$flowId/steps/new") ?>"
      class="btn btn-primary">+ New Step</a>
-  <a href="<?= site_url('admin/approval-flows') ?>"
+  <a href="<?= site_url('approval-flows') ?>"
      class="btn btn-secondary">← Back to Flows</a>
 </p>
 
@@ -42,9 +42,9 @@
              : '—' ?>
         </td>
         <td>
-          <a href="<?= site_url("admin/approval-flows/$flowId/steps/{$s['id']}/edit") ?>"
+          <a href="<?= site_url("approval-flows/$flowId/steps/{$s['id']}/edit") ?>"
              class="btn btn-sm btn-secondary">Edit</a>
-          <form action="<?= site_url("admin/approval-flows/$flowId/steps/{$s['id']}")?>"
+          <form action="<?= site_url("approval-flows/$flowId/steps/{$s['id']}")?>"
                 method="post" class="d-inline"
                 onsubmit="return confirm('Delete this step?')">
             <?= csrf_field() ?>

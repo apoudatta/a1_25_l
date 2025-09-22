@@ -1,25 +1,31 @@
 <?= $this->extend('layouts/vendor') ?>
 <?= $this->section('content') ?>
 
-<h4 class="mb-3">Daily Registrations – <?= esc($monthLabel) ?></h4>
-<canvas id="monthlyChart" height="200"></canvas>
+<h2 class="mb-3">Registrations on <?= esc($date) ?></h2>
 
-<script>
-  // Data rendered server-side into JS variables
-  const labels = <?= json_encode(array_map(fn($r)=>substr($r->day,8), $rows)) ?>;
-  const data   = <?= json_encode(array_map(fn($r)=>(int)$r->cnt, $rows)) ?>;
-
-  new Chart($('#monthlyChart'), {
-    type: 'bar',
-    data: {
-      labels,
-      datasets: [{
-        label: 'Registrations',
-        data,
-        fill: false
-      }]
-    }
-  });
-</script>
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Meal Date</th>
+      <th>Meal Type Name</th>
+      <th>Cafeteria Name</th>
+      <th>Status</th>
+      <th>Total</th>
+    </tr>
+  </thead>
+  <tbody>
+    <?php foreach($rows as $s): ?>
+    <tr>
+      <td><?= $s['id'] ?></td>
+      <td><?= esc($s['subs_date']) ?></td>
+      <td><?= esc($s['meal_type_name']) ?></td>
+      <td><?= esc($s['cafeteria_name']) ?></td>
+      <td><?= esc($s['status']) ?></td>
+      <td><?= esc($s['total']) ?></td>
+    </tr>
+    <?php endforeach ?>
+  </tbody>
+</table>
 
 <?= $this->endSection() ?>

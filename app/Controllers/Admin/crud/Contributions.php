@@ -100,7 +100,7 @@ class Contributions extends BaseController
             return redirect()->back()->withInput()->with('error', implode(' ', $this->model->errors()));
         }
 
-        return redirect()->to('admin/contributions')->with('success', 'Contribution created.');
+        return redirect()->to('contributions')->with('success', 'Contribution created.');
     }
 
     public function edit($id)
@@ -153,18 +153,18 @@ class Contributions extends BaseController
             return redirect()->back()->withInput()->with('error', implode(' ', $this->model->errors()));
         }
 
-        return redirect()->to('admin/contributions')->with('success', 'Contribution updated.');
+        return redirect()->to('contributions')->with('success', 'Contribution updated.');
     }
 
     public function delete($id)
     {
         $this->model->delete((int) $id);
-        return redirect()->to('admin/contributions')->with('success', 'Contribution deleted.');
+        return redirect()->to('contributions')->with('success', 'Contribution deleted.');
     }
 
     /**
      * Toggle active flag. Works with normal POST or AJAX.
-     * POST /admin/contributions/{id}/toggle
+     * POST /contributions/{id}/toggle
      */
    // app/Controllers/Admin/crud/Contributions.php
 

@@ -33,7 +33,7 @@
   </div>
 
   <button class="btn btn-success"><?= $button ?></button>
-  <a href="<?= site_url('admin/meal-types') ?>"
+  <a href="<?= site_url('meal-types') ?>"
      class="btn btn-secondary">Cancel</a>
 </form>
 

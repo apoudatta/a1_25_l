@@ -4,7 +4,7 @@
 <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
   <h2 class="mb-0">Ramadan Periods</h2>
   <?php if (can('admin.ramadan-periods.create')): ?>
-    <a href="<?= site_url('admin/ramadan-periods/new') ?>" class="btn btn-primary">
+    <a href="<?= site_url('ramadan-periods/new') ?>" class="btn btn-primary">
       <i class="bi bi-calendar-plus me-2"></i> New Period
     </a>
   <?php endif; ?>
@@ -35,9 +35,9 @@
           </td>
           <td>
             <?php if (can('admin.ramadan-periods.edit')): ?>
-              <a href="<?= site_url("admin/ramadan-periods/{$r['id']}/edit") ?>" class="btn btn-sm btn-secondary me-1">Edit</a>
+              <a href="<?= site_url("ramadan-periods/{$r['id']}/edit") ?>" class="btn btn-sm btn-secondary me-1">Edit</a>
             <?php endif; ?>
-            <!-- <form action="<?= site_url("admin/ramadan-periods/{$r['id']}") ?>"
+            <!-- <form action="<?= site_url("ramadan-periods/{$r['id']}") ?>"
                   method="post" class="d-inline"
                   onsubmit="return confirm('Delete this period?')">
               <?= csrf_field() ?>

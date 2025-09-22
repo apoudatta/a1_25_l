@@ -15,7 +15,7 @@
 
 <form
   method="post"
-  action="<?= site_url('admin/employment-types/store') ?>"
+  action="<?= site_url('employment-types/store') ?>"
   class="row g-3"
 >
   <?= csrf_field() ?>
@@ -72,7 +72,7 @@
     >Save</button>
 
     <a
-      href="<?= site_url('admin/employment-types') ?>"
+      href="<?= site_url('employment-types') ?>"
       class="btn btn-sm btn-secondary"
     >Back</a>
   </div>

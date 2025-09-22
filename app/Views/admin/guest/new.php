@@ -17,7 +17,7 @@
   </div>
 <?php endif ?>
 
-<?= form_open('admin/guest-subscriptions/store') ?>
+<?= form_open('guest-subscriptions/store') ?>
   <?= csrf_field() ?>
 
   <div class="row g-3 mb-3">

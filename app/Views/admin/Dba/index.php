@@ -43,7 +43,7 @@ bKash :: DBA
 		<div class="user_detail">
 			
 			<form 
-				action="<?= base_url('admin/dba'); ?>" 
+				action="<?= base_url('dba'); ?>" 
 				method="post" 
 				enctype="multipart/form-data"
 				class="card shadow-sm p-3"

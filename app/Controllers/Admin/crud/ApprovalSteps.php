@@ -65,7 +65,7 @@ class ApprovalSteps extends BaseController
         ];
 
         $this->stepModel->insert($data);
-        return redirect()->to("admin/approval-flows/{$flowId}/steps")
+        return redirect()->to("approval-flows/{$flowId}/steps")
                          ->with('success','Step added.');
     }
 
@@ -101,7 +101,7 @@ class ApprovalSteps extends BaseController
         ];
 
         $this->stepModel->update($stepId, $data);
-        return redirect()->to("admin/approval-flows/{$flowId}/steps")
+        return redirect()->to("approval-flows/{$flowId}/steps")
                          ->with('success','Step updated.');
     }
 
@@ -109,7 +109,7 @@ class ApprovalSteps extends BaseController
     public function delete($flowId, $stepId)
     {
         $this->stepModel->delete($stepId);
-        return redirect()->to("admin/approval-flows/{$flowId}/steps")
+        return redirect()->to("approval-flows/{$flowId}/steps")
                          ->with('success','Step removed.');
     }
 }

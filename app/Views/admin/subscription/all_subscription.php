@@ -41,7 +41,7 @@
   </div>
 </div>
 
-<form method="post" action="<?= site_url('admin/subscription/unsubscribe_bulk') ?>" id="bulkUnsubscribeForm">
+<form method="post" action="<?= site_url('subscription/unsubscribe_bulk') ?>" id="bulkUnsubscribeForm">
   
 
 <table id="subscriptionTable" class="table table-bordered table-striped nowrap w-100">
@@ -103,7 +103,7 @@
               <button
                 type="submit"
                 class="btn btn-sm btn-danger"
-                formaction="<?= site_url("admin/subscription/unsubscribe_single/{$s['id']}") ?>"
+                formaction="<?= site_url("subscription/unsubscribe_single/{$s['id']}") ?>"
                 formmethod="post"
                 data-bs-toggle="tooltip"
                 title="Unsubscribe"

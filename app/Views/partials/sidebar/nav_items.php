@@ -5,17 +5,17 @@ if ($perm && ! (has_role('SUPER ADMIN') || can($perm))) {
 }
 
 $setting_paths = [
-  'admin/meal-cards',
-  'admin/approval-flows',
-  'admin/cafeterias',
-  'admin/meal-costs',
-  'admin/contributions',
-  'admin/public-holidays',
-  'admin/occasions',
-  'admin/cutoff-times',
-  'admin/ramadan-periods',
-  'admin/meal-types',
-  'admin/employment-types',
+  'meal-cards',
+  'approval-flows',
+  'cafeterias',
+  'meal-costs',
+  'contributions',
+  'public-holidays',
+  'occasions',
+  'cutoff-times',
+  'ramadan-periods',
+  'meal-types',
+  'employment-types',
 ];
 
 $uri = uri_string();

@@ -5,7 +5,7 @@
   <h2 class="mb-0">Occasions</h2>
 
   <?php if (can('admin.occasions.new')): ?>
-    <a href="<?= site_url('admin/occasions/new') ?>" class="btn btn-primary">
+    <a href="<?= site_url('occasions/new') ?>" class="btn btn-primary">
       <i class="bi bi-plus-lg"></i> New Occasion
     </a>
   <?php endif; ?>
@@ -33,9 +33,9 @@
           </td>
           <td>
           <?php if (can('admin.occasions.edit')): ?>
-            <a href="<?= site_url("admin/occasions/{$r['id']}/edit") ?>" class="btn btn-sm btn-secondary me-1">Edit</a>
+            <a href="<?= site_url("occasions/{$r['id']}/edit") ?>" class="btn btn-sm btn-secondary me-1">Edit</a>
             <?php endif; ?>
-            <!-- <form action="<?= site_url("admin/occasions/{$r['id']}") ?>" method="post" class="d-inline" onsubmit="return confirm('Delete this occasion?')">
+            <!-- <form action="<?= site_url("occasions/{$r['id']}") ?>" method="post" class="d-inline" onsubmit="return confirm('Delete this occasion?')">
               <?= csrf_field() ?>
               <input type="hidden" name="_method" value="DELETE">
               <button class="btn btn-sm btn-danger">Delete</button>

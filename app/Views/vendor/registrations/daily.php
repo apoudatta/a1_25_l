@@ -6,18 +6,20 @@
 <table class="table table-hover">
   <thead>
     <tr>
-      <th>#</th><th>User ID</th><th>Meal Type ID</th>
-      <th>Cafeteria ID</th><th>Period</th><th>Status</th>
+      <th>#</th>
+      <th>Meal Type Name</th>
+      <th>Cafeteria Name</th>
+      <th>Meal Date</th>
+      <th>Status</th>
     </tr>
   </thead>
   <tbody>
     <?php foreach($subs as $s): ?>
     <tr>
       <td><?= $s['id'] ?></td>
-      <td><?= esc($s['user_id']) ?></td>
-      <td><?= esc($s['meal_type_id']) ?></td>
-      <td><?= esc($s['cafeteria_id']) ?></td>
-      <td><?= esc($s['start_date']) ?> → <?= esc($s['end_date']) ?></td>
+      <td><?= esc($s['meal_type_name']) ?></td>
+      <td><?= esc($s['cafeteria_name']) ?></td>
+      <td><?= esc($s['subs_date']) ?></td>
       <td><?= esc($s['status']) ?></td>
     </tr>
     <?php endforeach ?>

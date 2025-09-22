@@ -8,7 +8,7 @@
       </button>
 
       <!-- 2) Brand -->
-      <a class="navbar-brand d-flex align-items-center" href="<?= site_url('admin/dashboard') ?>">
+      <a class="navbar-brand d-flex align-items-center" href="<?= site_url('dashboard') ?>">
         <span class="ms-2">
           Lunch Management portal
         </span>

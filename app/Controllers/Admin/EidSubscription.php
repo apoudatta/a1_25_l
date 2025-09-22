@@ -177,7 +177,7 @@ class EidSubscription extends BaseController
         }
 
         // 5) Final Redirect
-        return redirect()->to('admin/eid-subscription')
+        return redirect()->to('eid-subscription')
                         ->with('success', 'Subscription successful.');
     }
 

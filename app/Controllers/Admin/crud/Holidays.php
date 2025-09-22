@@ -13,7 +13,6 @@ class Holidays extends BaseController
         $this->model = new PublicHolidayModel();
     }
 
-    /** GET /admin/public-holidays */
     public function index()
     {
         // First day of the current year
@@ -32,13 +31,11 @@ class Holidays extends BaseController
         
 
 
-    /** GET /admin/public-holidays/new */
     public function new()
     {
         return view('admin/crud/holidays/form', ['holiday'=>null]);
     }
 
-    /** POST /admin/public-holidays */
     // Optional: put this as a private helper in the same controller
     private function holidayDateExists(string $date, ?int $exceptId = null): bool
     {
@@ -67,11 +64,10 @@ class Holidays extends BaseController
             'created_by'   => session('user_id'),
         ]);
 
-        return redirect()->to('admin/public-holidays')
+        return redirect()->to('public-holidays')
                         ->with('success', 'Holiday added.');
     }
 
-    /** GET /admin/public-holidays/{id}/edit */
     public function edit($id)
     {
         $h = $this->model->find($id);
@@ -81,7 +77,6 @@ class Holidays extends BaseController
         return view('admin/crud/holidays/form', ['holiday' => $h]);
     }
 
-    /** POST /admin/public-holidays/{id} */
     public function update($id)
     {
         $h = $this->model->find($id);
@@ -105,16 +100,15 @@ class Holidays extends BaseController
             'updated_by'   => session('user_id'),
         ]);
 
-        return redirect()->to('admin/public-holidays')
+        return redirect()->to('public-holidays')
                         ->with('success', 'Holiday updated.');
     }
 
 
-    /** DELETE /admin/public-holidays/{id} */
     public function delete($id)
     {
         $this->model->delete($id);
-        return redirect()->to('admin/public-holidays')
+        return redirect()->to('public-holidays')
                          ->with('success','Holiday deleted.');
     }
 }

@@ -5,7 +5,7 @@
 
 <div class="d-flex justify-content-between align-items-center mb-3">
   <h4 class="mb-0">Contributions</h4>
-  <a href="<?= site_url('admin/contributions/new') ?>" class="btn btn-primary btn-sm">New</a>
+  <a href="<?= site_url('contributions/new') ?>" class="btn btn-primary btn-sm">New</a>
 </div>
 
 
@@ -37,7 +37,7 @@
           <td class="text-end"><?= number_format((float)$r['user_tk'], 2) ?></td>
           <td>
             <!-- Toggle button (works with JS or plain POST) -->
-            <form action="<?= site_url('admin/contributions/'.$r['id'].'/toggle') ?>" method="post" class="d-inline js-toggle-form">
+            <form action="<?= site_url('contributions/'.$r['id'].'/toggle') ?>" method="post" class="d-inline js-toggle-form">
               <?= csrf_field() ?>
               <button type="submit"
                 class="btn btn-sm <?= $r['is_active'] ? 'btn-success' : 'btn-outline-secondary' ?> js-toggle-btn">
@@ -46,8 +46,8 @@
             </form>
           </td>
           <!-- <td>
-            <a href="<?= site_url('admin/contributions/'.$r['id'].'/edit') ?>" class="btn btn-sm btn-secondary">Edit</a>
-            <form action="<?= site_url('admin/contributions/'.$r['id']) ?>" method="post" class="d-inline">
+            <a href="<?= site_url('contributions/'.$r['id'].'/edit') ?>" class="btn btn-sm btn-secondary">Edit</a>
+            <form action="<?= site_url('contributions/'.$r['id']) ?>" method="post" class="d-inline">
               <?= csrf_field() ?>
               <input type="hidden" name="_method" value="DELETE">
               <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this contribution?')">Delete</button>

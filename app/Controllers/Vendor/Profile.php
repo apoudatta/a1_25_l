@@ -20,11 +20,7 @@ class Profile extends BaseController
         $user   = $this->userModel->find($userId);
 
         return view('vendor/profile/index', [
-            'user'              => $user,
-            'op_contact_name'   => $user['op_contact_name']  ?? '',
-            'op_contact_phone'  => $user['op_contact_phone'] ?? '',
-            'op_contact_email'  => $user['op_contact_email'] ?? '',
-            'description'       => $user['description']      ?? '',
+            'user'              => $user
         ]);
     }
 

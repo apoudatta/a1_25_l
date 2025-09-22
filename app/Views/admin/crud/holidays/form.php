@@ -5,8 +5,8 @@
 <h4 class="mb-4"><?= $isEdit ? 'Edit' : 'Add' ?> Holiday</h4>
 
 <form action="<?= $isEdit
-    ? site_url("admin/public-holidays/{$holiday['id']}")
-    : site_url('admin/public-holidays') ?>"
+    ? site_url("public-holidays/{$holiday['id']}")
+    : site_url('public-holidays') ?>"
   method="post" class="row g-3">
   <?= csrf_field() ?>
   <?php if($isEdit): ?>
@@ -49,7 +49,7 @@
 
   <div class="col-12">
     <button class="btn btn-primary"><?= $isEdit ? 'Update' : 'Create' ?></button>
-    <a href="<?= site_url('admin/public-holidays')?>" class="btn btn-outline-secondary">Cancel</a>
+    <a href="<?= site_url('public-holidays')?>" class="btn btn-outline-secondary">Cancel</a>
   </div>
 </form>
 

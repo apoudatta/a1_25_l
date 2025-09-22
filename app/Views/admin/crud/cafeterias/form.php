@@ -5,8 +5,8 @@
 <h4 class="mb-4"><?= $isEdit ? 'Edit' : 'New' ?> Cafeteria</h4>
 
 <form action="<?= $isEdit
-    ? site_url("admin/cafeterias/{$cafeteria['id']}")
-    : site_url('admin/cafeterias') ?>"
+    ? site_url("cafeterias/{$cafeteria['id']}")
+    : site_url('cafeterias') ?>"
   method="post">
 
   <?= csrf_field() ?>
@@ -42,7 +42,7 @@
   <button class="btn btn-primary">
     <?= $isEdit ? 'Update' : 'Create' ?>
   </button>
-  <a href="<?= site_url('admin/cafeterias') ?>" class="btn btn-outline-secondary">Cancel</a>
+  <a href="<?= site_url('cafeterias') ?>" class="btn btn-outline-secondary">Cancel</a>
 </form>
 
 <?= $this->endSection() ?>

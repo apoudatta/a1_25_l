@@ -15,8 +15,8 @@
 
   <form id="stepForm"
         action="<?= site_url($isNew
-           ? "admin/approval-flows/{$flowId}/steps"
-           : "admin/approval-flows/{$flowId}/steps/{$step['id']}") ?>"
+           ? "approval-flows/{$flowId}/steps"
+           : "approval-flows/{$flowId}/steps/{$step['id']}") ?>"
         method="post" novalidate>
     <?= csrf_field() ?>
     <?php if (! $isNew): ?>
@@ -118,7 +118,7 @@
     <button type="submit" class="btn btn-primary">
       <?= $isNew ? 'Add Step' : 'Update Step' ?>
     </button>
-    <a href="<?= site_url("admin/approval-flows/{$flowId}/steps") ?>"
+    <a href="<?= site_url("approval-flows/{$flowId}/steps") ?>"
        class="btn btn-secondary">Cancel</a>
   </form>
 </div>

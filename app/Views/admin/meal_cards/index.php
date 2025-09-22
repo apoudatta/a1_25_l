@@ -5,7 +5,7 @@
 
 <?= view('partials/content_heading', [
   'heading' => 'Meal Cards',
-  'add_btn' => can('admin.meal-cards.form') ? ['Add Meal Card', 'admin/meal-cards/new'] : null
+  'add_btn' => can('admin.meal-cards.form') ? ['Add Meal Card', 'meal-cards/new'] : null
 ]) ?>
 
 <?= view('partials/flash_message') ?>
@@ -61,12 +61,12 @@
         <td><?= date('d M Y h:i A', strtotime($r['created_at'])) ?></td>
         <td class="text-end">
           <?php if (can('admin.meal-cards.form')): ?>
-            <a class="btn btn-sm btn-outline-primary" href="<?= site_url('admin/meal-cards/'.$r['id'].'/edit') ?>">
+            <a class="btn btn-sm btn-outline-primary" href="<?= site_url('meal-cards/'.$r['id'].'/edit') ?>">
               <i class="bi bi-pencil-square"></i> Edit
             </a>
           <?php endif; ?>
           <?php if (can('meal.cards.delete')): ?>
-            <!-- <form class="d-inline" method="post" action="<?= site_url('admin/meal-cards/'.$r['id'].'/delete') ?>" onsubmit="return confirm('Delete this meal card?')">
+            <!-- <form class="d-inline" method="post" action="<?= site_url('meal-cards/'.$r['id'].'/delete') ?>" onsubmit="return confirm('Delete this meal card?')">
               <?= csrf_field() ?>
               <button class="btn btn-sm btn-outline-danger" type="submit">
                 <i class="bi bi-trash"></i> Delete

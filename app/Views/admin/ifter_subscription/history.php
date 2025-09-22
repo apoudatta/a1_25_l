@@ -42,13 +42,13 @@
 
   <?php if (can('admin.ramadan.ifter-subscription.new')): ?>
   <div class="col-4 col-md-3 col-lg-5 text-end">
-    <a href="<?= site_url('admin/ifter-subscription/new') ?>"
+    <a href="<?= site_url('ifter-subscription/new') ?>"
        class="btn btn-primary">+ Ifter Subscribe</a>
   </div>
   <?php endif; ?>
 </div>
 
-<form method="post" action="<?= site_url('admin/ifter-subscription/unsubscribe_bulk') ?>" id="bulkUnsubscribeForm">
+<form method="post" action="<?= site_url('ifter-subscription/unsubscribe_bulk') ?>" id="bulkUnsubscribeForm">
 
 <table id="subscriptionTable" class="table table-bordered table-striped nowrap w-100">
   <thead class="table-light">

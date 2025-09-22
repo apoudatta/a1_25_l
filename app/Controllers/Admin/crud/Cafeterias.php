@@ -60,7 +60,7 @@ class Cafeterias extends BaseController
             'is_active' => isset($post['is_active']) ? 1 : 0,
         ]);
 
-        return redirect()->to('admin/cafeterias')->with('success', 'Cafeteria created.');
+        return redirect()->to('cafeterias')->with('success', 'Cafeteria created.');
     }
 
     public function update($id)
@@ -95,7 +95,7 @@ class Cafeterias extends BaseController
             'is_active' => isset($post['is_active']) ? 1 : 0,
         ]);
 
-        return redirect()->to('admin/cafeterias')->with('success', 'Cafeteria updated.');
+        return redirect()->to('cafeterias')->with('success', 'Cafeteria updated.');
     }
 
 
@@ -112,11 +112,11 @@ class Cafeterias extends BaseController
     }
     
 
-    /** DELETE /admin/cafeterias/{id} */
+    /** DELETE /cafeterias/{id} */
     public function delete($id)
     {
         $this->model->delete($id);
-        return redirect()->to('admin/cafeterias')
+        return redirect()->to('cafeterias')
                          ->with('success','Cafeteria deleted.');
     }
 }

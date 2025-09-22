@@ -41,7 +41,7 @@ class Roles extends BaseController
             'name'        => $name,
             'description' => $this->request->getPost('description'),
         ]);
-        return redirect()->to(site_url('admin/roles'))->with('success', 'Role created.');
+        return redirect()->to(site_url('roles'))->with('success', 'Role created.');
     }
 
     public function edit(int $id)
@@ -50,7 +50,7 @@ class Roles extends BaseController
         if (! $role) {
             throw PageNotFoundException::forPageNotFound('Role not found');
         }
-        return view('admin/roles/edit', ['role' => $role]);
+        return view('roles/edit', ['role' => $role]);
     }
 
     public function update(int $id)
@@ -70,7 +70,7 @@ class Roles extends BaseController
             'name'        => $name,
             'description' => $this->request->getPost('description'),
         ]);
-        return redirect()->to(site_url('admin/roles'))->with('success', 'Role updated.');
+        return redirect()->to(site_url('roles'))->with('success', 'Role updated.');
     }
 
     public function delete(int $id)
@@ -81,6 +81,6 @@ class Roles extends BaseController
         $this->db->table('roles')->where('id', $id)->delete();
         $this->db->transComplete();
 
-        return redirect()->to(site_url('admin/roles'))->with('success', 'Role deleted.');
+        return redirect()->to(site_url('roles'))->with('success', 'Role deleted.');
     }
 }

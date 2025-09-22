@@ -6,7 +6,7 @@
 <?= view('partials/flash_message') ?>
 
 <div class="mb-3">
-  <a class="btn btn-primary" href="<?= site_url('admin/roles/create') ?>">Add Role</a>
+  <a class="btn btn-primary" href="<?= site_url('roles/create') ?>">Add Role</a>
 </div>
 
 <table class="table table-sm table-striped align-middle">
@@ -29,18 +29,18 @@
         <td class="text-end">
           <?php if (function_exists('can') && can('rbac.assign')): ?>
             <a class="btn btn-sm btn-outline-secondary"
-               href="<?= site_url('admin/roles/'.$r['id'].'/permissions') ?>">
+               href="<?= site_url('roles/'.$r['id'].'/permissions') ?>">
               Manage Perms
             </a>
           <?php endif; ?>
 
           <a class="btn btn-sm btn-outline-primary"
-             href="<?= site_url('admin/roles/edit/'.$r['id']) ?>">
+             href="<?= site_url('roles/edit/'.$r['id']) ?>">
             Edit
           </a>
 
           <!-- <form method="post"
-                action="<?= site_url('admin/roles/delete/'.$r['id']) ?>"
+                action="<?= site_url('roles/delete/'.$r['id']) ?>"
                 class="d-inline">
             <?= csrf_field() ?>
             <button class="btn btn-sm btn-outline-danger"

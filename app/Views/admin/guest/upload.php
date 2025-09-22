@@ -21,7 +21,7 @@
 <?php endif ?>
 
 
-<form action="<?= site_url('admin/guest-subscriptions/process-upload') ?>"
+<form action="<?= site_url('guest-subscriptions/process-upload') ?>"
       method="post" enctype="multipart/form-data">
   <?= csrf_field() ?>
 
@@ -181,7 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     try {
       // use the endpoint you already have that returns {cutoffDays, leadDays, cutOffTime}
-      const res = await fetch('<?= site_url('admin/intern-subscriptions/cutoffinfo') ?>/' + id);
+      const res = await fetch('<?= site_url('intern-subscriptions/cutoffinfo') ?>/' + id);
       const cfg = await res.json();
 
       // destroy current flatpickr, then rebuild with new rules

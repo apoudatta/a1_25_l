@@ -37,7 +37,6 @@ class MealApprovals extends BaseController
         $this->userModel               = new UserModel();
     }
 
-    /** GET /admin/approvals */
     public function index()
     {
         $db    = db_connect();
@@ -121,7 +120,7 @@ class MealApprovals extends BaseController
 
 
     /**
-     * POST /admin/approvals/bulk-act/{approve|reject}
+     * POST /approvals/bulk-act/{approve|reject}
      * Body:
      *   - detail_ids[] : array of meal_subscriptions.id (selected rows)
      *   - types[]      : legacy; ignored (kept for compatibility)
@@ -238,7 +237,7 @@ class MealApprovals extends BaseController
 
 
     /**
-     * POST /admin/approvals/act/{approve|reject}/{subsId}
+     * POST /approvals/act/{approve|reject}/{subsId}
      */
     public function act(string $action, int $subsId)
     {

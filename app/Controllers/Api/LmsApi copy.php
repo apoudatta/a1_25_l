@@ -222,43 +222,62 @@ class LmsApi extends BaseController
         $empId     = trim((string)($in['emp_id']    ?? ''));
         $cafeteriaIdInput = (int)($in['cafeteria_id'] ?? $this->request->getGet('cafeteria_id') ?? 0); // REQUIRED
         $mealType  = strtolower(trim((string)($in['meal_type'] ?? ''))); // "lunch"/"ifter"/"sehri"
-        $today     = (new \DateTime('now', new \DateTimeZone('Asia/Dhaka')))->format('Y-m-d');
+        $today     = date('Y-m-d');
 
         if ($cafeteriaIdInput <= 0) {
             return $this->json(false, null, 'cafeteria_id is required', ApiCode::CAFETERIA_REQUIRED);
         }
 
-        $db = \Config\Database::connect();
-        
-        // Fetch meal type id dynamically from the database
-        $mealTypeRecord = $db->table('meal_types')->select('id')->where('LOWER(name)', $mealType)->get()->getRowArray();
-
-        // If no matching meal type, return an error
-        if (!$mealTypeRecord) {
-            return $this->json(false, null, 'Invalid meal_type. Use lunch/ifter/sehri/Eid Morning Snacks/Eid Lunch/Eid Evening Snacks/Eid Dinner', ApiCode::INVALID_MEAL_TYPE);
+        // Map meal_type text -> id (1=lunch, 2-ifter, 3-sehri)
+        $mealTypeIdInput = null;
+        if ($mealType !== '') {
+            if     ($mealType === 'lunch') $mealTypeIdInput = 1;
+            elseif ($mealType === 'ifter') $mealTypeIdInput = 2;
+            elseif ($mealType === 'sehri') $mealTypeIdInput = 3;
+            elseif ($mealType === 'Eid Morning Snacks') $mealTypeIdInput = 4;
+            elseif ($mealType === 'Eid Lunch') $mealTypeIdInput = 5;
+            elseif ($mealType === 'Eid Evening Snacks') $mealTypeIdInput = 6;
+            elseif ($mealType === 'Eid Dinner') $mealTypeIdInput = 7;
+            else return $this->json(false, null, 'Invalid meal_type. Use lunch/ifter/sehri/Eid Morning Snacks/Eid Lunch/Eid Evening Snacks/Eid Dinner', ApiCode::INVALID_MEAL_TYPE);
         }
 
-        // Get meal type ID from the result
-        $mealTypeIdInput = (int) $mealTypeRecord['id'];
-
+        $db = \Config\Database::connect();
         $db->transStart();
 
-        // ------------------- CASE A: OTP path (guest/intern) -------------------
+        // ------------------- CASE A: OTP path (guest -> intern) -------------------
         if ($otp !== '') {
-            // Look up OTP in meal_reference linked to meal_subscriptions
-            $src = $db->table('meal_reference mr')
-                ->select('mr.*, ms.user_id, ms.meal_type_id, ms.emp_type_id, ms.cafeteria_id, ms.subs_date, ms.status')
-                ->join('meal_subscriptions ms', 'ms.id = mr.subs_id', 'left')
-                ->where('mr.otp', $otp)
-                ->where('ms.subs_date', $today)
-                ->get()->getRowArray();
+            // fetch a row by otp (optionally filtered by meal_type and today)
+            $fetchByOtp = function(string $table, string $dateCol, ?int $mealTypeId) use ($db, $otp, $today) {
+                $b = $db->table($table)->where('otp', $otp)->where($dateCol, $today);
+                if ($mealTypeId !== null) $b->where('meal_type_id', $mealTypeId);
+                return $b->get()->getRowArray();
+            };
 
-            if (!$src) {
+            // Try guest first, then intern
+            $src          = $fetchByOtp('guest_subscriptions',  'subscription_date', $mealTypeIdInput);
+            $srcTable     = 'GUEST';
+            $srcTableName = 'guest_subscriptions';
+            $srcDateCol   = 'subscription_date';
+            $nameField    = 'guest_name';
+            $typeField    = 'guest_type';
+
+            if (! $src) {
+                $src          = $fetchByOtp('intern_subscriptions', 'subscription_date', $mealTypeIdInput);
+                if ($src) {
+                    $srcTable     = 'INTERN';
+                    $srcTableName = 'intern_subscriptions';
+                    $srcDateCol   = 'subscription_date';
+                    $nameField    = 'intern_name';
+                    $typeField    = 'subscription_type';
+                }
+            }
+
+            if (! $src) {
                 $db->transComplete();
                 return $this->json(false, null, 'Invalid or unmatched OTP', ApiCode::OTP_INVALID);
             }
 
-            // Cafeteria mismatch check
+            // Cafeteria mismatch guard (critical)
             $cafeteriaIdOfSrc = (int)($src['cafeteria_id'] ?? 0);
             if ($cafeteriaIdOfSrc !== $cafeteriaIdInput) {
                 $db->transComplete();
@@ -273,59 +292,62 @@ class LmsApi extends BaseController
 
             // Collect fields
             $mealTypeId     = (int)($src['meal_type_id'] ?? 0);
-            $empTypeId      = (int)($src['emp_type_id'] ?? 0);
-            $mealDate       = $src['subs_date'] ?? $today;
-            $subscriptionId = (int)($src['subs_id'] ?? 0);
-            $userName       = $src['ref_name'] ?? ''; // Guest/Intern Name from `meal_reference`
-            $phone          = $src['ref_phone'] ?? ''; // Guest/Intern Phone from `meal_reference`
+            $mealDate       = $src[$srcDateCol] ?? $today;
+            $subscriptionId = (int)($src['id'] ?? 0);
+            $userName       = $src[$nameField] ?? '';
+            $phone          = $src['phone'] ?? '';
+            $userType       = $src[$typeField] ?? '';
 
-            // Prevent duplicate token for the same subscription row
+            // Prevent duplicate token for same source row
             $existingToken = $db->table('meal_tokens')
-                ->where('subs_id', $subscriptionId)
+                ->where('subscription_table', $srcTable)
+                ->where('subscription_id', $subscriptionId)
                 ->get()->getRowArray();
 
             if ($existingToken) {
-                $db->transComplete();
+                if ($existingToken && $existingToken['status'] === 'REDEEMED') {
+                    $db->transComplete();
+                    return $this->json(false, null, 'Meal already consumed, Token exists!', ApiCode::TOKEN_EXISTS_REDEEMED);
+                }
+                $db->table('meal_tokens')->where('id', $existingToken['id'])
+                ->update(['status' => 'REDEEMED', 'redeemed_at' => date('Y-m-d H:i:s')]);
                 $autoToken = $existingToken['token_code'];
-                return $this->json(false, null, 'Meal already consumed, Token exists!', ApiCode::TOKEN_EXISTS_REDEEMED);
             } else {
                 // Generate and insert auto token (NOT the OTP)
                 $autoToken = $this->generateMealTokenCode($db, 0, $mealTypeId, $mealDate);
                 $db->table('meal_tokens')->insert([
                     'user_id'            => 0,
-                    'subs_id'            => $subscriptionId,  // Referencing the subs_id
+                    'subscription_table' => $srcTable,           // GUEST | INTERN
+                    'subscription_id'    => $subscriptionId,
+                    'token_code'         => $autoToken,
                     'meal_type_id'       => $mealTypeId,
-                    'emp_type_id'        => $empTypeId,
                     'meal_date'          => $mealDate,
                     'cafeteria_id'       => $cafeteriaIdOfSrc,
-                    'token_code'         => $autoToken,
+                    'status'             => 'REDEEMED',
                     'created_at'         => date('Y-m-d H:i:s'),
+                    'redeemed_at'        => date('Y-m-d H:i:s'),
                 ]);
             }
 
-            // Mark the meal_reference and meal_subscription as REDEEMED
-            $db->table('meal_reference')->where('id', $src['id'])->update(['otp' => null]);
-            $db->table('meal_subscriptions')->where('id', $subscriptionId)->update(['status' => 'REDEEMED']);
+            // Mark source row REDEEMED
+            $db->table($srcTableName)->where('id', $subscriptionId)->update(['status' => 'REDEEMED']);
 
-            // Build cafeteria info
+            // Build payload + dashboard (table-based)
             $cafeteria = $db->table('cafeterias')->where('id', $cafeteriaIdOfSrc)->get()->getRowArray();
             $dash = $this->computeDashboardInfo($cafeteriaIdOfSrc, $today, $db);
 
             $db->transComplete();
 
-            $mealType = $db->table('meal_types')->where('id', $mealTypeId)->get()->getRowArray();
-            $empType = $db->table('employment_types')->where('id', $empTypeId)->get()->getRowArray();
-
             return $this->json(true, [
                 'user' => [
                     'name'  => $userName ?: null,
                     'phone' => $phone ?: null,
-                    'user_type' => $empType['name'] ?? null,
+                    'user_type' => $userType ?: ($srcTable === 'GUEST' ? 'GUEST' : 'INTERN'),
                 ],
                 'meal' => [
                     'meal_date'    => $this->formatMealDateWithCurrentTime($mealDate),
                     'meal_type_id' => $mealTypeId,
-                    'meal_type'    => $mealType['name'] ?? null,
+                    'meal_type'    => $this->subs->getMealTypeName($mealTypeId),
                     'token_code'   => $autoToken,
                 ],
                 'cafeteria' => $cafeteria ? [
@@ -334,7 +356,7 @@ class LmsApi extends BaseController
                     'location' => $cafeteria['location'] ?? null,
                 ] : null,
                 'dashboard' => $dash,
-            ], '', ApiCode::OK);
+                ], '', ApiCode::OK);
         }
 
         // ------------------- CASE B: emp_id / card_code path (employee subscription) -------------------
@@ -343,8 +365,8 @@ class LmsApi extends BaseController
             return $this->json(false, null, 'Provide otp or card_code or emp_id', ApiCode::MISSING_FIELDS);
         }
 
-        // Resolve user via meal_cards (ACTIVE)
-        $cardQ = $db->table('meal_cards')->where('status', 'ACTIVE');
+        // Resolve user via meal_card (ACTIVE)
+        $cardQ = $db->table('meal_card')->where('status', 'ACTIVE');
         if ($empId !== '')    $cardQ->where('employee_id', $empId);
         if ($cardCode !== '') $cardQ->where('card_code', $cardCode);
         $card = $cardQ->get()->getRowArray();
@@ -358,77 +380,74 @@ class LmsApi extends BaseController
                     ->where('employee_id', $empId)
                     ->where('status', 'ACTIVE')
                     ->get()->getRowArray();
-
+        
                 if (! $userRow) {
                     $db->transComplete();
                     return $this->json(false, null, 'Employee not found or inactive', ApiCode::EMPLOYEE_NOT_FOUND);
                 }
                 $userId = (int)$userRow['id'];
             } else {
+                // No card match and no empId provided → still an error
                 $db->transComplete();
                 return $this->json(false, null, 'Valid active card not found for given emp_id/card_code', ApiCode::ACTIVE_CARD_NOT_FOUND);
             }
         }
 
-        // Today's subscription (optionally filter by meal_type) in unified table
-        $msQ = $db->table('meal_subscriptions')
+        // Today's subscription detail (optionally filter by meal_type)
+        $msdQ = $db->table('meal_subscription_details')
             ->where('user_id', $userId)
-            ->where('subs_date', $today);
+            ->where('subscription_date', $today); // if your column is "meal_date", change here
 
-        if ($mealTypeIdInput !== null) {
-            $msQ->where('meal_type_id', $mealTypeIdInput);
-        }
+        if ($mealTypeIdInput !== null) $msdQ->where('meal_type_id', $mealTypeIdInput);
 
-        $ms = $msQ->orderBy('id', 'DESC')->get()->getRowArray();
-        if (! $ms) {
+        $msd = $msdQ->orderBy('id', 'DESC')->get()->getRowArray();
+        if (! $msd) {
             $db->transComplete();
             return $this->json(false, null, 'No scheduled meal for today', ApiCode::NO_SCHEDULED_MEAL);
         }
 
-        if (isset($ms['status']) && strtoupper($ms['status']) === 'REDEEMED') {
+        if (isset($msd['status']) && strtoupper($msd['status']) === 'REDEEMED') {
             $db->transComplete();
             return $this->json(false, null, 'Meal already consumed', ApiCode::MEAL_ALREADY_CONSUMED);
         }
 
-        // Cafeteria mismatch guard (critical)
-        $cafeteriaIdOfMs = (int)($ms['cafeteria_id'] ?? 0);
-        if ($cafeteriaIdOfMs !== $cafeteriaIdInput) {
+        // ✅ Cafeteria mismatch guard (critical)
+        $cafeteriaIdOfMsd = (int)($msd['cafeteria_id'] ?? 0);
+        if ($cafeteriaIdOfMsd !== $cafeteriaIdInput) {
             $db->transComplete();
             return $this->json(false, null, 'This meal is for a different cafeteria', ApiCode::DIFFERENT_CAFETERIA);
         }
 
-        // Insert token (auto) and mark subscription as REDEEMED
+        // Insert token (auto) and mark detail as REDEEMED
         $autoToken = $this->generateMealTokenCode(
-            $db,
-            (int)$userId,
-            (int)($ms['meal_type_id'] ?? 0),
-            $ms['subs_date'] ?? $today
+            $db, 
+            (int)$userId, 
+            (int)($msd['meal_type_id'] ?? 0), 
+            $msd['meal_date'] ?? date('Y-m-d')
         );
 
         $db->table('meal_tokens')->insert([
             'user_id'            => $userId,
-            'subs_id'            => (int)($ms['id'] ?? 0),
-            'meal_type_id'       => (int)$ms['meal_type_id'],
-            'emp_type_id'        => (int)$ms['emp_type_id'],
-            'meal_date'          => $ms['subs_date'],
-            'cafeteria_id'       => $cafeteriaIdOfMs,
+            'subscription_table' => 'EMPLOYEE',
+            'subscription_id'    => (int)($msd['id'] ?? 0),
             'token_code'         => $autoToken,
+            'meal_type_id'       => (int)$msd['meal_type_id'],
+            'meal_date'          => $msd['subscription_date'], // if your column is meal_date, change here too
+            'cafeteria_id'       => $cafeteriaIdOfMsd,
+            'status'             => 'REDEEMED',
             'created_at'         => date('Y-m-d H:i:s'),
+            'redeemed_at'        => date('Y-m-d H:i:s'),
         ]);
 
-        $db->table('meal_subscriptions')->where('id', $ms['id'])->update(['status' => 'REDEEMED']);
+        $db->table('meal_subscription_details')->where('id', $msd['id'])->update(['status' => 'REDEEMED']);
 
         // Payload + dashboard (table-based)
         $user = $db->table('users')->where('id', $userId)->get()->getRowArray();
-        $cafeteria = $db->table('cafeterias')->where('id', $cafeteriaIdOfMs)->get()->getRowArray();
-        $mealTypeId = (int)$ms['meal_type_id'];
-        $mealType = $db->table('meal_types')->where('id', $mealTypeId)->get()->getRowArray();
-        $empTypeId = (int)$ms['emp_type_id'];
-        $empType = $db->table('employment_types')->where('id', $empTypeId)->get()->getRowArray();
+        $cafeteria = $db->table('cafeterias')->where('id', $cafeteriaIdOfMsd)->get()->getRowArray();
+        $mealTypeId = (int)$msd['meal_type_id'];
+        $mealDate   = $msd['subscription_date'];
 
-        $mealDate   = $ms['subs_date'];
-
-        $dash = $this->computeDashboardInfo($cafeteriaIdOfMs, $today, $db);
+        $dash = $this->computeDashboardInfo($cafeteriaIdOfMsd, $today, $db);
 
         $db->transComplete();
 
@@ -437,12 +456,12 @@ class LmsApi extends BaseController
                 'id'          => (int)$user['id'],
                 'employee_id' => $user['employee_id'] ?? null,
                 'name'        => $user['name'] ?? null,
-                'user_type'   => $empType['name'] ?? null,
+                'user_type' => 'EMPLOYEE', 
             ],
             'meal' => [
                 'meal_date'    => $this->formatMealDateWithCurrentTime($mealDate),
                 'meal_type_id' => $mealTypeId,
-                'meal_type'    => $mealType['name'] ?? null,
+                'meal_type'    => $this->subs->getMealTypeName($mealTypeId),
                 'token_code'   => $autoToken,
             ],
             'cafeteria' => $cafeteria ? [
@@ -453,6 +472,7 @@ class LmsApi extends BaseController
             'dashboard' => $dash,
         ], '', ApiCode::OK);
     }
+
 
 
     /**
@@ -488,39 +508,60 @@ class LmsApi extends BaseController
         if ($cafeteriaId <= 0) {
             return $this->json(false, null, 'cafeteria_id is required (integer)', ApiCode::CAFETERIA_REQUIRED);
         }
-
-        $data = $this->computeDashboardInfo($cafeteriaId, date('Y-m-d'));
+        $db = \Config\Database::connect();
+        $data = $this->computeDashboardInfo($cafeteriaId, date('Y-m-d'), $db);
         return $this->json(true, $data);
     }
 
     /**
-     * Dashboard counts using the new meal_subscriptions table.
+     * Dashboard counts using ONLY source tables (no meal_tokens).
      * Counts for a given cafeteria & date:
-     *  - today_registration: rows in non-cancelled statuses
+     *  - today_registration: rows in non-cancel statuses
      *  - consumption: rows with status='REDEEMED'
      *  - remaining: registration - consumption
      */
-    private function computeDashboardInfo(int $cafeteriaId, ?string $date = null): array
-    {
+    private function computeDashboardInfo(
+        int $cafeteriaId,
+        ?string $date = null,
+        ?ConnectionInterface $db = null
+    ): array {
         $date = $date ?: date('Y-m-d');
-        $db = \Config\Database::connect();
+        $db   = $db ?: \Config\Database::connect();
 
         // Adjust this list to match your "registered but not cancelled" statuses.
         $nonCancelStatuses = ['PENDING', 'ACTIVE', 'REDEEMED'];
 
-        // Query for registration (non-cancelled statuses)
-        $registration = $db->table('meal_subscriptions')
-            ->where('cafeteria_id', $cafeteriaId)
-            ->where('subs_date', $date)
-            ->whereIn('status', $nonCancelStatuses)
-            ->countAllResults();
+        $sum = function(string $table, string $dateCol, array $extra = []) use ($db, $cafeteriaId, $date): int {
+            try {
+                $b = $db->table($table)->selectCount('id', 'c')
+                    ->where('cafeteria_id', $cafeteriaId)
+                    ->where($dateCol, $date);
 
-        // Query for consumption (status = 'REDEEMED')
-        $consumption = $db->table('meal_subscriptions')
-            ->where('cafeteria_id', $cafeteriaId)
-            ->where('subs_date', $date)
-            ->where('status', 'REDEEMED')
-            ->countAllResults();
+                foreach ($extra as $k => $v) {
+                    if ($k === '__in__') {
+                        foreach ($v as $col => $vals) $b->whereIn($col, $vals);
+                    } else {
+                        $b->where($k, $v);
+                    }
+                }
+                return (int) $b->get()->getRow('c');
+            } catch (\Throwable $e) {
+                // Table might not exist in some setups → treat as 0
+                return 0;
+            }
+        };
+
+        // Registration (scheduled/approved for the day)
+        $regSubs   = $sum('meal_subscription_details', 'subscription_date', ['__in__' => ['status' => $nonCancelStatuses]]);
+        $regGuest  = $sum('guest_subscriptions',       'subscription_date', ['__in__' => ['status' => $nonCancelStatuses]]);
+        $regIntern = $sum('intern_subscriptions',      'subscription_date', ['__in__' => ['status' => $nonCancelStatuses]]);
+        $registration = $regSubs + $regGuest + $regIntern;
+
+        // Consumption (actually redeemed)
+        $conSubs   = $sum('meal_subscription_details', 'subscription_date',        ['status' => 'REDEEMED']);
+        $conGuest  = $sum('guest_subscriptions',       'subscription_date', ['status' => 'REDEEMED']);
+        $conIntern = $sum('intern_subscriptions',      'subscription_date', ['status' => 'REDEEMED']);
+        $consumption = $conSubs + $conGuest + $conIntern;
 
         return [
             'today_registration' => $registration,
@@ -528,7 +569,6 @@ class LmsApi extends BaseController
             'remaining'          => max(0, $registration - $consumption),
         ];
     }
-
 
     private function readInput(): array
     {

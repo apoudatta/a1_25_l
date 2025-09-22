@@ -3,33 +3,42 @@
 namespace App\Controllers\Vendor;
 
 use App\Controllers\BaseController;
-use App\Models\MealSubscriptionModel;
-use App\Models\MealTokenModel;
 
 class Dashboard extends BaseController
 {
+    protected \CodeIgniter\Database\BaseConnection $db;
+
+    public function __construct()
+    {
+        $this->db = \Config\Database::connect();
+    }
+
     public function index()
     {
-        $today = date('Y-m-d');
+        // Today in Asia/Dhaka to match business day boundaries
+        $today = (new \DateTime('now', new \DateTimeZone('Asia/Dhaka')))->format('Y-m-d');
 
-        // Active registrations for today
-        $subModel = new MealSubscriptionModel();
-        $registrations = $subModel
-            ->where('start_date <=', $today)
-            ->where('end_date >=', $today)
+        // === registrations ===
+        // All registered meals for today excluding CANCELLED.
+        // (Includes ACTIVE, PENDING, REDEEMED, and any NO_SHOW flagged later.)
+        $registrations = (int) $this->db->table('meal_subscriptions')
+            ->where('subs_date', $today)
+            ->whereIn('status', ['ACTIVE', 'REDEEMED'])
             ->countAllResults();
 
-        // Redeemed tokens for today
-        $tokenModel = new MealTokenModel();
-        $redeemed = $tokenModel
-            ->where('meal_date', $today)
+        // === redeemed ===
+        // Meals actually consumed today.
+        $redeemed = (int) $this->db->table('meal_subscriptions')
+            ->where('subs_date', $today)
             ->where('status', 'REDEEMED')
             ->countAllResults();
 
-        // Pending tokens (generated but not yet redeemed)
-        $pending = $tokenModel
-            ->where('meal_date', $today)
-            ->where('status', 'GENERATED')
+        // === pending ===
+        // Still to be served today (planned but not redeemed).
+        // We treat ACTIVE + PENDING as "awaiting redemption".
+        $pending = (int) $this->db->table('meal_subscriptions')
+            ->where('subs_date', $today)
+            ->whereIn('status', ['ACTIVE'])
             ->countAllResults();
 
         return view('vendor/dashboard', [

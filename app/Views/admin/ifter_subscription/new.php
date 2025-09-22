@@ -17,9 +17,11 @@
   </div>
 <?php endif ?>
 
-<?= form_open('admin/ifter-subscription/store') ?>
+<?= form_open('ifter-subscription/store') ?>
   <?= csrf_field() ?>
 
+  <?php
+  if(!has_role('EMPLOYEE')): ?>
   <div class="row g-3">
     <div class="col-md-6">
       <label for="lunch_for" class="form-label">Ifter For</label>
@@ -52,6 +54,21 @@
       <?php endif ?>
     </div>
   </div>
+  <?php else: ?>
+    <div class="col-md-6">
+      <label for="employee_name" class="form-label">Employee Name</label>
+      <select 
+        name="employee_id" 
+        class="form-select"
+      >
+        <option value="<?= session('user_id') ?>"><?= session('user_name') ?></option>
+      </select>
+    </div>
+<?php endif ?>
+
+
+
+
 
   <div class="row g-3 mb-3">
     <div class="col-md-6">
@@ -211,7 +228,7 @@ $(function () {
       $loader.hide();
     } else {
       $loader.show();
-      $.getJSON("<?= site_url('admin/employees/active-list') ?>", function (res) {
+      $.getJSON("<?= site_url('employees/active-list') ?>", function (res) {
         $employee.append($('<option>', { value: '', text: 'Select employee…' }));
         res.forEach(emp => $employee.append($('<option>', { value: emp.id, text: emp.name })));
       }).always(() => $loader.hide());

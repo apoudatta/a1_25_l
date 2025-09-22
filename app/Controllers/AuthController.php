@@ -80,27 +80,25 @@ class AuthController extends BaseController
         //$payload = $this->request->getPost();
         //$user = json_decode($this->request->getPost('user_info'), true);
         if(isset($user['email']) && !empty($user['email'])){
-            //$this->dd($user);
             $userdata = $this->userModel
             ->select('id, employee_id, name, email, phone, department, designation, division, status, user_type, login_method, line_manager_id')
             ->where('email', $user['email'])
             ->first();
             
-            //$this->dd($userdata);
             if (! $userdata) {
                 echo 'User not found for '.$user['email'];
                 exit;
                 // return redirect()->to('/')
                 //     ->with('error', 'User not found for '.$user['email']);
             }
-
+            
             if ($userdata['status'] == 'INACTIVE') {
                 echo 'Account is inactive';
                 exit;
                 // return redirect()->to('/')
                 //     ->with('error', 'Account is inactive');
             }
-
+            
             $this->setSessionData($userdata);
             $userId = (int) $userdata['id'];
             Services::authz()->primeSession($userId);
@@ -143,24 +141,27 @@ class AuthController extends BaseController
 
         // Super admin bypass
         if ($authz->isSuper($userId)) {
-            return site_url('admin/dashboard');
+            return site_url('dashboard');
         }
 
         switch ($type) {
-            case 'ADMIN':
+            case 'EMPLOYEE':
                 // Prefer the dashboard if allowed
                 if ($authz->can($userId, 'admin.dashboard')) {
-                    return site_url('admin/dashboard');
+                    return site_url('dashboard');
+                }
+                if ($authz->can($userId, 'admin.employee-dashboard')) {
+                    return site_url('admin/employee-dashboard');
                 }
 
                 // Otherwise, pick the first admin page they can access
                 $candidates = [
                     // perm => url (order = priority)
-                    'admin.users'   => 'admin/users',
-                    'admin.approvals' => 'admin/approvals',
-                    'meal.subscriptions'           => 'admin/subscription',
-                    'admin.guest-subscriptions'                => 'admin/guest-subscriptions',
-                    'admin.ramadan'              => 'admin/ramadan',
+                    'admin.users'   => 'users',
+                    'admin.approvals' => 'approvals',
+                    'meal.subscriptions'           => 'subscription',
+                    'admin.guest-subscriptions'                => 'guest-subscriptions',
+                    'admin.ramadan'              => 'ramadan',
                 ];
                 foreach ($candidates as $perm => $url) {
                     if ($authz->can($userId, $perm)) {
@@ -169,16 +170,13 @@ class AuthController extends BaseController
                 }
 
                 // Last resort: go home (or a "no access" page)
-                return site_url('/');
-
-            case 'EMPLOYEE':
-                return site_url('employee/dashboard');
+                return site_url('/no-access');
 
             case 'VENDOR':
                 return site_url('vendor/dashboard');
 
             default:
-                return site_url('/');
+                return site_url('/no-access');
         }
     }
 

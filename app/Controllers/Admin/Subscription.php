@@ -29,7 +29,7 @@ class Subscription extends BaseController
         $this->db          = db_connect();
     }
 
-    /** GET /admin/subscription/new */
+    /** GET /subscription/new */
     public function new()
     {
         // Default to Lunch (id = 1) like before
@@ -281,7 +281,7 @@ class Subscription extends BaseController
             return redirect()->back()->withInput()->with('error', 'Failed to save subscription.');
         }
 
-        return redirect()->to('admin/subscription')->with('success', 'Subscription submitted.');
+        return redirect()->to('subscription')->with('success', 'Subscription submitted.');
     }
 
 
@@ -349,7 +349,7 @@ class Subscription extends BaseController
     }
 
 
-    /** GET /admin/employees/active-list (unchanged; used by the form’s select) */
+    /** GET /employees/active-list (unchanged; used by the form’s select) */
     public function activeList()
     {
         $employees = $this->users
@@ -362,7 +362,7 @@ class Subscription extends BaseController
         return $this->response->setJSON($employees);
     }
 
-    /** POST /admin/subscription/unsubscribe_single/(:num) */
+    /** POST /subscription/unsubscribe_single/(:num) */
     public function unsubscribeSingle($id)
     {
         $id = (int)$id;
@@ -376,7 +376,7 @@ class Subscription extends BaseController
             ->with($ok ? 'success' : 'error', $ok ? 'Unsubscribed.' : 'Unable to unsubscribe.');
     }
 
-    /** POST /admin/subscription/unsubscribe_bulk */
+    /** POST /subscription/unsubscribe_bulk */
     public function unsubscribe_bulk()
     {
         $ids    = array_values(array_filter((array) $this->request->getPost('subscription_ids'), 'is_numeric'));

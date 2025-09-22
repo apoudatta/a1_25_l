@@ -13,7 +13,6 @@ class RamadanConfigs extends BaseController
         $this->model = new RamadanConfigModel();
     }
 
-   /** GET /admin/ramadan-periods */
    public function index()
     {
         $minYear = (int) date('Y') - 1;   // show last year and newer
@@ -31,13 +30,11 @@ class RamadanConfigs extends BaseController
    
 
 
-    /** GET /admin/ramadan-periods/new */
     public function new()
     {
         return view('admin/crud/ramadan_periods/form', ['row' => null]);
     }
 
-    /** POST /admin/ramadan-periods */
     public function create()
     {
         $year = (int) $this->request->getPost('year');
@@ -54,11 +51,10 @@ class RamadanConfigs extends BaseController
             'end_date'   => $this->request->getPost('end_date'),
         ]);
 
-        return redirect()->to('admin/ramadan-periods')
+        return redirect()->to('ramadan-periods')
                         ->with('success', 'Ramadan period added.');
     }
 
-    /** GET /admin/ramadan-periods/{id}/edit */
     public function edit($id)
     {
         $row = $this->model->find($id);
@@ -68,7 +64,6 @@ class RamadanConfigs extends BaseController
         return view('admin/crud/ramadan_periods/form', ['row' => $row]);
     }
 
-    /** POST /admin/ramadan-periods/{id} */
     public function update($id)
     {
         $row = $this->model->find($id);
@@ -92,16 +87,15 @@ class RamadanConfigs extends BaseController
             'end_date'   => $this->request->getPost('end_date'),
         ]);
 
-        return redirect()->to('admin/ramadan-periods')
+        return redirect()->to('ramadan-periods')
                         ->with('success', 'Ramadan period updated.');
     }
 
 
-    /** DELETE /admin/ramadan-periods/{id} */
     public function delete($id)
     {
         $this->model->delete($id);
-        return redirect()->to('admin/ramadan-periods')
+        return redirect()->to('ramadan-periods')
                          ->with('success','Ramadan period deleted.');
     }
 }

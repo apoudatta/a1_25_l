@@ -2,7 +2,7 @@
 <?= $this->section('content') ?>
 
 <h5>Role Permissions — <?= esc($role['name']) ?></h5>
-<form method="post" action="<?= site_url('admin/roles/'.$role['id'].'/permissions') ?>">
+<form method="post" action="<?= site_url('roles/'.$role['id'].'/permissions') ?>">
   <?= csrf_field() ?>
 
   <div class="row row-cols-1 row-cols-md-3 g-2">
@@ -35,7 +35,7 @@
 
   <div class="mt-3">
     <button class="btn btn-primary">Save Changes</button>
-    <a class="btn btn-light" href="<?= site_url('admin/roles') ?>">Back</a>
+    <a class="btn btn-light" href="<?= site_url('roles') ?>">Back</a>
   </div>
 </form>
 

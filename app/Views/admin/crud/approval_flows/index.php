@@ -3,7 +3,7 @@
 
 <div class="d-flex justify-content-between align-items-center mb-3">
   <h4 class="mb-0">Approval Flows</h4>
-  <a href="<?= site_url('admin/approval-flows/new') ?>" class="btn btn-primary btn-sm">New</a>
+  <a href="<?= site_url('approval-flows/new') ?>" class="btn btn-primary btn-sm">New</a>
 </div>
 
 <form method="get" class="mb-3">
@@ -38,10 +38,10 @@
         <td><?= esc($r['effective_date']) ?></td>
         <td><?= !empty($r['is_active']) ? 'Yes' : 'No' ?></td>
         <td>
-          <a href="<?= site_url("admin/approval-flows/{$r['id']}/edit") ?>" class="btn btn-sm btn-secondary">Edit</a>
-          <a href="<?= site_url("admin/approval-flows/{$r['id']}/steps") ?>" class="btn btn-sm btn-info">Steps</a>
+          <a href="<?= site_url("approval-flows/{$r['id']}/edit") ?>" class="btn btn-sm btn-secondary">Edit</a>
+          <a href="<?= site_url("approval-flows/{$r['id']}/steps") ?>" class="btn btn-sm btn-info">Steps</a>
 
-          <form action="<?= site_url('admin/approval-flows/'.$r['id']) ?>" method="post" class="d-inline">
+          <form action="<?= site_url('approval-flows/'.$r['id']) ?>" method="post" class="d-inline">
             <?= csrf_field() ?>
             <input type="hidden" name="_method" value="DELETE">
             <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this flow?')">Delete</button>

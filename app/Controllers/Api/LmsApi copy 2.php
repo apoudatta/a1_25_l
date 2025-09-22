@@ -228,19 +228,20 @@ class LmsApi extends BaseController
             return $this->json(false, null, 'cafeteria_id is required', ApiCode::CAFETERIA_REQUIRED);
         }
 
-        $db = \Config\Database::connect();
-        
-        // Fetch meal type id dynamically from the database
-        $mealTypeRecord = $db->table('meal_types')->select('id')->where('LOWER(name)', $mealType)->get()->getRowArray();
-
-        // If no matching meal type, return an error
-        if (!$mealTypeRecord) {
-            return $this->json(false, null, 'Invalid meal_type. Use lunch/ifter/sehri/Eid Morning Snacks/Eid Lunch/Eid Evening Snacks/Eid Dinner', ApiCode::INVALID_MEAL_TYPE);
+        // Map meal_type text -> id (1=lunch, 2-ifter, 3-sehri, 4..7 Eid...)
+        $mealTypeIdInput = null;
+        if ($mealType !== '') {
+            if     ($mealType === 'lunch') $mealTypeIdInput = 1;
+            elseif ($mealType === 'ifter') $mealTypeIdInput = 2;
+            elseif ($mealType === 'sehri') $mealTypeIdInput = 3;
+            elseif ($mealType === 'eid morning snacks') $mealTypeIdInput = 4;
+            elseif ($mealType === 'eid lunch')           $mealTypeIdInput = 5;
+            elseif ($mealType === 'eid evening snacks')  $mealTypeIdInput = 6;
+            elseif ($mealType === 'eid dinner')          $mealTypeIdInput = 7;
+            else return $this->json(false, null, 'Invalid meal_type. Use lunch/ifter/sehri/Eid Morning Snacks/Eid Lunch/Eid Evening Snacks/Eid Dinner', ApiCode::INVALID_MEAL_TYPE);
         }
 
-        // Get meal type ID from the result
-        $mealTypeIdInput = (int) $mealTypeRecord['id'];
-
+        $db = \Config\Database::connect();
         $db->transStart();
 
         // ------------------- CASE A: OTP path (guest/intern) -------------------
@@ -253,12 +254,12 @@ class LmsApi extends BaseController
                 ->where('ms.subs_date', $today)
                 ->get()->getRowArray();
 
-            if (!$src) {
+            if (! $src) {
                 $db->transComplete();
                 return $this->json(false, null, 'Invalid or unmatched OTP', ApiCode::OTP_INVALID);
             }
 
-            // Cafeteria mismatch check
+            // Cafeteria guard
             $cafeteriaIdOfSrc = (int)($src['cafeteria_id'] ?? 0);
             if ($cafeteriaIdOfSrc !== $cafeteriaIdInput) {
                 $db->transComplete();
@@ -279,7 +280,7 @@ class LmsApi extends BaseController
             $userName       = $src['ref_name'] ?? ''; // Guest/Intern Name from `meal_reference`
             $phone          = $src['ref_phone'] ?? ''; // Guest/Intern Phone from `meal_reference`
 
-            // Prevent duplicate token for the same subscription row
+            // Prevent duplicate token for same subscription row
             $existingToken = $db->table('meal_tokens')
                 ->where('subs_id', $subscriptionId)
                 ->get()->getRowArray();
@@ -288,6 +289,7 @@ class LmsApi extends BaseController
                 $db->transComplete();
                 $autoToken = $existingToken['token_code'];
                 return $this->json(false, null, 'Meal already consumed, Token exists!', ApiCode::TOKEN_EXISTS_REDEEMED);
+                
             } else {
                 // Generate and insert auto token (NOT the OTP)
                 $autoToken = $this->generateMealTokenCode($db, 0, $mealTypeId, $mealDate);
@@ -313,8 +315,8 @@ class LmsApi extends BaseController
 
             $db->transComplete();
 
-            $mealType = $db->table('meal_types')->where('id', $mealTypeId)->get()->getRowArray();
-            $empType = $db->table('employment_types')->where('id', $empTypeId)->get()->getRowArray();
+        $mealType = $db->table('meal_types')->where('id', $mealTypeId)->get()->getRowArray();
+        $empType = $db->table('employment_types')->where('id', $empTypeId)->get()->getRowArray();
 
             return $this->json(true, [
                 'user' => [
@@ -390,7 +392,7 @@ class LmsApi extends BaseController
             return $this->json(false, null, 'Meal already consumed', ApiCode::MEAL_ALREADY_CONSUMED);
         }
 
-        // Cafeteria mismatch guard (critical)
+        // ✅ Cafeteria mismatch guard (critical)
         $cafeteriaIdOfMs = (int)($ms['cafeteria_id'] ?? 0);
         if ($cafeteriaIdOfMs !== $cafeteriaIdInput) {
             $db->transComplete();
@@ -453,6 +455,9 @@ class LmsApi extends BaseController
             'dashboard' => $dash,
         ], '', ApiCode::OK);
     }
+
+
+
 
 
     /**

@@ -20,8 +20,8 @@ if (! $validation) {
 
 
 <form action="<?= site_url($isNew 
-        ? 'admin/cutoff-times' 
-        : "admin/cutoff-times/{$row['id']}") ?>"
+        ? 'cutoff-times' 
+        : "cutoff-times/{$row['id']}") ?>"
       method="post" novalidate
       class="col-md-6">
   <?= csrf_field() ?>
@@ -102,7 +102,7 @@ if (! $validation) {
   </div>
 
   <button class="btn btn-primary"><?= $isNew ? 'Create' : 'Update' ?></button>
-  <a href="<?= site_url('admin/cutoff-times') ?>" class="btn btn-secondary">Cancel</a>
+  <a href="<?= site_url('cutoff-times') ?>" class="btn btn-secondary">Cancel</a>
 </form>
 
 <?= $this->endSection() ?>

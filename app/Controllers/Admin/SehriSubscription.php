@@ -300,7 +300,7 @@ class SehriSubscription extends BaseController
         }
 
         $msg = ($status === 'PENDING') ? 'Subscriptions pending approval.' : 'Subscriptions active.';
-        return redirect()->to('admin/sehri-subscription')->with('success', $msg);
+        return redirect()->to('sehri-subscription')->with('success', $msg);
     }
 
     # -----------------------------------------------------------

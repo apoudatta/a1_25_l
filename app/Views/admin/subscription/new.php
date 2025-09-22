@@ -12,41 +12,55 @@
 <?php endif ?>
 
 
-<?= form_open('admin/subscription/store') ?>
+<?= form_open('subscription/store') ?>
   <?= csrf_field() ?>
 
-  <div class="row g-3">
+  
+  <?php
+  if(!has_role('EMPLOYEE')): ?>
+    <div class="row g-3">
     <div class="col-md-6">
       <label for="lunch_for" class="form-label">Lunch For</label>
       <select
-        id="lunch_for"
-        name="lunch_for"
-        class="form-select <?= isset($validation) && $validation->hasError('lunch_for') ? 'is-invalid' : '' ?>"
-        required>
-        <option value="SELF">Self</option>
-        <option value="OTHER">Other</option>
-      </select>
-    </div>
-
-    <div class="col-md-6">
-      <label for="employee_id" class="form-label">Employee Name</label>
-      <select id="employee_id"
-        name="employee_id"
-        class="form-select"
-        required>
-        <option value="">Select employee…</option>
-      </select>
-      <div id="employee_loader" style="display: none;">
-        <span class="spinner-border spinner-border-sm"></span>
-        Loading employees...
-      </div>
-      <?php if(isset($validation)): ?>
-        <div class="invalid-feedback">
-          <?= $validation->getError('employee_id') ?>
-        </div>
-      <?php endif ?>
-    </div>
+      id="lunch_for"
+      name="lunch_for"
+      class="form-select <?= isset($validation) && $validation->hasError('lunch_for') ? 'is-invalid' : '' ?>"
+      required>
+      <option value="SELF">Self</option>
+      <option value="OTHER">Other</option>
+    </select>
   </div>
+  
+  <div class="col-md-6">
+    <label for="employee_id" class="form-label">Employee Name</label>
+    <select id="employee_id"
+    name="employee_id"
+    class="form-select"
+    required>
+    <option value="">Select employee…</option>
+  </select>
+  <div id="employee_loader" style="display: none;">
+    <span class="spinner-border spinner-border-sm"></span>
+    Loading employees...
+  </div>
+  <?php if(isset($validation)): ?>
+    <div class="invalid-feedback">
+      <?= $validation->getError('employee_id') ?>
+    </div>
+    <?php endif ?>
+  </div>
+</div>
+<?php else: ?>
+  <div class="col-md-6">
+      <label for="employee_name" class="form-label">Employee Name</label>
+      <select 
+        name="employee_id" 
+        class="form-select"
+      >
+        <option value="<?= session('user_id') ?>"><?= session('user_name') ?></option>
+      </select>
+    </div>
+<?php endif ?>
 
   <div class="row g-3 mb-3">
     <div class="col-md-6">
@@ -209,7 +223,7 @@ $(document).ready(function () {
     } else if (selected === 'OTHER') {
       $loader.show();
 
-      $.getJSON("<?= site_url('admin/employees/active-list') ?>", function (res) {
+      $.getJSON("<?= site_url('employees/active-list') ?>", function (res) {
         $employee.append($('<option>', { value: '', text: 'Select employee…' }));
         res.forEach(function (emp) {
           $employee.append(

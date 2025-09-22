@@ -46,7 +46,7 @@ class GuestSubscription extends BaseController
         $this->db = db_connect();
     }
 
-    /** GET /admin/guest-subscriptions/new */
+    /** GET /guest-subscriptions/new */
     public function new()
     {
         // default Lunch (1) like your view
@@ -86,7 +86,7 @@ class GuestSubscription extends BaseController
         ]);
     }
 
-    /** POST /admin/guest-subscriptions/store */
+    /** POST /guest-subscriptions/store */
     public function store()
     {
         $rules = [
@@ -320,11 +320,11 @@ class GuestSubscription extends BaseController
             return redirect()->back()->withInput()->with('error', 'Failed to save guest subscription.');
         }
 
-        return redirect()->to('admin/guest-subscriptions')
+        return redirect()->to('guest-subscriptions')
             ->with('success', $status === 'PENDING' ? 'Subscription pending approval.' : 'Subscription active.');
     }
 
-    /** GET /admin/guest-subscriptions/all-guest-list */
+    /** GET /guest-subscriptions/all-guest-list */
     public function index($listType = null)
     {
         if ($listType === null) {
@@ -380,7 +380,7 @@ class GuestSubscription extends BaseController
         return view($viewPage, ['rows' => $rows]);
     }
 
-    /** GET /admin/guest-subscriptions/upload */
+    /** GET /guest-subscriptions/upload */
     public function uploadForm()
     {
         ['days' => $days, 'time' => $time, 'lead_days' => $lead] = $this->cutoffResolver->getDefault(1);
@@ -402,7 +402,7 @@ class GuestSubscription extends BaseController
     }
 
 
-    /** POST /admin/guest-subscriptions/process-upload */
+    /** POST /guest-subscriptions/process-upload */
     public function processUpload()
     {
         if (! $this->validate($this->validateUpload())) {
@@ -425,13 +425,13 @@ class GuestSubscription extends BaseController
         // Insert everything
         $result = $this->insertSubscriptionsBulk($mealTypeId, $guestTypeId, $dates, $rows, $status, $flow);
         if ($result[0] !== true) {
-            return redirect()->to('admin/guest-subscriptions/bulk-list')->with('success', $result[1]);
+            return redirect()->to('guest-subscriptions/bulk-list')->with('success', $result[1]);
         }
 
-        return redirect()->to('admin/guest-subscriptions/bulk-list')->with('success', 'Excel processed and subscriptions created.');
+        return redirect()->to('guest-subscriptions/bulk-list')->with('success', 'Excel processed and subscriptions created.');
     }
 
-    /** POST /admin/guest-subscriptions/unsubscribe/(:num) */
+    /** POST /guest-subscriptions/unsubscribe/(:num) */
     public function unsubscribe($id)
     {
         $ok = $this->subs->update((int)$id, [
@@ -443,7 +443,7 @@ class GuestSubscription extends BaseController
         return redirect()->back()->with($ok ? 'success' : 'error', $ok ? 'Unsubscribed successfully.' : 'Unable to unsubscribe.');
     }
 
-    /** POST /admin/guest-subscriptions/unsubscribe-bulk */
+    /** POST /guest-subscriptions/unsubscribe-bulk */
     public function unsubscribe_bulk()
     {
         $ids    = array_values(array_filter((array)$this->request->getPost('subscription_ids'), 'is_numeric'));

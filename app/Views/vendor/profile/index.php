@@ -3,133 +3,78 @@
 
 <h4 class="mb-4">My Profile</h4>
 
-<?php if(session()->getFlashdata('success')): ?>
-  <div class="alert alert-success">
-    <?= session()->getFlashdata('success') ?>
-  </div>
-<?php endif ?>
+<?php if (empty($user)): ?>
+  <div class="alert alert-warning">Profile not found.</div>
+  <?php /* Optionally link back */ ?>
+  <a href="<?= esc(base_url('vendor/dashboard')) ?>" class="btn btn-secondary btn-sm">Back to Dashboard</a>
+<?php else: ?>
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <div class="row g-3">
+        <!-- Left: Avatar/initials -->
+        <div class="col-md-3 d-flex align-items-start">
+          <div class="d-flex align-items-center gap-3">
+            <div class="rounded-circle bg-light d-flex align-items-center justify-content-center"
+                 style="width:72px;height:72px;font-weight:600;">
+              <?php
+                $initials = '';
+                $n = trim((string)($user['vendor_name'] ?? $user['name'] ?? ''));
+                if ($n !== '') {
+                  $parts = preg_split('/\s+/', $n);
+                  $initials = strtoupper(mb_substr($parts[0] ?? '', 0, 1) . mb_substr($parts[1] ?? '', 0, 1));
+                }
+                echo esc($initials ?: 'U');
+              ?>
+            </div>
+            <div>
+              <div class="fw-semibold">
+                <?= esc($user['vendor_name'] ?? $user['name'] ?? '—') ?>
+              </div>
+              <div class="text-muted small">
+                Vendor ID: <?= esc($user['vendor_id'] ?? '-') ?>
+              </div>
+            </div>
+          </div>
+        </div>
 
-<form method="post" action="<?= site_url('vendor/profile/update') ?>">
-<?= csrf_field() ?>
-  <div class="row gx-3">
-    <!-- Vendor ID -->
-    <div class="col-md-6 mb-3">
-      <label
-        for="vendor_id"
-        class="form-label"
-      >
-        Vendor ID
-      </label>
-      <input
-        type="text"
-        id="vendor_id"
-        name="vendor_id"
-        class="form-control"
-        value="<?= esc(old('vendor_id', $profile['vendor_id'] ?? ''), 'attr') ?>"
-        readonly
-      >
-    </div>
+        <!-- Right: Details -->
+        <div class="col-md-6">
+          <div class="row">
+            <div class="col-sm-12 mb-3">
+              <div class="text-muted small">Name</div>
+              <div class="fw-semibold">
+                <?= esc($user['name'] ?? '-') ?>
+              </div>
+            </div>
 
-    <!-- Vendor Name -->
-    <div class="col-md-6 mb-3">
-      <label
-        for="vendor_name"
-        class="form-label"
-      >
-        Vendor Name
-      </label>
-      <input
-        type="text"
-        id="vendor_name"
-        name="vendor_name"
-        class="form-control"
-        value="<?= esc(old('vendor_name', $profile['vendor_name'] ?? ''), 'attr') ?>"
-      >
-      <?= isset($validation) ? esc($validation->getError('vendor_name')) : '' ?>
-    </div>
-  </div>
+            <div class="col-sm-12 mb-3">
+              <div class="text-muted small">Phone</div>
+              <div class="fw-semibold">
+                <?= esc($user['phone'] ?? '-') ?>
+              </div>
+            </div>
 
-  <div class="row gx-3">
-    <!-- Operational Contact Name -->
-    <div class="col-md-6 mb-3">
-      <label
-        for="op_contact_name"
-        class="form-label"
-      >
-        Operational Contact Name
-      </label>
-      <input
-        type="text"
-        id="op_contact_name"
-        name="op_contact_name"
-        class="form-control"
-        value="<?= esc(old('op_contact_name', $profile['op_contact_name'] ?? ''), 'attr') ?>"
-      >
-      <?= isset($validation) ? esc($validation->getError('op_contact_name')) : '' ?>
-    </div>
+            <div class="col-sm-12 mb-3">
+              <div class="text-muted small">Email</div>
+              <div class="fw-semibold">
+                <?= esc($user['email'] ?? '-') ?>
+              </div>
+            </div>
 
-    <!-- Operational Contact Phone -->
-    <div class="col-md-6 mb-3">
-      <label
-        for="op_contact_phone"
-        class="form-label"
-      >
-        Operational Contact Phone
-      </label>
-      <input
-        type="tel"
-        id="op_contact_phone"
-        name="op_contact_phone"
-        class="form-control"
-        value="<?= esc(old('op_contact_phone', $profile['op_contact_phone'] ?? ''), 'attr') ?>"
-      >
-      <?= isset($validation) ? esc($validation->getError('op_contact_phone')) : '' ?>
+          </div>
+        </div>
+      </div>
+
+      <hr class="my-4">
+
+      <div class="d-flex gap-2">
+        <a href="<?= esc(base_url('vendor/dashboard')) ?>" class="btn btn-outline-secondary btn-sm">
+          Back to Dashboard
+        </a>
+        <!-- No edit/save buttons since this is view-only -->
+      </div>
     </div>
   </div>
-
-  <div class="row gx-3">
-    <!-- Operational Contact Email -->
-    <div class="col-md-6 mb-3">
-      <label
-        for="op_contact_email"
-        class="form-label"
-      >
-        Operational Contact Email
-      </label>
-      <input
-        type="email"
-        id="op_contact_email"
-        name="op_contact_email"
-        class="form-control"
-        value="<?= esc(old('op_contact_email', $profile['op_contact_email'] ?? ''), 'attr') ?>"
-      >
-      <?= isset($validation) ? esc($validation->getError('op_contact_email')) : '' ?>
-    </div>
-
-    <!-- Description / Specialty -->
-    <div class="col-md-6 mb-3">
-      <label
-        for="description"
-        class="form-label"
-      >
-        Description / Specialty
-      </label>
-      <textarea
-        id="description"
-        name="description"
-        class="form-control"
-        rows="3"
-      ><?= esc(old('description', $profile['description'] ?? '')) ?></textarea>
-      <?= isset($validation) ? esc($validation->getError('description')) : '' ?>
-    </div>
-  </div>
-
-  <button
-    type="submit"
-    class="btn btn-primary"
-  >
-    Save Changes
-  </button>
-</form>
+<?php endif; ?>
 
 <?= $this->endSection() ?>

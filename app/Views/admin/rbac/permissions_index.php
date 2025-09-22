@@ -4,7 +4,7 @@
 <h5>Permissions</h5>
 <?= view('partials/flash_message') ?>
 
-<form method="post" action="<?= site_url('admin/permissions') ?>" class="mb-3">
+<form method="post" action="<?= site_url('permissions') ?>" class="mb-3">
   <?= csrf_field() ?>
   <div class="row g-2">
     <div class="col-md-4"><input name="name" class="form-control" placeholder="e.g. reports.view"></div>
@@ -22,8 +22,8 @@
       <td><code><?= esc($p['name']) ?></code></td>
       <td><?= esc($p['description'] ?? '') ?></td>
       <td class="text-nowrap">
-        <a class="btn btn-sm btn-outline-secondary" href="<?= site_url('admin/permissions/'.$p['id'].'/edit') ?>">Edit</a>
-        <form method="post" action="<?= site_url('admin/permissions/'.$p['id'].'/delete') ?>" class="d-inline">
+        <a class="btn btn-sm btn-outline-secondary" href="<?= site_url('permissions/'.$p['id'].'/edit') ?>">Edit</a>
+        <form method="post" action="<?= site_url('permissions/'.$p['id'].'/delete') ?>" class="d-inline">
           <?= csrf_field() ?>
           <button class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete permission?')">Delete</button>
         </form>

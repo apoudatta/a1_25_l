@@ -36,7 +36,7 @@ class EmploymentTypes extends BaseController
     {
         $row = $this->types->find($id);
         if (! $row) {
-            return redirect()->to(site_url('admin/employment-types'))
+            return redirect()->to(site_url('employment-types'))
                              ->with('error', 'Employment Type not found.');
         }
         return view('admin/crud/employment_types/form', compact('row'));
@@ -59,7 +59,7 @@ class EmploymentTypes extends BaseController
                 ->with('errors', $this->types->errors());
         }
 
-        return redirect()->to(site_url('admin/employment-types'))
+        return redirect()->to(site_url('employment-types'))
                          ->with('success', 'Employment Type saved successfully.');
     }
 
@@ -67,13 +67,13 @@ class EmploymentTypes extends BaseController
     {
         $row = $this->types->find($id);
         if (! $row) {
-            return redirect()->to(site_url('admin/employment-types'))
+            return redirect()->to(site_url('employment-types'))
                              ->with('error', 'Employment Type not found.');
         }
 
         $this->types->delete($id);
 
-        return redirect()->to(site_url('admin/employment-types'))
+        return redirect()->to(site_url('employment-types'))
                          ->with('success', 'Employment Type deleted.');
     }
 
@@ -81,14 +81,14 @@ class EmploymentTypes extends BaseController
     {
         $row = $this->types->find($id);
         if (! $row) {
-            return redirect()->to(site_url('admin/employment-types'))
+            return redirect()->to(site_url('employment-types'))
                              ->with('error', 'Employment Type not found.');
         }
 
         $row['is_active'] = (int)!$row['is_active'];
         $this->types->save($row);
 
-        return redirect()->to(site_url('admin/employment-types'))
+        return redirect()->to(site_url('employment-types'))
                          ->with('success', 'Status updated.');
     }
 }

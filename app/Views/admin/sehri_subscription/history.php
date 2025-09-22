@@ -40,11 +40,11 @@
     </select>
   </div>
   <div class="col-4 col-md-3 col-lg-5 text-end">
-    <a href="<?= site_url('admin/sehri-subscription/new') ?>"
+    <a href="<?= site_url('sehri-subscription/new') ?>"
        class="btn btn-primary">+ Sehri Subscribe</a>
   </div>
 </div>
-<form method="post" action="<?= site_url('admin/sehri-subscription/unsubscribe_bulk') ?>" id="bulkUnsubscribeForm">
+<form method="post" action="<?= site_url('sehri-subscription/unsubscribe_bulk') ?>" id="bulkUnsubscribeForm">
 <table id="subscriptionTable" class="table table-bordered table-striped nowrap w-100">
   <thead class="table-light">
     <tr>

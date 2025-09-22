@@ -301,14 +301,14 @@ class IfterSubscription extends BaseController
         }
 
         $msg = ($status === 'PENDING') ? 'Subscriptions pending approval.' : 'Subscriptions active.';
-        return redirect()->to('admin/ifter-subscription')->with('success', $msg);
+        return redirect()->to('ifter-subscription')->with('success', $msg);
     }
 
     /**
      * Unified list: history (me) or all (admin)
      * Route examples:
-     *   - /admin/ifter-subscription/history         -> browse('me')
-     *   - /admin/ifter-subscription/all-ifter-list  -> browse('all')
+     *   - /ifter-subscription/history         -> browse('me')
+     *   - /ifter-subscription/all-ifter-list  -> browse('all')
      */
     public function index(string $scope = 'me')
     {

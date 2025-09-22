@@ -4,7 +4,7 @@
 <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
   <h2 class="mb-0">Cut-Off Times</h2>
   <?php if (can('admin.cutoff-times.new')): ?>
-    <a href="<?= site_url('admin/cutoff-times/new') ?>" class="btn btn-primary">+ New Entry</a>
+    <a href="<?= site_url('cutoff-times/new') ?>" class="btn btn-primary">+ New Entry</a>
   <?php endif; ?>
 </div>
 
@@ -43,9 +43,9 @@
           </td>
           <td>
             <?php if (can('admin.cutoff-times.edit')): ?>
-              <a href="<?= site_url("admin/cutoff-times/{$r['id']}/edit") ?>" class="btn btn-sm btn-secondary me-1">Edit</a>
+              <a href="<?= site_url("cutoff-times/{$r['id']}/edit") ?>" class="btn btn-sm btn-secondary me-1">Edit</a>
             <?php endif; ?>
-            <!-- <form action="<?= site_url("admin/cutoff-times/{$r['id']}")?>" method="post" class="d-inline" onsubmit="return confirm('Delete this?')">
+            <!-- <form action="<?= site_url("cutoff-times/{$r['id']}")?>" method="post" class="d-inline" onsubmit="return confirm('Delete this?')">
               <?= csrf_field() ?>
               <input type="hidden" name="_method" value="DELETE">
               <button class="btn btn-sm btn-danger">Del</button>

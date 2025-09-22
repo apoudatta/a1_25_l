@@ -15,16 +15,10 @@ class Assign extends BaseController
         $perm = $db->table('permissions')->orderBy('name');
 
         // roleID 1 - Super Admin, 2 - Admin, 3 - Employee, 4 - vendor
-        if ($roleId === 3) {
-            // employee.* only
-            $perm->like('name', 'employee.', 'after');   // name LIKE 'employee.%'
-        } elseif ($roleId === 4) {
+        if ($roleId === 4) {
             // vendor.* only
             $perm->like('name', 'vendor.', 'after');   // name LIKE 'vendor.%'
         } else {
-            // everything except employee.*
-            // If your CI4 version has notLike():
-            $perm->notLike('name', 'employee.', 'after'); // name NOT LIKE 'employee.%'
             $perm->notLike('name', 'vendor.', 'after'); // name NOT LIKE 'employee.%'
     
             // If notLike() isn't available, use raw WHERE (uncomment this instead):

@@ -2,7 +2,7 @@
 <?= $this->section('content') ?>
 
 <h5>User Roles — <?= esc($user['employee_id']) ?> (<?= esc($user['email'] ?? '') ?>)</h5>
-<form method="post" action="<?= site_url('admin/users/'.$user['id'].'/roles') ?>">
+<form method="post" action="<?= site_url('users/'.$user['id'].'/roles') ?>">
   <?= csrf_field() ?>
 
   <?php $selected = $attached[0] ?? null; ?> <!-- current role id, if any -->
@@ -30,7 +30,7 @@
 
   <div class="mt-3">
     <button class="btn btn-primary">Save Changes</button>
-    <a class="btn btn-light" href="<?= site_url('admin/users') ?>">Back</a>
+    <a class="btn btn-light" href="<?= site_url('users') ?>">Back</a>
   </div>
 </form>
 

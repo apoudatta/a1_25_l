@@ -20,7 +20,7 @@
   <div class="col-auto align-self-end">
     <button class="btn btn-primary">View</button>
   </div>
-  <div class="col-auto align-self-end">
+  <!-- <div class="col-auto align-self-end">
     <form method="post" action="<?= site_url('vendor/history/export') ?>">
       <?= csrf_field() ?>
       <input type="hidden" name="start_date" value="<?= esc($start) ?>">
@@ -29,7 +29,7 @@
         Export CSV
       </button>
     </form>
-  </div>
+  </div> -->
 </form>
 
 <div id="orderHistoryResults">
@@ -38,13 +38,13 @@
   <?php else: ?>
     <table class="table table-hover">
       <thead>
-        <tr><th>Date</th><th>Meal Type ID</th><th>Count</th></tr>
+        <tr><th>Date</th><th>Meal Type Name</th><th>Count</th></tr>
       </thead>
       <tbody>
         <?php foreach ($rows as $r): ?>
         <tr>
           <td><?= esc($r->day) ?></td>
-          <td><?= esc($r->meal_type_id) ?></td>
+          <td><?= esc($r->meal_type_name) ?></td>
           <td><?= esc($r->cnt) ?></td>
         </tr>
         <?php endforeach ?>

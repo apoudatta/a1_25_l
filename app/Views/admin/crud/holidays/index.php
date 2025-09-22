@@ -5,7 +5,7 @@
   <h2 class="mb-0">Public Holidays</h2>
 
   <?php if (can('admin.public-holidays.new')): ?>
-    <a href="<?= site_url('admin/public-holidays/new') ?>" class="btn btn-primary">
+    <a href="<?= site_url('public-holidays/new') ?>" class="btn btn-primary">
       <i class="bi bi-calendar-plus me-2"></i>Add Holiday
     </a>
   <?php endif; ?>
@@ -41,9 +41,9 @@
           </td>
           <td>
             <?php if (can('admin.public-holidays.edit')): ?>
-              <a href="<?= site_url("admin/public-holidays/{$h['id']}/edit") ?>" class="btn btn-sm btn-secondary me-1">Edit</a>
+              <a href="<?= site_url("public-holidays/{$h['id']}/edit") ?>" class="btn btn-sm btn-secondary me-1">Edit</a>
             <?php endif; ?>
-              <!-- <form action="<?= site_url("admin/public-holidays/{$h['id']}") ?>" method="post" class="d-inline" onsubmit="return confirm('Delete this holiday?')">
+              <!-- <form action="<?= site_url("public-holidays/{$h['id']}") ?>" method="post" class="d-inline" onsubmit="return confirm('Delete this holiday?')">
                 <?= csrf_field() ?>
                 <input type="hidden" name="_method" value="DELETE">
                 <button class="btn btn-sm btn-danger">Delete</button>

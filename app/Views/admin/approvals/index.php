@@ -35,10 +35,10 @@
   </div>
 
   <div class="col-12 col-md d-flex justify-content-md-end gap-2 mt-2 mt-md-0">
-    <form id="bulkApproveForm" method="post" action="<?= site_url('admin/approvals/bulk-approve') ?>" class="d-none">
+    <form id="bulkApproveForm" method="post" action="<?= site_url('approvals/bulk-approve') ?>" class="d-none">
       <?= csrf_field() ?>
     </form>
-    <form id="bulkRejectForm"  method="post" action="<?= site_url('admin/approvals/bulk-reject')  ?>" class="d-none">
+    <form id="bulkRejectForm"  method="post" action="<?= site_url('approvals/bulk-reject')  ?>" class="d-none">
       <?= csrf_field() ?>
     </form>
 
@@ -101,13 +101,13 @@
         <td><span class="badge <?= $badge ?>"><?= esc($status) ?></span></td>
         <td>
           <?php if (($a['approval_status'] ?? '') === 'PENDING' && ($a['subs_status'] ?? '') === 'PENDING'): ?>
-            <form action="<?= site_url('admin/approvals/approve/'.$a['subs_id']) ?>"
+            <form action="<?= site_url('approvals/approve/'.$a['subs_id']) ?>"
                   method="post" class="d-inline action-form">
               <?= csrf_field() ?>
               <button class="btn btn-sm btn-success btn-approve">Approve</button>
             </form>
 
-            <form action="<?= site_url('admin/approvals/reject/'.$a['subs_id']) ?>"
+            <form action="<?= site_url('approvals/reject/'.$a['subs_id']) ?>"
                   method="post" class="d-inline action-form">
               <?= csrf_field() ?>
               <button class="btn btn-sm btn-danger btn-reject">Reject</button>

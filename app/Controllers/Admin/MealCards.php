@@ -82,7 +82,7 @@ class MealCards extends BaseController
 
         $this->cards->insert($payload);
 
-        return redirect()->to(site_url('admin/meal-cards'))
+        return redirect()->to(site_url('meal-cards'))
                         ->with('success', 'Meal card created.');
     }
 
@@ -91,7 +91,7 @@ class MealCards extends BaseController
     {
         $row = $this->cards->find($id);
         if (! $row) {
-            return redirect()->to(site_url('admin/meal-cards'))->with('error', 'Meal card not found.');
+            return redirect()->to(site_url('meal-cards'))->with('error', 'Meal card not found.');
         }
 
         return view('admin/meal_cards/form', [
@@ -105,7 +105,7 @@ class MealCards extends BaseController
     {
         $row = $this->cards->find($id);
         if (! $row) {
-            return redirect()->to(site_url('admin/meal-cards'))
+            return redirect()->to(site_url('meal-cards'))
                             ->with('error', 'Meal card not found.');
         }
 
@@ -146,7 +146,7 @@ class MealCards extends BaseController
 
         $this->cards->update($id, $payload);
 
-        return redirect()->to(site_url('admin/meal-cards'))
+        return redirect()->to(site_url('meal-cards'))
                         ->with('success', 'Meal card updated.');
     }
 
@@ -155,7 +155,7 @@ class MealCards extends BaseController
     {
         // CSRF + POST expected
         $this->cards->delete($id);
-        return redirect()->to(site_url('admin/meal-cards'))
+        return redirect()->to(site_url('meal-cards'))
                          ->with('success', 'Meal card deleted.');
     }
 }

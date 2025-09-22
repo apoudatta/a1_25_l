@@ -5,7 +5,7 @@
 
 <?= view('partials/flash_message') ?>
 
-<form method="post" action="<?= site_url('admin/roles/update/'.$role['id']) ?>">
+<form method="post" action="<?= site_url('roles/update/'.$role['id']) ?>">
   <?= csrf_field() ?>
 
   <div class="mb-3">
@@ -31,7 +31,7 @@
 
   <div class="d-flex gap-2">
     <button class="btn btn-primary">Update</button>
-    <a class="btn btn-light" href="<?= site_url('admin/roles') ?>">Back</a>
+    <a class="btn btn-light" href="<?= site_url('roles') ?>">Back</a>
   </div>
 </form>
 

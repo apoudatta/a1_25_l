@@ -43,25 +43,4 @@ class SubscriptionAjax extends BaseController
         return $this->response->setJSON(['holidays'=>$dates]);
     }
 
-    /** POST /api/subscriptions/check-overlap */
-    public function checkOverlap()
-    {
-        $p    = $this->request->getJSON(true);
-        $user = session('user_id');
-        $subM = new MealSubscriptionModel();
-
-        $conflicts = $subM
-           ->where('user_id',       $user)
-           ->where('meal_type_id',  $p['meal_type_id'])
-           ->groupStart()
-             ->where('start_date <=',$p['end_date'])
-             ->where('end_date >=',  $p['start_date'])
-           ->groupEnd()
-           ->findAll();
-
-        return $this->response->setJSON([
-            'conflict' => count($conflicts)>0,
-            'existing' => $conflicts
-        ]);
-    }
 }

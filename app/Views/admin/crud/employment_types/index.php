@@ -5,7 +5,7 @@
   <h2 class="mb-0">Employment Types</h2>
 
   <?php if (can('admin.employment-types.new')): ?>
-    <a href="<?= site_url('admin/employment-types/create') ?>" class="btn btn-primary">
+    <a href="<?= site_url('employment-types/create') ?>" class="btn btn-primary">
       <i class="bi bi-plus-lg"></i> New Employment Types
     </a>
   <?php endif; ?>
@@ -46,13 +46,13 @@
             <?php if (can('admin.employment-types.edit')): ?>
               <a
                 class="btn btn-sm btn-outline-primary"
-                href="<?= site_url('admin/employment-types/'.$r['id'].'/edit') ?>"
+                href="<?= site_url('employment-types/'.$r['id'].'/edit') ?>"
               >Edit</a>
             <?php endif; ?>
 
             <!-- <a
               class="btn btn-sm btn-outline-danger"
-              href="<?= site_url('admin/employment-types/'.$r['id'].'/delete') ?>"
+              href="<?= site_url('employment-types/'.$r['id'].'/delete') ?>"
               onclick="return confirm('Delete this type? This cannot be undone.')"
             >Delete</a> -->
           </td>

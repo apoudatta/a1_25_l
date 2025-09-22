@@ -18,9 +18,6 @@ class ApprovalFlows extends BaseController
         $this->empTypeModel  = new EmploymentTypeModel();
     }
 
-    /**
-     * GET /admin/approval-flows
-     */
     public function index()
     {
         // 1) Optional: grab search/sort inputs
@@ -55,9 +52,6 @@ class ApprovalFlows extends BaseController
         ]);
     }
 
-    /**
-     * GET /admin/approval-flows/new
-     */
     public function new()
     {
         // Employment types for dropdown (plus "ALL" option with value 0)
@@ -74,9 +68,6 @@ class ApprovalFlows extends BaseController
         ]);
     }
 
-    /**
-     * POST /admin/approval-flows
-     */
     public function create()
     {
         $post = $this->request->getPost();
@@ -91,13 +82,10 @@ class ApprovalFlows extends BaseController
 
         $this->model->insert($data);
 
-        return redirect()->to('admin/approval-flows')
+        return redirect()->to('approval-flows')
                          ->with('success', 'Flow created.');
     }
 
-    /**
-     * GET /admin/approval-flows/(:num)/edit
-     */
     public function edit($id)
     {
         $flow = $this->model->find($id);
@@ -118,9 +106,6 @@ class ApprovalFlows extends BaseController
         ]);
     }
 
-    /**
-     * POST/PUT /admin/approval-flows/(:num)
-     */
     public function update($id)
     {
         $post = $this->request->getPost();
@@ -135,17 +120,14 @@ class ApprovalFlows extends BaseController
 
         $this->model->update($id, $data);
 
-        return redirect()->to('admin/approval-flows')
+        return redirect()->to('approval-flows')
                          ->with('success', 'Flow updated.');
     }
 
-    /**
-     * DELETE /admin/approval-flows/(:num)
-     */
     public function delete($id)
     {
         $this->model->delete($id);
-        return redirect()->to('admin/approval-flows')
+        return redirect()->to('approval-flows')
                          ->with('success', 'Flow deleted.');
     }
 }

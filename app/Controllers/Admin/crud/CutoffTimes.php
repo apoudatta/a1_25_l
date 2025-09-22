@@ -14,7 +14,6 @@ class CutoffTimes extends BaseController
         $this->model = new CutoffTimeModel();
     }
 
-    /** GET /admin/cutoff-times */
     public function index()
     {
         $rows = $this->model
@@ -29,7 +28,6 @@ class CutoffTimes extends BaseController
     }
 
 
-    /** GET /admin/cutoff-times/new */
     public function create()
     {
         $mealM = new MealTypeModel();
@@ -40,7 +38,6 @@ class CutoffTimes extends BaseController
         ]);
     }
 
-    /** POST /admin/cutoff-times */
     public function store()
     {
         $post = $this->request->getPost();
@@ -73,11 +70,10 @@ class CutoffTimes extends BaseController
 
         $this->model->insert($data);
 
-        return redirect()->to('admin/cutoff-times')->with('success','Cut‐off time saved.');
+        return redirect()->to('cutoff-times')->with('success','Cut‐off time saved.');
     }
 
 
-    /** GET /admin/cutoff-times/{id}/edit */
     public function edit($id)
     {
         $mealM = new MealTypeModel();
@@ -91,7 +87,6 @@ class CutoffTimes extends BaseController
         ]);
     }
 
-    /** PUT /admin/cutoff-times/{id} */
     public function update($id)
     {
         $data = $this->validate([
@@ -119,15 +114,14 @@ class CutoffTimes extends BaseController
 
         $this->model->update($id, $data);
 
-        return redirect()->to('admin/cutoff-times')
+        return redirect()->to('cutoff-times')
                          ->with('success','Cut‐off time updated.');
     }
 
-    /** DELETE /admin/cutoff-times/{id} */
     public function delete($id)
     {
         $this->model->delete($id);
-        return redirect()->to('admin/cutoff-times')
+        return redirect()->to('cutoff-times')
                          ->with('success','Cut‐off time removed.');
     }
 }

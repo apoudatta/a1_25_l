@@ -5,8 +5,8 @@
 <h4 class="mb-4"><?= $isEdit ? 'Edit' : 'New' ?> Meal Cost</h4>
 
 <form action="<?= $isEdit
-    ? site_url("admin/meal-costs/{$cost['id']}")
-    : site_url('admin/meal-costs') ?>"
+    ? site_url("meal-costs/{$cost['id']}")
+    : site_url('meal-costs') ?>"
   method="post" class="row g-3">
 
   <?= csrf_field() ?>
@@ -61,7 +61,7 @@
 
   <div class="col-12">
     <button class="btn btn-primary"><?= $isEdit ? 'Update' : 'Create' ?></button>
-    <a href="<?= site_url('admin/meal-costs')?>" class="btn btn-outline-secondary">Cancel</a>
+    <a href="<?= site_url('meal-costs')?>" class="btn btn-outline-secondary">Cancel</a>
   </div>
 </form>
 <?= $this->endSection() ?>
@@ -111,7 +111,7 @@
     if (!mealTypeId) return;
 
     try {
-      const url = '<?= site_url('admin/meal-costs/horizon') ?>/' + encodeURIComponent(mealTypeId);
+      const url = '<?= site_url('meal-costs/horizon') ?>/' + encodeURIComponent(mealTypeId);
       const res = await fetch(url, { headers: { 'Accept': 'application/json' }});
       const json = await res.json();
 

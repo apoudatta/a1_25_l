@@ -4,7 +4,7 @@
 <h4 class="mb-3"><?= $flow ? 'Edit Approval Flow' : 'New Approval Flow' ?></h4>
 
 <?php $isEdit = !empty($flow); ?>
-<form method="post" action="<?= $isEdit ? site_url('admin/approval-flows/'.$flow['id']) : site_url('admin/approval-flows') ?>">
+<form method="post" action="<?= $isEdit ? site_url('approval-flows/'.$flow['id']) : site_url('approval-flows') ?>">
   <?= csrf_field() ?>
   <?php if ($isEdit): ?>
     <input type="hidden" name="_method" value="PUT">
@@ -58,7 +58,7 @@
 
   <div class="d-flex gap-2">
     <button type="submit" class="btn btn-primary"><?= $isEdit ? 'Update' : 'Save' ?></button>
-    <a href="<?= site_url('admin/approval-flows') ?>" class="btn btn-secondary">Cancel</a>
+    <a href="<?= site_url('approval-flows') ?>" class="btn btn-secondary">Cancel</a>
   </div>
 </form>
 

@@ -58,7 +58,7 @@ class ReportController extends BaseController
     /** Default landing – redirect to first report */
     public function index()
     {
-        return redirect()->to(site_url('admin/report/meal-charge-list-for-payroll'));
+        return redirect()->to(site_url('report/meal-charge-list-for-payroll'));
     }
 
     /** 1) Meal Charge list for payroll */
@@ -123,7 +123,7 @@ class ReportController extends BaseController
             'employmentTypes'  => $this->getEmploymentTypes(),
         ];
 
-        return $this->response->setBody(view('admin/report/meal_charge_list_for_payroll', $payload));
+        return $this->response->setBody(view('report/meal_charge_list_for_payroll', $payload));
     }
 
     
@@ -162,12 +162,14 @@ class ReportController extends BaseController
             'employmentTypes'  => $this->getEmploymentTypes(),
         ];
 
-        return $this->response->setBody(view('admin/report/meal_report_for_billing', $payload));
+        return $this->response->setBody(view('report/meal_report_for_billing', $payload));
     }
 
-    private function mealReportQueryForBilling($empTypeId, $start, $end, $typeId = 0): array{
+    private function mealReportQueryForBilling($empTypeId, $start, $end, $typeId = 0): array
+    {
         $db = db_connect();
         $monthYearLabel = date("F'Y", strtotime($start));
+
         $q = $db->table('meal_subscriptions ms')
             ->select("
                 u.employee_id  AS emp_id,
@@ -177,7 +179,7 @@ class ReportController extends BaseController
                 u.department   AS department,
                 u.phone        AS phone,
                 c.name         AS caff_name,
-                et.name         AS emp_type_name,
+                et.name        AS emp_type_name,
                 mr.ref_id,
                 mr.ref_name,
                 COUNT(ms.id)   AS day_count,
@@ -186,18 +188,17 @@ class ReportController extends BaseController
             ->join('users u',           'u.id = ms.user_id',       'left')
             ->join('meal_reference mr', 'mr.subs_id = ms.id',      'left')
             ->join('cafeterias c',      'c.id = ms.cafeteria_id',  'left')
-            ->join('employment_types et',      'et.id = ms.emp_type_id',  'left')
+            ->join('employment_types et', 'et.id = ms.emp_type_id', 'left')
             ->where('ms.subs_date >=', $start)
             ->where('ms.subs_date <=', $end)
             ->whereIn('ms.emp_type_id', $empTypeId)
             ->whereIn('ms.status', ['ACTIVE','REDEEMED'])
-            ->groupBy('u.id')
+            ->groupBy('u.id, u.employee_id, u.name, u.designation, u.division, u.department, u.phone, c.name, et.name, mr.ref_id, mr.ref_name') // Include non-aggregated columns in GROUP BY
             ->orderBy('u.employee_id', 'ASC');
 
-            if ($typeId > 0) {
-                // assumes ms.emp_type_id references employment_types.id
-                $q->where('ms.emp_type_id', $typeId);
-            }
+        if ($typeId > 0) {
+            $q->where('ms.emp_type_id', $typeId);
+        }
 
         $rows = $q->get()->getResultArray();
 
@@ -208,6 +209,7 @@ class ReportController extends BaseController
 
         return $rows;
     }
+
 
 
 
@@ -261,7 +263,7 @@ class ReportController extends BaseController
             'row'         => $row,
         ];
 
-        return $this->response->setBody(view('admin/report/meal_detail_report', $payload));
+        return $this->response->setBody(view('report/meal_detail_report', $payload));
     }
 
 
@@ -305,7 +307,7 @@ class ReportController extends BaseController
         $rows = $b->orderBy('u.name', 'ASC')->orderBy('ms.id', 'ASC')->get()->getResultArray();
 
         return $this->response->setBody(
-            view('admin/report/daily_meal_report', array_merge(
+            view('report/daily_meal_report', array_merge(
                 $this->getLookups(),
                 [
                     'title'   => 'Daily Meal Report',
@@ -375,7 +377,7 @@ class ReportController extends BaseController
         }
 
         return $this->response->setBody(
-            view('admin/report/food_consumption_report', array_merge(
+            view('report/food_consumption_report', array_merge(
                 $this->getLookups(),
                 [
                     'title'           => 'Food Consumption Report',

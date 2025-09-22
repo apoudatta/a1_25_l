@@ -24,7 +24,7 @@
 
 
 
-<form id="csvForm" action="<?= site_url('admin/intern-subscriptions/process-upload') ?>"
+<form id="csvForm" action="<?= site_url('intern-subscriptions/process-upload') ?>"
       method="post" enctype="multipart/form-data" novalidate>
   <?= csrf_field() ?>
 
@@ -150,7 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!id) return;
 
     try {
-      const res  = await fetch('<?= base_url('admin/intern-subscriptions/cutoffinfo') ?>/' + id);
+      const res  = await fetch('<?= base_url('intern-subscriptions/cutoffinfo') ?>/' + id);
       if (!res.ok) throw new Error(res.statusText);
       const json = await res.json();
 

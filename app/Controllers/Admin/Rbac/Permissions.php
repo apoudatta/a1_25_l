@@ -48,7 +48,7 @@ class Permissions extends BaseController
             'name' => $name,
             'description' => $this->request->getPost('description')
         ]);
-        return redirect()->to(site_url('admin/permissions'))->with('success','Permission updated.');
+        return redirect()->to(site_url('permissions'))->with('success','Permission updated.');
     }
 
     public function delete(int $id)

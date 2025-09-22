@@ -23,6 +23,12 @@ $routes->set404Override();
 // --------------------------------------------------------------------
 // Public / Auth Routes
 // --------------------------------------------------------------------
+$routes->get('no-access', static function () {
+    return service('response')
+        ->setStatusCode(403)
+        ->setBody(view('auth/no_access'));
+});
+
 $routes->get('/',                    'AuthController::loginForm');
 $routes->post('auth/login',          'AuthController::login');
 $routes->post('external/receive',    'AuthController::externalReceive');
@@ -38,15 +44,16 @@ $routes->get('test',  'AuthController::test');
 // --------------------------------------------------------------------
 // Admin Routes (login required + permission guarded)
 // --------------------------------------------------------------------
-$routes->group('admin', ['filter' => ['auth']], static function($routes) {
+$routes->group('', ['filter' => ['auth']], static function($routes) {
     // Dashboard
-    $routes->get('dashboard',                 'Admin\Dashboard::index',       ['filter' => 'perm:admin.dashboard']);
+    $routes->get('dashboard',                 'Admin\Dashboard::index',                 ['filter' => 'perm:admin.dashboard']);
+    $routes->get('employee-dashboard',        'Admin\Dashboard::employeeDashboard',     ['filter' => 'perm:admin.employee-dashboard']);
 
     // ---------------- Meal Management ----------------
     // Subscriptions
     $routes->get('subscription',              'Admin\Subscription::history',          ['filter' => 'perm:admin.subscriptions.history']);
     $routes->get('subscription/new',                  'Admin\Subscription::new',              ['filter' => 'perm:admin.subscriptions.new']);
-    $routes->post('subscription/store',               'Admin\Subscription::store',            ['filter' => 'perm:admin.subscriptions.store']);
+    $routes->post('subscription/store',               'Admin\Subscription::store');
     $routes->get('employees/active-list',             'Admin\Subscription::activeList');
     //$routes->get('subscription/history/(:num)/view',  'Admin\Subscription::view/$1',          ['filter' => 'perm:admin.subscriptions.view']);
     $routes->get('subscription/all-subscriptions',    'Admin\Subscription::allSubscriptions', ['filter' => 'perm:admin.subscriptions.all-subscriptions']);
@@ -243,7 +250,7 @@ $routes->group('admin', ['filter' => ['auth']], static function($routes) {
 });
 
 // Admin > Report
-$routes->group('admin/report', ['namespace' => 'App\Controllers\Admin','filter' => 'auth'], static function($routes) {
+$routes->group('report', ['namespace' => 'App\Controllers\Admin','filter' => 'auth'], static function($routes) {
     $routes->get('/', 'ReportController::index', ['as' => 'admin.report']);
 
     $routes->get('meal-charge-list-for-payroll', 'ReportController::mealChargeListForPayroll', ['filter' => 'perm:admin.report.meal-charge-list-for-payroll']);
@@ -258,7 +265,7 @@ $routes->group('admin/report', ['namespace' => 'App\Controllers\Admin','filter' 
 });
 
 // RBAC Admin (Super Admin / rbac.manage only)
-$routes->group('admin', ['filter' => ['auth','perm:rbac.manage']], static function($routes) {
+$routes->group('', ['filter' => ['auth','perm:rbac.manage']], static function($routes) {
     // Permissions CRUD
     $routes->get('permissions',                 'Admin\Rbac\Permissions::index',   ['filter'=>'perm:rbac.permissions.read']);
     $routes->post('permissions',                'Admin\Rbac\Permissions::store',   ['filter'=>'perm:rbac.permissions.create']);
@@ -276,56 +283,6 @@ $routes->group('admin', ['filter' => ['auth','perm:rbac.manage']], static functi
     $routes->post('users/(:num)/roles',         'Admin\Rbac\Assign::saveUser/$1');
 });
 
-// --------------------------------------------------------------------
-// Employee Routes
-// --------------------------------------------------------------------
-$routes->group('employee', ['filter' => ['auth']], static function($routes) {
-    $routes->get('dashboard',                       'Employee\Dashboard::index',              ['filter' => 'perm:employee.dashboard']);
-
-    // Approval Queue
-    // $routes->group('approvals', ['filter' => 'perm:employee.approvals'], static function($routes) {
-    $routes->group('approvals', static function($routes) {
-        $routes->get('',                             'Employee\MealApprovals::index');
-        $routes->post('bulk-approve',          'Employee\MealApprovals::bulkApprove');
-        $routes->post('bulk-reject',           'Employee\MealApprovals::bulkReject');
-        $routes->post('approve/(:segment)/(:num)', 'Employee\MealApprovals::approveSingle/$1/$2');
-        $routes->post('reject/(:segment)/(:num)',  'Employee\MealApprovals::rejectSingle/$1/$2');
-
-    });
-
-    // Meal Subscription
-    $routes->get('subscription/new',                'Employee\Subscription::new',             ['filter' => 'perm:employee.subscriptions.new']);
-    $routes->post('subscription/store',             'Employee\Subscription::store');
-    $routes->get('subscription',            'Employee\Subscription::history',         ['filter' => 'perm:employee.subscriptions.history']);
-    //$routes->get('subscription/history/(:num)/view','Employee\Subscription::view/$1',         ['filter' => 'perm:employee.subscriptions.view']);
-    // $routes->post('subscription/unsubscribe/(:num)','Employee\Subscription::unsubscribe/$1',  ['filter' => 'perm:employee.subscriptions.unsubscribe_single']);
-    $routes->post('subscription/unsubscribe_single/(:num)', 'Employee\Subscription::unsubscribeSingle/$1', ['filter' => 'perm:employee.subscriptions.unsubscribe']);
-
-    // Guest Subscription
-    $routes->get('guest-subscriptions',             'Employee\GuestSubscription::index',      ['filter' => 'perm:employee.guests.index']);
-    $routes->get('guest-subscriptions/new',         'Employee\GuestSubscription::new',        ['filter' => 'perm:employee.guests.new']);
-    $routes->post('guest-subscriptions/store',      'Employee\GuestSubscription::store');
-    $routes->post('guest-subscriptions/unsubscribe/(:num)', 'Employee\GuestSubscription::unsubscribe/$1', ['filter' => 'perm:employee.guests.unsubscribe']);
-    
-    // Ifter Subscription
-    $routes->get('ifter-subscription',      'Employee\IfterSubscription::history',    ['filter' => 'perm:employee.ifter.history']);
-    $routes->get('ifter-subscription/new',  'Employee\IfterSubscription::new',        ['filter' => 'perm:employee.ifter.new']);
-    $routes->post('ifter-subscription/store',       'Employee\IfterSubscription::store');
-    $routes->post('ifter-subscription/unsubscribe/(:num)', 'Employee\IfterSubscription::unsubscribeSingle/$1', ['filter' => 'perm:employee.ifter.unsubscribe']);
-
-    // Seheri Subscription
-    $routes->get('sehri-subscription',      'Employee\SehriSubscription::history',    ['filter' => 'perm:employee.sehri.history']);
-    $routes->get('sehri-subscription/new',  'Employee\SehriSubscription::new',        ['filter' => 'perm:employee.sehri.new']);
-    $routes->post('sehri-subscription/store',       'Employee\SehriSubscription::store');
-    $routes->post('sehri-subscription/unsubscribe/(:num)', 'Employee\SehriSubscription::unsubscribeSingle/$1', ['filter' => 'perm:employee.sehri.unsubscribe']);
-
-    // Eid Subscription
-    $routes->get('eid-subscription',                'Employee\EidSubscription::history',      ['filter' => 'perm:employee.eid.history']);
-    $routes->get('eid-subscription/new',            'Employee\EidSubscription::new',          ['filter' => 'perm:employee.eid.new']);
-    $routes->post('eid-subscription/store',         'Employee\EidSubscription::store');
-    $routes->post('eid-subscription/unsubscribe/(:num)', 'Employee\EidSubscription::unsubscribeSingle/$1', ['filter' => 'perm:employee.eid.unsubscribe']);
-
-});
 
 // --------------------------------------------------------------------
 // Vendor Routes
@@ -380,7 +337,6 @@ $routes->group('api_auth', ['filter' => 'auth_api'], static function($routes) {
 $routes->group('api', ['namespace' => 'App\Controllers\Api'], static function($r) {
     $r->get('subscription-settings',          'SubscriptionAjax::settings');
     $r->get('public-holidays',                'SubscriptionAjax::holidays');
-    $r->post('subscriptions/check-overlap',   'SubscriptionAjax::checkOverlap');
 
     $r->post('save-new-card',     'LmsApi::saveNewCard');   // 1) SaveNewCard
     $r->post('get-emp-meal',      'LmsApi::getEmpMeal');    // 2) GetEmpMeal
@@ -393,7 +349,7 @@ $routes->group('api', ['namespace' => 'App\Controllers\Api'], static function($r
 
 // Shared AJAX (require login)
 $routes->get('eid-subscription/get-occasion-date/(:any)', 'Admin\EidSubscription::getOccasionDate/$1', ['filter' => 'auth']);
-$routes->get('admin/user/getEmpId/(:num)', 'Admin\Users::getEmpId/$1');
+$routes->get('user/getEmpId/(:num)', 'Admin\Users::getEmpId/$1');
 
 // --------------------------------------------------------------------
 // Environment-specific routes

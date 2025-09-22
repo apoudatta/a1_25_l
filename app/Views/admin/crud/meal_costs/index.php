@@ -4,7 +4,7 @@
 <h2 class="mb-4">Meal Cost Settings</h2>
 
   <?php if (can('admin.meal-costs.new')): ?>
-    <a href="<?= site_url('admin/meal-costs/new') ?>" class="btn btn-primary">
+    <a href="<?= site_url('meal-costs/new') ?>" class="btn btn-primary">
       <i class="bi bi-plus-lg"></i> New Meal Cost 
     </a>
   <?php endif; ?>
@@ -31,7 +31,7 @@
         </td>
         <!-- <td><?= $c['is_active'] ? 'Active' : 'Inactive' ?></td> -->
         <td>
-          <form action="<?= site_url('admin/meal-costs/'.$c['id'].'/toggle') ?>" method="post" class="d-inline">
+          <form action="<?= site_url('meal-costs/'.$c['id'].'/toggle') ?>" method="post" class="d-inline">
             <?= csrf_field() ?>
             <button class="btn btn-sm <?= $c['is_active'] ? 'btn-success' : 'btn-secondary' ?>">
               <?= $c['is_active'] ? 'Active' : 'Inactive' ?>
@@ -40,7 +40,7 @@
         </td>
         <!-- <td>
           <?php if (can('admin.meal-costs.edit')): ?>
-            <a href="<?= site_url("admin/meal-costs/{$c['id']}/edit") ?>"
+            <a href="<?= site_url("meal-costs/{$c['id']}/edit") ?>"
               class="btn btn-sm btn-secondary">Edit</a>
           <?php endif; ?>
         </td> -->
